@@ -1,11 +1,11 @@
-OBJS=main.o
+OBJS=main.o reader.o print.o memory.o
 
 CC=clang
 
 CFLAGS=-g -Wall -Wextra
 
-scheme: $(OBJS)
-	$(CC) -o scheme $(OBJS)
+js: $(OBJS)
+	$(CC) -o jscheme $(OBJS)
 
 clean:
 	rm $(OBJS)
