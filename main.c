@@ -1,18 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "jscheme.h"
 
-int 
+int
 main() {
 
 	printf("Welcome to (JS)cheme\n");
 
+	/*
+	 * Jojo Scheme REPL 
+	 */
 	for(;;){
+		
 		printf("JS> ");
-		char input = getc(stdin);
-		while(input != '\n'){
-			printf("%c", input);
-			input = getc(stdin);
-		}
+	
+		OBJ input = js_read();			
+		js_print(input);
+		
 		printf("\n");
 	}
 	return 0;
