@@ -127,3 +127,6 @@ fabric.properties
 
 ## Intellij .idea directory ##
 .idea/
+
+## jscheme ##
+jscheme
