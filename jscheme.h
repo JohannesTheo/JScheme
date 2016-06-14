@@ -1,3 +1,4 @@
+#include <stdio.h>
 /*
  *	One header file to confuse them all ( and myself )
  */
@@ -20,9 +21,9 @@ enum tag{
 };
 
 struct jschemeFileStream{
-	enum tag tag,
-	FILE *file
-}
+	enum tag tag;
+	FILE *file;
+};
 
 struct jschemeInteger{
 	enum tag tag;

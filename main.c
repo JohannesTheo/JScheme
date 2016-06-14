@@ -7,6 +7,7 @@ main() {
 
 	printf("Welcome to (JS)cheme\n");
 
+	OBJ input = newFileStream(stdin);
 	/*
 	 * Jojo Scheme REPL 
 	 */
@@ -14,8 +15,8 @@ main() {
 		
 		printf("JS> ");
 	
-		OBJ input = js_read();			
-		js_print(input);
+		OBJ result = js_read(input);			
+		js_print(result);
 		
 		printf("\n");
 	}
