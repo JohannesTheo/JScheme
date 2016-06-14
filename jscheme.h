@@ -16,7 +16,13 @@ typedef struct jschemeObject *OBJ;
 
 enum tag{
 	T_INTEGER,
+	T_FILESTREAM
 };
+
+struct jschemeFileStream{
+	enum tag tag,
+	FILE *file
+}
 
 struct jschemeInteger{
 	enum tag tag;
@@ -25,22 +31,23 @@ struct jschemeInteger{
 
 struct jschemeObject{
 
-	// More JScheme Type will be added
+	// More Types will be added
 	union {
 		struct jschemeInteger integer;
+		struct jschemeFileStream fileStream;
 	} u;
 };
 
 /*
- * Forward devlarations
+ * Forward declarations
  */
 
 // memory
 OBJ newInteger(jscheme_int64);
+OBJ newFileStream(FILE *);
 
 //reader
 OBJ js_read();
-OBJ readNumber(char);
 
 // print
 void js_print(OBJ);
