@@ -2,7 +2,7 @@
 #include "jscheme.h"
 
 OBJ
-newInteger(jscheme_int64 iVal) {
+newInteger(jscheme_int64 iVal){
 
 	struct jschemeInteger *theJSInt;
 
@@ -12,3 +12,14 @@ newInteger(jscheme_int64 iVal) {
 	return (OBJ) theJSInt;
 }
 
+OBJ
+newFileStream(FILE* file){
+
+	struct jschemeFileStream *fileStream;
+
+	fileStream = (struct jschemeFileStream*)(malloc( sizeof( struct jschemeFileStream)));
+	fileStream->tag = T_FILESTREAM;
+	fileStream->file = file;
+
+	return (OBJ)fileStream;
+}
