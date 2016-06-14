@@ -24,3 +24,15 @@ newFileStream(FILE* file){
 
 	return (OBJ)fileStream;
 }
+
+OBJ
+newSymbol(char *chars){
+
+	struct jschemeSymbol *theSymbol;
+
+	theSymbol = (struct jschemeSymbol*)(malloc( sizeof( struct jschemeSymbol)));
+	theSymbol->tag = T_SYMBOL;
+	theSymbol->symbolVal = chars;
+
+	return (OBJ)theSymbol;
+}

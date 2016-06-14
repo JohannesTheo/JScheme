@@ -17,7 +17,13 @@ typedef struct jschemeObject *OBJ;
 
 enum tag{
 	T_INTEGER,
+	T_SYMBOL,
 	T_FILESTREAM
+};
+
+struct jschemeSymbol{
+	enum tag tag;
+	char *symbolVal;
 };
 
 struct jschemeFileStream{
@@ -35,6 +41,7 @@ struct jschemeObject{
 	// More Types will be added
 	union {
 		struct jschemeInteger integer;
+		struct jschemeSymbol symbol;
 		struct jschemeFileStream fileStream;
 	} u;
 };
@@ -45,6 +52,7 @@ struct jschemeObject{
 
 // memory
 OBJ newInteger(jscheme_int64);
+OBJ newSymbol(char *);
 OBJ newFileStream(FILE *);
 
 //reader

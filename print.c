@@ -6,9 +6,15 @@ js_print(OBJ o){
 
 	enum tag kindOf = o->u.integer.tag;
 
-	if( kindOf == T_INTEGER ) {
-		printf("%ld" , o->u.integer.intVal);
-	} else {
-		printf("#<unimpl. print>");
+	switch(kindOf){
+		case T_INTEGER:
+			printf("%ld" , o->u.integer.intVal);
+			break;
+		case T_SYMBOL:
+			printf("%s", o->u.symbol.symbolVal);
+			break;
+		default:
+			printf("#<unimpl. print>");
+			break;
 	}
 }
