@@ -17,10 +17,17 @@ typedef long jscheme_int64;
 typedef struct jschemeObject *OBJ;
 
 enum tag{
+	T_NIL,
+	T_TRUE,
+	T_FALSE,
 	T_INTEGER,
 	T_SYMBOL,
 	T_STRING,
 	T_FILESTREAM
+};
+
+struct jschemeAny{
+	enum tag tag;
 };
 
 struct jschemeString{
@@ -47,6 +54,7 @@ struct jschemeObject{
 
 	// More Types will be added
 	union {
+		struct jschemeAny any;
 		struct jschemeInteger integer;
 		struct jschemeSymbol symbol;
 		struct jschemeString string;
@@ -57,6 +65,9 @@ struct jschemeObject{
 /*
  * Forward declarations
  */
+
+// well known objects
+OBJ js_nil, js_true, js_false;
 
 // memory
 OBJ newInteger(jscheme_int64);

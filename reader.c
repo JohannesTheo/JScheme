@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "jscheme.h"
 
 
@@ -81,9 +82,17 @@ readSymbol(OBJ inStream, char firstChar){
 		}
 		ch = nextChar(inStream);
 	}
-
-	// here we could check for known syntax -> nil, true, false etc...
-	// and return an appropriate OBJ.
+	
+	if(strcmp(buffer, "nil") == 0 ){
+		return js_nil;
+	}
+	if(strcmp(buffer, "#t") == 0 ){
+		return js_true;
+	}
+	if(strcmp(buffer, "#f") == 0 ){
+		return js_false;
+	}
+	
 	retVal = newSymbol(buffer);
 	return retVal;
 }
