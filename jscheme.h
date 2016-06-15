@@ -3,6 +3,7 @@
  *	One header file to confuse them all ( and myself )
  */
 
+#define DEBUG
 
 #ifdef __WIN32__
 typedef int jscheme_int32;

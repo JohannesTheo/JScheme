@@ -6,6 +6,22 @@ js_print(OBJ o){
 
 	enum tag kindOf = o->u.integer.tag;
 
+#ifdef DEBUG
+	switch(kindOf){
+		case T_INTEGER:
+			printf("<JS integer> ");
+			break;
+		case T_SYMBOL:
+			printf("<JS symbol> ");
+			break;
+		case T_STRING:
+			printf("<JS string> ");
+			break;
+		default:
+			printf("<Debug error: tag not supported>\n");
+	}
+#endif
+
 	switch(kindOf){
 		case T_INTEGER:
 			printf("%ld" , o->u.integer.intVal);
