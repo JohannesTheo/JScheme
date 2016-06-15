@@ -36,3 +36,15 @@ newSymbol(char *chars){
 
 	return (OBJ)theSymbol;
 }
+
+OBJ
+newString(char *chars){
+
+	struct jschemeString *theString;
+
+	theString = (struct jschemeString*)(malloc( sizeof( struct jschemeString)));
+	theString->tag = T_STRING;
+	theString->stringVal = chars;
+
+	return (OBJ)theString;
+}

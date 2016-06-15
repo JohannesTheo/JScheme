@@ -19,11 +19,11 @@ nextChar(OBJ inStream){
 	return ch;
 }
 
-char
+static char
 skipWhiteSpace(OBJ inStream){
 
 	char ch;
-       
+
 	do{
 		ch = nextChar(inStream);
 	} while (isWhiteSpace(ch));
@@ -31,9 +31,9 @@ skipWhiteSpace(OBJ inStream){
 	return ch;
 }
 
-int
+static int
 isDigit(char ch) {
-	return (ch >= '0') && (ch <= '9'); 
+	return (ch >= '0') && (ch <= '9');
 }
 
 OBJ
@@ -73,14 +73,14 @@ readSymbol(OBJ inStream, char firstChar){
 		(ch != EOF)){
 
 		buffer[current_size++] = ch;
-		
+
 		if(current_size == buffer_size){
 			int new_buffer_size = buffer_size * 2;
 			buffer = realloc(buffer, new_buffer_size);
 			buffer_size = new_buffer_size;
 		}
 		ch = nextChar(inStream);
-	}	
+	}
 
 	// here we could check for known syntax -> nil, true, false etc...
 	// and return an appropriate OBJ.
@@ -89,10 +89,61 @@ readSymbol(OBJ inStream, char firstChar){
 }
 
 OBJ
+readString(OBJ inStream){
+
+	char ch;
+	OBJ retString;
+
+	char *buffer = NULL;
+	int buffer_size = 64;
+	int current_size = 0;
+
+	buffer = malloc(buffer_size);
+	ch = nextChar(inStream);
+
+	while( ch != '"' && ch != EOF ){
+		if(ch == '\\'){
+			ch = nextChar(inStream);
+			switch(ch){
+				case EOF:
+					printf("Error: <unterminated string>");
+					break;
+				case 'n':
+					ch = '\n';
+					break;
+				case 'r':
+					ch = '\r';
+					break;
+				case 't':
+					ch = '\t';
+					break;
+				default:
+					break;
+			}
+		}
+
+		buffer[current_size++] = ch;
+
+		if(current_size == buffer_size){
+			int new_buffer_size = buffer_size * 2;
+			buffer = realloc(buffer, new_buffer_size);
+			buffer_size = new_buffer_size;
+		}
+		ch = nextChar(inStream);
+	}
+
+	retString = newString(buffer);
+	return retString;
+}
+
+OBJ
 js_read(OBJ inStream){
 
 	char ch = skipWhiteSpace(inStream);
-
+	
+	if(ch == '"'){
+		return readString(inStream);
+	}
 	if(isDigit(ch)){
 		return readNumber(inStream, ch);
 	}

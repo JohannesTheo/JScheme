@@ -13,8 +13,11 @@ js_print(OBJ o){
 		case T_SYMBOL:
 			printf("%s", o->u.symbol.symbolVal);
 			break;
+		case T_STRING:
+			printf("\"%s\"", o->u.string.stringVal);
+			break;
 		default:
-			printf("#<unimpl. print>");
+			printf("<unimpl. (print)>");
 			break;
 	}
 }
