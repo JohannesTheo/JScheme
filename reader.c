@@ -15,9 +15,22 @@ static char
 nextChar(OBJ inStream){
 
 	// this will sometimes read one char ahead so we will need a peekChar or something...
-	char ch;
+	char ch = inStream->u.fileStream.peekChar;
+
+	if(ch != 0){
+		inStream->u.fileStream.peekChar = 0;
+		return ch;
+	}
+
 	ch = fgetc(inStream->u.fileStream.file);
 	return ch;
+}
+
+static void
+unreadChar(OBJ inStream, char ch){
+	
+	inStream->u.fileStream.peekChar = ch;
+
 }
 
 static char
@@ -50,7 +63,7 @@ readNumber(OBJ inStream, char firstChar){
 	while( isDigit( ch = nextChar(inStream) )){
 		iVal = iVal * 10 + ( (int)ch - '0');
 	}
-
+	unreadChar(inStream, ch);
 	retVal = newInteger( iVal );
 	return retVal;
 }
@@ -71,6 +84,7 @@ readSymbol(OBJ inStream, char firstChar){
 	while( !isWhiteSpace(ch) &&
 		(ch != '(') &&
 		(ch != ')') &&
+		(ch != '"') &&
 		(ch != EOF)){
 
 		buffer[current_size++] = ch;
@@ -82,7 +96,9 @@ readSymbol(OBJ inStream, char firstChar){
 		}
 		ch = nextChar(inStream);
 	}
-	
+		
+	unreadChar(inStream, ch);
+
 	if(strcmp(buffer, "nil") == 0 ){
 		return js_nil;
 	}

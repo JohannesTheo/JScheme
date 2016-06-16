@@ -43,6 +43,7 @@ struct jschemeSymbol{
 struct jschemeFileStream{
 	enum tag tag;
 	FILE *file;
+	int peekChar;
 };
 
 struct jschemeInteger{
@@ -80,4 +81,8 @@ OBJ js_read();
 
 // print
 void js_print(OBJ);
+
+// main prompt
+void prompt_on();
+void prompt_off();
 

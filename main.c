@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "jscheme.h"
 
+static int prompt_enabled = 1;
+
 void 
 initializeWellKnownObjects(){
 
@@ -29,7 +31,8 @@ main() {
 	 */
 	for(;;){
 		
-		printf("JS> ");
+		printf("MAIN: %d :", prompt_enabled);
+		if(prompt_enabled) printf("JS> ");
 	
 		OBJ result = js_read(input);			
 		js_print(result);
@@ -37,4 +40,14 @@ main() {
 		printf("\n");
 	}
 	return 0;
+}
+
+void
+prompt_on(){
+	prompt_enabled = 1;
+}
+
+void
+prompt_off(){
+	prompt_enabled = 0;
 }

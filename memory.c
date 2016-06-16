@@ -21,6 +21,7 @@ newFileStream(FILE* file){
 	fileStream = (struct jschemeFileStream*)(malloc( sizeof( struct jschemeFileStream)));
 	fileStream->tag = T_FILESTREAM;
 	fileStream->file = file;
+	fileStream->peekChar = 0;
 
 	return (OBJ)fileStream;
 }
