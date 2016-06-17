@@ -56,8 +56,8 @@ thisIsTheEnd(OBJ inStream){
 		if(ch == '\n'){
 			//printf("END>");
 			end = 1;
+			break;
 		}
-		break;
 	} while (isWhiteSpace(ch));
 
 	unreadChar(inStream, ch);
