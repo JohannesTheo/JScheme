@@ -48,6 +48,12 @@ skipWhiteSpace(OBJ inStream){
 
 static int
 thisIsTheEnd(OBJ inStream){
+	/*
+	 *	This is the end
+	 *	Beautiful friend
+	 *	This is the end
+	 *	My only friend, the end
+	 */
 	int end = 0;
 	char ch;
 
