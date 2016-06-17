@@ -3,7 +3,7 @@
  *	One header file to confuse them all ( and myself )
  */
 
-//#define DEBUG
+#define DEBUG
 
 #ifdef __WIN32__
 typedef int jscheme_int32;
@@ -12,6 +12,16 @@ typedef long long jscheme_int64;
 typedef int jscheme_int32;
 typedef long jscheme_int64;
 #endif
+
+// fancy colors
+#define RED   "\x1B[31m"
+#define GRN   "\x1B[32m"
+#define YEL   "\x1B[33m"
+#define BLU   "\x1B[34m"
+#define MAG   "\x1B[35m"
+#define CYN   "\x1B[36m"
+#define WHT   "\x1B[37m"
+#define RESET "\x1B[0m"
 
 // In JScheme everything will be a jschemeObject
 typedef struct jschemeObject *OBJ;

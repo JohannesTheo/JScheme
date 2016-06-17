@@ -9,25 +9,25 @@ js_print(OBJ o){
 #ifdef DEBUG
 	switch(kindOf){
 		case T_NIL:
-			printf("<JS nil> ");
+			printf(YEL"<JS nil> "RESET);
 			break;
 		case T_TRUE:
-			printf("<JS true> ");
+			printf(YEL"<JS true> "RESET);
 			break;
 		case T_FALSE:
-			printf("<JS false> ");
+			printf(YEL"<JS false> "RESET);
 			break;
 		case T_INTEGER:
-			printf("<JS integer> ");
+			printf(YEL"<JS integer> "RESET);
 			break;
 		case T_SYMBOL:
-			printf("<JS symbol> ");
+			printf(YEL"<JS symbol> "RESET);
 			break;
 		case T_STRING:
-			printf("<JS string> ");
+			printf(YEL"<JS string> "RESET);
 			break;
 		default:
-			printf("<Debug error: tag not supported>\n");
+			printf(RED"<Debug error: tag not supported>\n"RESET);
 	}
 #endif
 
