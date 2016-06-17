@@ -31,7 +31,7 @@ main() {
 	 */
 	for(;;){
 		
-		printf("MAIN: %d :", prompt_enabled);
+//		printf("MAIN: %d :", prompt_enabled);
 		if(prompt_enabled) printf("JS> ");
 	
 		OBJ result = js_read(input);			

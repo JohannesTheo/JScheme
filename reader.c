@@ -40,9 +40,28 @@ skipWhiteSpace(OBJ inStream){
 
 	do{
 		ch = nextChar(inStream);
+		//printf("skip:%i>", ch);
 	} while (isWhiteSpace(ch));
 
 	return ch;
+}
+
+static int
+thisIsTheEnd(OBJ inStream){
+	int end = 0;
+	char ch;
+
+	do{
+		ch = nextChar(inStream);
+		if(ch == '\n'){
+			//printf("END>");
+			end = 1;
+		}
+		break;
+	} while (isWhiteSpace(ch));
+
+	unreadChar(inStream, ch);
+	return end;
 }
 
 static int
@@ -164,14 +183,22 @@ readString(OBJ inStream){
 OBJ
 js_read(OBJ inStream){
 
+	OBJ retVal;
+	prompt_off();
 	char ch = skipWhiteSpace(inStream);
 	
 	if(ch == '"'){
-		return readString(inStream);
+		retVal = readString(inStream);
 	}
-	if(isDigit(ch)){
-		return readNumber(inStream, ch);
+	else if(isDigit(ch)){
+		retVal = readNumber(inStream, ch);
+	}else{
+		retVal = readSymbol(inStream, ch);
 	}
+	
+	if(thisIsTheEnd(inStream)){
+		prompt_on();
+	};
 
-	return readSymbol(inStream, ch);
+	return retVal;
 }
