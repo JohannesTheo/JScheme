@@ -27,6 +27,19 @@ newFileStream(FILE* file){
 }
 
 OBJ
+newStringStream(char *buffer){
+
+	struct jschemeStringStream *stringStream;
+
+	stringStream = (struct jschemeStringStream*)(malloc( sizeof( struct jschemeStringStream)));
+	stringStream->tag = T_STRINGSTREAM;
+	stringStream->buffer = buffer;
+	stringStream->index = 0;
+
+	return (OBJ)stringStream;
+}
+
+OBJ
 newSymbol(char *chars){
 
 	struct jschemeSymbol *theSymbol;
@@ -49,3 +62,15 @@ newString(char *chars){
 
 	return (OBJ)theString;
 }
+
+
+const char* tag_lookup[8] = {
+	"T_NIL",
+	"T_TURE",
+	"T_FALSE",
+	"T_INTEGER",
+	"T_SYMBOL",
+	"T_STRING",
+	"T_FILESTREAM",
+	"T_STRINGSTREAM"
+};

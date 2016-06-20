@@ -14,23 +14,49 @@ isWhiteSpace(char ch){
 static char
 nextChar(OBJ inStream){
 
-	// this will sometimes read one char ahead so we will need a peekChar or something...
-	char ch = inStream->u.fileStream.peekChar;
 
-	if(ch != 0){
-		inStream->u.fileStream.peekChar = 0;
+	if(inStream->u.any.tag == T_FILESTREAM){
+		// this will sometimes read one char ahead so we will need a peekChar or something...
+		char ch = inStream->u.fileStream.peekChar;
+
+		if(ch != 0){
+			inStream->u.fileStream.peekChar = 0;
+			return ch;
+		}
+
+		ch = fgetc(inStream->u.fileStream.file);
+		return ch;
+	}
+	else if(inStream->u.any.tag == T_STRINGSTREAM){
+		
+		int index = inStream->u.stringStream.index;
+		char ch = inStream->u.stringStream.buffer[index];
+		//printf("\nnextChar: %c at index %d, newIndex: %d", ch, index, index+1);
+
+		inStream->u.stringStream.index++;
+		
+		if(ch == 0){
+			//printf(RED "\nEOF\n" RESET);
+			return EOF;
+		}
 		return ch;
 	}
 
-	ch = fgetc(inStream->u.fileStream.file);
-	return ch;
+	return -1;
 }
 
 static void
 unreadChar(OBJ inStream, char ch){
 	
-	inStream->u.fileStream.peekChar = ch;
+	if(inStream->u.any.tag == T_FILESTREAM){
 
+		inStream->u.fileStream.peekChar = ch;
+	}
+	if(inStream->u.any.tag == T_STRINGSTREAM){
+	
+		inStream->u.stringStream.index--;	
+		///printf("\nunreadChar: %c newIndex: %i",ch, inStream->u.stringStream.index);
+	}
 }
 
 static char
@@ -46,7 +72,7 @@ skipWhiteSpace(OBJ inStream){
 	return ch;
 }
 
-static int
+int
 thisIsTheEnd(OBJ inStream){
 	/*
 	 *	This is the end
@@ -58,9 +84,10 @@ thisIsTheEnd(OBJ inStream){
 	char ch;
 
 	do{
+		//printf(CYN "\nendSearch: " RESET);
 		ch = nextChar(inStream);
-		if(ch == '\n'){
-			//printf("END>");
+		if(ch == '\n' || ch == EOF){
+			//printf(RED "<END>" RESET);
 			end = 1;
 			break;
 		}
@@ -77,6 +104,7 @@ isDigit(char ch) {
 
 OBJ
 readNumber(OBJ inStream, char firstChar){
+	//printf(YEL "\nreadNumber>" RESET);
 
 	jscheme_int64 iVal = 0;
 	char ch;
@@ -84,7 +112,6 @@ readNumber(OBJ inStream, char firstChar){
 
 	// substract the ASCII value of '0' from char to get the actual value between 0 and 9.
 	iVal = (int)firstChar - '0';
-
 	while( isDigit( ch = nextChar(inStream) )){
 		iVal = iVal * 10 + ( (int)ch - '0');
 	}
@@ -95,6 +122,7 @@ readNumber(OBJ inStream, char firstChar){
 
 OBJ
 readSymbol(OBJ inStream, char firstChar){
+	//printf(YEL "\nreadSymbol>" RESET);
 
 	char ch;
 	char *buffer = NULL;
@@ -140,6 +168,7 @@ readSymbol(OBJ inStream, char firstChar){
 
 OBJ
 readString(OBJ inStream){
+	//printf(YEL "\nreadString>" RESET);
 
 	char ch;
 	OBJ retString;
@@ -208,3 +237,4 @@ js_read(OBJ inStream){
 
 	return retVal;
 }
+

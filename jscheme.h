@@ -33,8 +33,11 @@ enum tag{
 	T_INTEGER,
 	T_SYMBOL,
 	T_STRING,
-	T_FILESTREAM
+	T_FILESTREAM,
+	T_STRINGSTREAM
 };
+
+extern const char* tag_lookup[8];
 
 struct jschemeAny{
 	enum tag tag;
@@ -56,6 +59,12 @@ struct jschemeFileStream{
 	int peekChar;
 };
 
+struct jschemeStringStream{
+	enum tag tag;
+	char* buffer;
+	int index;
+};
+
 struct jschemeInteger{
 	enum tag tag;
 	jscheme_int64 intVal;
@@ -70,6 +79,7 @@ struct jschemeObject{
 		struct jschemeSymbol symbol;
 		struct jschemeString string;
 		struct jschemeFileStream fileStream;
+		struct jschemeStringStream stringStream;
 	} u;
 };
 
@@ -85,9 +95,11 @@ OBJ newInteger(jscheme_int64);
 OBJ newSymbol(char *);
 OBJ newString(char *);
 OBJ newFileStream(FILE *);
+OBJ newStringStream(char *);
 
 //reader
 OBJ js_read();
+int thisIsTheEnd();
 
 // print
 void js_print(OBJ);
@@ -96,3 +108,5 @@ void js_print(OBJ);
 void prompt_on();
 void prompt_off();
 
+// selftest
+void selftest();
