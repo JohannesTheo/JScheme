@@ -23,7 +23,10 @@ typedef long jscheme_int64;
 #define WHT   "\x1B[37m"
 #define RESET "\x1B[0m"
 
-// In JScheme everything will be a jschemeObject
+/*
+ * 	In JScheme everything will be a jschemeObject
+ */
+
 typedef struct jschemeObject *OBJ;
 
 enum tag{
@@ -37,7 +40,7 @@ enum tag{
 	T_STRINGSTREAM
 };
 
-extern const char* tag_lookup[8];
+extern const char* tag_lookup[];
 
 struct jschemeAny{
 	enum tag tag;
@@ -84,7 +87,26 @@ struct jschemeObject{
 };
 
 /*
- * Forward declarations
+ *	macros
+ */
+#ifdef DEBUG
+#define ASSERT(expr,msg){ ((!(expr)) ? error(msg, __FILE__, __LINE__): 0); }
+#else
+#define ASSERT(expr,msg) 
+#endif
+
+#define TAG(o)		((o)->u.any.tag)
+
+#define ISNIL(o)	(TAG(o) == T_NIL)	
+#define ISTRUE(o)	(TAG(o) == T_TRUE)	
+#define ISFALSE(o)	(TAG(o) == T_FALSE)	
+#define ISINTEGER(o)	(TAG(o) == T_INTEGER)	
+#define ISSYMBOL(o)	(TAG(o) == T_SYMBOL)
+#define ISSTRING(o)	(TAG(o) == T_STRING)
+
+
+/*
+ * 	Forward declarations
  */
 
 // well known objects
@@ -104,9 +126,10 @@ int thisIsTheEnd();
 // print
 void js_print(OBJ);
 
-// main prompt
+// main
 void prompt_on();
 void prompt_off();
+void error(char *, char *, int);
 
 // selftest
 void selftest();

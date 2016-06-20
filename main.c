@@ -52,3 +52,9 @@ void
 prompt_off(){
 	prompt_enabled = 0;
 }
+
+void
+error(char* msg, char* fileName, int line){
+	fprintf(stderr, "%s[%d]: %s\n", fileName, line, msg);
+	abort();
+}

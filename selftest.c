@@ -69,6 +69,8 @@ selftest(){
 		
 	} while(!thisIsTheEnd(multi_test_stream));
 
-
+//	error("Test Error", __FILE__, __LINE__);
+//	ASSERT(1,"TRUE");
+//	ASSERT(0,"FALSE");
 	printf("\n\nEnd of selftest\n\n");
 }
