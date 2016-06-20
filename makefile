@@ -1,4 +1,4 @@
-OBJS=main.o reader.o print.o memory.o
+OBJS=main.o reader.o print.o memory.o selftest.o
 
 CC=clang
 

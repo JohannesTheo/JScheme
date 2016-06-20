@@ -22,6 +22,7 @@ int
 main() {
 
 	initializeWellKnownObjects();
+	selftest();
 
 	printf("Welcome to (JS)cheme\n");
 
