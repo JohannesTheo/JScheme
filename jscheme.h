@@ -96,14 +96,16 @@ struct jschemeObject{
 #endif
 
 #define TAG(o)		((o)->u.any.tag)
+#define INTVAL(o)	((o)->u.integer.intVal)
+#define SYMBOLVAL(o)	((o)->u.symbol.symbolVal)
+#define STRINGVAL(o)	((o)->u.string.stringVal)
 
-#define ISNIL(o)	(TAG(o) == T_NIL)	
-#define ISTRUE(o)	(TAG(o) == T_TRUE)	
-#define ISFALSE(o)	(TAG(o) == T_FALSE)	
-#define ISINTEGER(o)	(TAG(o) == T_INTEGER)	
+#define ISNIL(o)	(TAG(o) == T_NIL)
+#define ISTRUE(o)	(TAG(o) == T_TRUE)
+#define ISFALSE(o)	(TAG(o) == T_FALSE)
+#define ISINTEGER(o)	(TAG(o) == T_INTEGER)
 #define ISSYMBOL(o)	(TAG(o) == T_SYMBOL)
 #define ISSTRING(o)	(TAG(o) == T_STRING)
-
 
 /*
  * 	Forward declarations
