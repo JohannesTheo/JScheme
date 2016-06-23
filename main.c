@@ -32,10 +32,11 @@ main() {
 	 */
 	for(;;){
 		
+		OBJ expr, result;
 //		printf("MAIN: %d :", prompt_enabled);
 		if(prompt_enabled) printf(CYN "JS> " RESET);
 	
-		OBJ result = js_read(input);			
+		result = js_read(input);
 		js_print(result);
 		
 		printf("\n");
@@ -53,8 +54,3 @@ prompt_off(){
 	prompt_enabled = 0;
 }
 
-void
-error(char* msg, char* fileName, int line){
-	fprintf(stderr, "%s [%d]: %s\n", fileName, line, msg);
-	abort();
-}

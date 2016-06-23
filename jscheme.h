@@ -131,7 +131,10 @@ void js_print(OBJ);
 // main
 void prompt_on();
 void prompt_off();
+
+//error
 void error(char *, char *, int);
+void jserror(char *, OBJ);
 
 // selftest
 void selftest();
