@@ -28,7 +28,9 @@ main() {
 
 	printf("Welcome to (JS)cheme\n");
 
-	setjmp(whereEverythingWasFine);
+	if( setjmp(whereEverythingWasFine) ){
+		printf("back in wonderland\n");
+	}	
 	printf("start REPL...\n");
 
 	OBJ input = newFileStream(stdin);
@@ -38,11 +40,12 @@ main() {
 	for(;;){
 		
 		OBJ expr, result;
-//		printf("MAIN: %d :", prompt_enabled);
 		if(prompt_enabled) printf(CYN "JS> " RESET);
 	
-		result = js_read(input);
-		js_print(stdout, result);
+		expr = js_read(input);		// R ead
+		result = js_eval(expr);		// E valuate
+		js_print(stdout, result);	// P rint
+						// L oop
 
 		printf("\n");
 	}

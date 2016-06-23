@@ -125,6 +125,9 @@ OBJ newStringStream(char *);
 OBJ js_read();
 int thisIsTheEnd();
 
+// eval
+OBJ js_eval();
+
 // print
 void js_print(FILE *, OBJ);
 
