@@ -134,7 +134,7 @@ void prompt_off();
 
 //error
 void error(char *, char *, int);
-void jserror(char *, OBJ);
+void js_error(char *, OBJ);
 
 // selftest
 void selftest();
