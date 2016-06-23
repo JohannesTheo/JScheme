@@ -55,6 +55,6 @@ prompt_off(){
 
 void
 error(char* msg, char* fileName, int line){
-	fprintf(stderr, "%s[%d]: %s\n", fileName, line, msg);
+	fprintf(stderr, "%s [%d]: %s\n", fileName, line, msg);
 	abort();
 }
