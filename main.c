@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "jscheme.h"
+#include <setjmp.h>
 
 static int prompt_enabled = 1;
+static jmp_buf whereEverythingWasFine;
 
 void 
 initializeWellKnownObjects(){
@@ -26,6 +28,9 @@ main() {
 
 	printf("Welcome to (JS)cheme\n");
 
+	setjmp(whereEverythingWasFine);
+	printf("start REPL...\n");
+
 	OBJ input = newFileStream(stdin);
 	/*
 	 * Jojo Scheme REPL 
@@ -37,8 +42,8 @@ main() {
 		if(prompt_enabled) printf(CYN "JS> " RESET);
 	
 		result = js_read(input);
-		js_print(stdin, result);
-		
+		js_print(stdout, result);
+
 		printf("\n");
 	}
 	return 0;
@@ -52,5 +57,10 @@ prompt_on(){
 void
 prompt_off(){
 	prompt_enabled = 0;
+}
+
+void
+getMeOutOfHere(){
+	longjmp(whereEverythingWasFine, 1);
 }
 

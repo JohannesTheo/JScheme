@@ -17,4 +17,5 @@ js_error(char* msg, OBJ arg){
 	fprintf(stderr,"\n-------------\n");
 	
 	fflush(stdout);
+	getMeOutOfHere();
 }

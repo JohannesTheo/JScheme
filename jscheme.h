@@ -131,6 +131,7 @@ void js_print(FILE *, OBJ);
 // main
 void prompt_on();
 void prompt_off();
+void getMeOutOfHere();
 
 //error
 void error(char *, char *, int);
