@@ -126,7 +126,7 @@ OBJ js_read();
 int thisIsTheEnd();
 
 // print
-void js_print(OBJ);
+void js_print(FILE *, OBJ);
 
 // main
 void prompt_on();

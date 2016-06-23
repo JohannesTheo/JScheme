@@ -37,7 +37,7 @@ main() {
 		if(prompt_enabled) printf(CYN "JS> " RESET);
 	
 		result = js_read(input);
-		js_print(result);
+		js_print(stdin, result);
 		
 		printf("\n");
 	}
