@@ -161,6 +161,10 @@ readSymbol(OBJ inStream, char firstChar){
 	if(strcmp(buffer, "#f") == 0 ){
 		return js_false;
 	}
+
+	// realloc buffer to save memory and add string terminator.
+	buffer = realloc(buffer, current_size + 1);
+	buffer[current_size] = '\0';	
 	
 	retVal = newSymbol(buffer);
 	return retVal;
@@ -210,6 +214,11 @@ readString(OBJ inStream){
 		}
 		ch = nextChar(inStream);
 	}
+
+
+	// realloc buffer to save memory and add string terminator.
+	buffer = realloc(buffer, current_size + 1);
+	buffer[current_size] = '\0';
 
 	retString = newString(buffer);
 	return retString;
