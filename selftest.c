@@ -10,9 +10,38 @@ js_readFromString(char *buffer){
 }
 
 void
+symbolTableFillTest(){
+
+	char ch1, ch2, ch3;
+
+	for(ch1 = 'a'; ch1 < 'z'; ch1++){
+		for(ch2 = 'a'; ch2 < 'z'; ch2++){
+			for(ch3 = 'a'; ch3 < 'z'; ch3++){
+				char testSymbol[4];
+				testSymbol[0] = ch1;
+				testSymbol[1] = ch2;
+				testSymbol[2] = ch3;
+				testSymbol[3] = '\0';
+
+				char* testSymbolCopy = malloc(4);
+				strcpy(testSymbolCopy, testSymbol);
+				symbolTableGetOrAdd(testSymbolCopy);
+			}
+		}
+	}
+}
+
+void
 selftest(){
 
 //	printf("JS selftest\n\n");
+
+	/*
+	 *	symbol table
+	 */
+	
+	symbolTableFillTest();
+
 
 	/*
 	 *	reader tests
