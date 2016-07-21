@@ -24,6 +24,7 @@ int
 main() {
 
 	initializeWellKnownObjects();
+	initSymbolTable();
 	selftest();
 
 	printf("Welcome to (JS)cheme\n");

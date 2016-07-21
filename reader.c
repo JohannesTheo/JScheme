@@ -128,7 +128,7 @@ readSymbol(OBJ inStream, char firstChar){
 	char *buffer = NULL;
 	int buffer_size = 64;
 	int current_size = 0;
-	OBJ retVal;
+	//OBJ retVal;
 
 	buffer = malloc(buffer_size);
 	buffer[current_size++] = firstChar;
@@ -165,9 +165,10 @@ readSymbol(OBJ inStream, char firstChar){
 	// realloc buffer to save memory and add string terminator.
 	buffer = realloc(buffer, current_size + 1);
 	buffer[current_size] = '\0';	
-	
-	retVal = newSymbol(buffer);
-	return retVal;
+
+	return symbolTableGetOrAdd(buffer);	
+	//retVal = newSymbol(buffer);
+	//return retVal;
 }
 
 OBJ

@@ -142,3 +142,8 @@ void js_error(char *, OBJ);
 
 // selftest
 void selftest();
+
+// symboltable
+void initSymbolTable();
+OBJ symbolTableGetOrAdd(char* );
+
