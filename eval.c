@@ -12,7 +12,11 @@ js_eval(OBJ expr){
 
 		case T_SYMBOL:
 			printf("Address of symbol: %p\n", expr); 
-			js_error("undefined variable", expr);
-			return expr;
+			
+			OBJ value = environmentGet(expr);
+			if(value == NULL){
+				js_error("undefined variable", expr);
+			}
+			return value;
 	}
 }

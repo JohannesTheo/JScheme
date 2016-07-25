@@ -6,6 +6,14 @@
 static int prompt_enabled = 1;
 static jmp_buf whereEverythingWasFine;
 
+
+void
+setupInitialEnvironment(){	
+
+	environmentPut(symbolTableGetOrAdd("a"), newInteger(10));
+	environmentPut(symbolTableGetOrAdd("b"), newInteger(20));
+}
+
 void 
 initializeWellKnownObjects(){
 
@@ -25,7 +33,10 @@ main() {
 
 	initializeWellKnownObjects();
 	initSymbolTable();
+	initGlobalEnvironment();
 	selftest();
+
+	setupInitialEnvironment();
 
 	printf("Welcome to (JS)cheme\n");
 
