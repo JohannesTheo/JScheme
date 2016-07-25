@@ -147,3 +147,8 @@ void selftest();
 void initSymbolTable();
 OBJ symbolTableGetOrAdd(char* );
 
+// environment
+void initGlobalEnvironment();
+void environmentPut(OBJ storedKey, OBJ storedValue);
+OBJ environmentGet(OBJ searchedKey);
+
