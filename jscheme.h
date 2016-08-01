@@ -39,6 +39,7 @@ enum tag{
 	T_FILESTREAM,
 	T_STRINGSTREAM,
 	T_CONS,
+	T_BUILTINFUNCTION,
 };
 
 extern const char* tag_lookup[];
@@ -80,6 +81,15 @@ struct jschemeCons{
 	OBJ cdr;
 };
 
+typedef OBJ (*OBJFUNC)();
+
+struct jsBuiltinFunction{
+	enum tag tag;
+
+	char *internalName;
+	OBJFUNC theCode;
+}; 
+
 struct jschemeObject{
 
 	// More Types will be added
@@ -91,6 +101,7 @@ struct jschemeObject{
 		struct jschemeFileStream fileStream;
 		struct jschemeStringStream stringStream;
 		struct jschemeCons cons;
+		struct jsBuiltinFunction builtinFunction;
 	} u;
 };
 
@@ -117,6 +128,8 @@ struct jschemeObject{
 #define ISSYMBOL(o)	(TAG(o) == T_SYMBOL)
 #define ISSTRING(o)	(TAG(o) == T_STRING)
 #define ISCONS(o)	(TAG(o) == T_CONS)
+#define ISBUILTINF(o) 	(TAG(o) == T_BUILTINFUNCTION)
+
 
 /*
  * 	Forward declarations
@@ -132,6 +145,7 @@ OBJ newString(char *);
 OBJ newFileStream(FILE *);
 OBJ newStringStream(char *);
 OBJ newCons(OBJ, OBJ);
+OBJ newBuiltinFunction(char *, OBJFUNC);
 
 //reader
 OBJ js_read();
@@ -139,6 +153,7 @@ int thisIsTheEnd();
 
 // eval
 OBJ js_eval();
+void initEvalStack();
 
 // print
 void js_print(FILE *, OBJ);
@@ -164,3 +179,36 @@ void initGlobalEnvironment();
 void environmentPut(OBJ storedKey, OBJ storedValue);
 OBJ environmentGet(OBJ searchedKey);
 
+// builtinFuntions
+OBJ builtin_plus();
+OBJ builtin_minus();
+OBJ builtin_times();
+OBJ builtin_quotient();
+
+/*
+ * eval stack
+ */
+
+extern OBJ *evalStack;
+extern int spIndex; // spIndex = index if next unused slot
+extern int stackLimit;
+
+static inline void
+PUSH(OBJ o) {
+#ifdef DEBUG	
+	if(spIndex == stackLimit) {
+		error("stack overflow", __FILE__, __LINE__);
+	}
+#endif
+	evalStack[spIndex++] = o;
+}
+
+static inline OBJ
+POP(){
+#ifdef DEBUG
+	if(spIndex == 0){
+		error("stack underflow", __FILE__, __LINE__);
+	}
+#endif
+	return evalStack[--spIndex];
+}
