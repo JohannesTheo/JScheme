@@ -6,7 +6,10 @@ static OBJ
 js_readFromString(char *buffer){
 	
 	OBJ stringStream = newStringStream(buffer);
-	return js_read(stringStream);
+	OBJ retVal = js_read(stringStream);
+	free(stringStream);
+	return retVal;
+	
 }
 
 void
@@ -31,17 +34,115 @@ symbolTableFillTest(){
 	}
 }
 
+
+void
+globalEnvironmentFillTest(){
+
+	char ch1, ch2, ch3;
+	OBJ storeSymbol;
+	OBJ searchSymbol, retrieveString;
+
+	// fill env
+	for(ch1 = 'a'; ch1 < 'z'; ch1++){
+		for(ch2 = 'a'; ch2 < 'z'; ch2++){
+			for(ch3 = 'a'; ch3 < 'z'; ch3++){
+				char testSymbol[4];
+				testSymbol[0] = ch1;
+				testSymbol[1] = ch2;
+				testSymbol[2] = ch3;
+				testSymbol[3] = '\0';
+
+				char *testSymbolCopy = malloc(4);
+				strcpy(testSymbolCopy, testSymbol);
+				
+				storeSymbol = symbolTableGetOrAdd(testSymbolCopy);		
+				OBJ theString = newString(testSymbolCopy);
+				environmentPut(storeSymbol, theString);
+			}
+		}
+	}
+
+	// test entries
+	for(ch1 = 'a'; ch1 < 'z'; ch1++){
+		for(ch2 = 'a'; ch2 < 'z'; ch2++){
+			for(ch3 = 'a'; ch3 < 'z'; ch3++){
+				char testSymbol[4];
+				testSymbol[0] = ch1;
+				testSymbol[1] = ch2;
+				testSymbol[2] = ch3;
+				testSymbol[3] = '\0';
+
+				char *testSymbolCopy = malloc(4);
+				strcpy(testSymbolCopy, testSymbol);
+				searchSymbol = symbolTableGetOrAdd(testSymbolCopy);		
+
+				retrieveString = environmentGet(searchSymbol);
+				
+				ASSERT( retrieveString->u.any.tag == T_STRING , "bad tag in string");
+				ASSERT( strcmp(STRINGVAL(retrieveString), testSymbolCopy) == 0 , "bad value in string");
+			}
+		}
+	}
+
+}
+
 void
 selftest(){
 
 //	printf("JS selftest\n\n");
 
 	/*
-	 *	symbol table
+	 *	symbol table tests
 	 */
-	
-	symbolTableFillTest();
+	{
+		OBJ sym1 = symbolTableGetOrAdd("hello");
+		ASSERT( ISSYMBOL(sym1), "bad tag in symbol");
 
+		OBJ sym2 = symbolTableGetOrAdd("world");
+		ASSERT( ISSYMBOL(sym2), "bad tag in symbol");
+
+		OBJ sym3 = symbolTableGetOrAdd("hello");
+		ASSERT( ISSYMBOL(sym3), "bad tag in symbol");
+
+		ASSERT( (sym1 == sym3), "bad symbol table behaviour");
+		ASSERT( (sym1 != sym2), "bad symbol table behaviour");
+		
+		symbolTableFillTest();
+
+		printf("SymTable: " GRN "OK\n" RESET);
+	}
+
+	/*
+	 * environment tests
+	 */
+	{
+		OBJ hello_key = symbolTableGetOrAdd("hello");
+		OBJ world_key = symbolTableGetOrAdd("world");
+		OBJ val_AFFE;
+		OBJ val_BEBE;
+		OBJ val_retrieved;
+
+		val_retrieved = environmentGet(world_key);
+		
+		// test - no entry for key in environment
+		ASSERT(val_retrieved == NULL, "Oo - already knows about the world");
+
+		// insert 2 key, value pairs
+		val_AFFE = newInteger(0xAFFE);
+		environmentPut(hello_key, val_AFFE);	
+		val_BEBE = newInteger(0xBEBE);
+		environmentPut(world_key, val_BEBE);
+
+		// test - values of the 2 keys
+		val_retrieved = environmentGet(hello_key);
+		ASSERT(val_retrieved == val_AFFE, "global environment problem");
+		val_retrieved = environmentGet(world_key);
+		ASSERT(val_retrieved == val_BEBE, "global environment problem");
+
+		globalEnvironmentFillTest();
+
+		printf("Env: " GRN "OK\n" RESET);
+	}
 
 	/*
 	 *	reader tests
@@ -152,6 +253,7 @@ selftest(){
 		
 	} while(!thisIsTheEnd(t_stream));
 	ASSERT( (t_count == 4), "bad number of members in multi-read test");
+	free(t_stream);
 
 	// 2. multiple symbols
 
@@ -168,6 +270,7 @@ selftest(){
 		
 	} while(!thisIsTheEnd(t_stream));
 	ASSERT( (t_count == 4), "bad number of members in multi-read test");
+	free(t_stream);
 
 	// 3. multiple strings
 	
@@ -184,7 +287,8 @@ selftest(){
 		
 	} while(!thisIsTheEnd(t_stream));
 	ASSERT( (t_count == 4), "bad number of members in multi-read test");
-	
+	free(t_stream);
+
 	/*
 	 *	test of mixed members in a row
 	 */
@@ -222,6 +326,7 @@ selftest(){
 		
 	} while(!thisIsTheEnd(t_stream));
 	ASSERT( (t_count == 4), "bad number of members in multi-read test");
+	free(t_stream);
 
 	// 2. integer, string and sybmols mix without whitespace
 
@@ -252,6 +357,7 @@ selftest(){
 		
 	} while(!thisIsTheEnd(t_stream));
 	ASSERT( (t_count == 3), "bad number of members in multi-read test");
+	free(t_stream);
 
 	// 3. integer, string and sybmols mix without whitespace 2
 
@@ -282,6 +388,8 @@ selftest(){
 		
 	} while(!thisIsTheEnd(t_stream));
 	ASSERT( (t_count == 3), "bad number of members in multi-read test");
+	free(t_stream);
+
 
 	/*
 	 *	END OF SELFTEST :)
