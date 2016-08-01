@@ -13,7 +13,7 @@ const static int HLIMIT = 4;				// hash only the n first byte
 static inline uint32_t
 FNV1a_string(char *string){
 
-	unsigned int hash = FNV_OFFSET_32;
+	uint32_t hash = FNV_OFFSET_32;
 	int index = 0;
 	
 	while(index < HLIMIT){
