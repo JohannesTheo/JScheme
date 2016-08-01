@@ -2,6 +2,7 @@
 #include "hash.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #define INITIAL_SYMBOLTABLESIZE 511	// one below a power of 2
 
@@ -25,7 +26,6 @@ symbolTableRehash(){
 	OBJ *oldSymbolTable = symbolTable;
 	OBJ *newSymbolTable;
 	int indexInOldTable;
-	printf("REHASH symbolTable, new size: %d\n", newSize);	
 
 	// allocate new symbolTable
 	newSymbolTable = (OBJ *) malloc((sizeof(OBJ) * newSize));
@@ -37,26 +37,23 @@ symbolTableRehash(){
 		OBJ oldSymbol = oldSymbolTable[indexInOldTable];
 		if( oldSymbol != NULL){
 			
-			unsigned int newh = FNV1a_string(SYMBOLVAL(oldSymbol));
+			uint32_t newh = FNV1a_string(SYMBOLVAL(oldSymbol));
 			int startIndex = newh % newSize;
 			int nextIndex = startIndex;
 			OBJ try;
 
 			// insert old OBJ with new hash in new table
 			for(;;){
-	//			printf("REHASH sym: %s index: %d\n", SYMBOLVAL(oldSymbol), nextIndex);
 
 				try = newSymbolTable[nextIndex];
 
 				// case 1: Slot empty
 				if(try == NULL){
-	//				printf("REHASH SLOT EMPTY -> add symbol\n");
 					newSymbolTable[nextIndex] = oldSymbol;
 					break;
 				}
 				
 				// case 2: Slot not empty - hash collision
-	//			printf("REHASH COLLISION -> symbol val: %s\n", SYMBOLVAL(try));
 				nextIndex = (nextIndex + 1) % newSize;
 				if(nextIndex == startIndex){
 					// error: no empty slots found in probing!
@@ -74,7 +71,7 @@ symbolTableRehash(){
 OBJ
 symbolTableGetOrAdd(char* symbol){
 	
-	unsigned int h = FNV1a_string(symbol);
+	uint32_t h = FNV1a_string(symbol);
 	int startIndex = h % symbolTableSize;
 	int nextIndex = startIndex;
 	OBJ try;
@@ -86,30 +83,26 @@ symbolTableGetOrAdd(char* symbol){
 
 		// case 1: Slot empty
 		if(try == NULL){
-	//		printf("SLOT EMPTY -> add symbol\n");
-			symbolTable[nextIndex] = newSymbol(symbol);
+			OBJ newSym = newSymbol(symbol);
+			symbolTable[nextIndex] = newSym;
 			fillSize++;
-	//		printf("FillSize: %d\n", fillSize);
 			if (fillSize > (symbolTableSize * 3 / 4) ){
 				symbolTableRehash();
 			}
-			return symbolTable[nextIndex];
+			return newSym;
 		}
 		
 		// case 2: Slot not empty - found symbol
 		if (strcmp(symbol, SYMBOLVAL(try)) == 0){
-	//		printf("FOUND -> symbol val: %s\n", SYMBOLVAL(try));
 			return symbolTable[nextIndex];
 		}
 		
 		// case 3: Slot not empty - hash collision
-	//	printf("HASH COLLISION -> symbol val: %s\n", SYMBOLVAL(try));
 		nextIndex = (nextIndex + 1) % symbolTableSize;
 		if(nextIndex == startIndex){
 			// error: no empty slots found in probing!
 			error("symbol table error - no empty slot", __FILE__, __LINE__);
 		}
-	
-	
 	}
 }
+
