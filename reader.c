@@ -153,19 +153,22 @@ readSymbol(OBJ inStream, char firstChar){
 	unreadChar(inStream, ch);
 
 	if(strcmp(buffer, "nil") == 0 ){
+		free(buffer);
 		return js_nil;
 	}
 	if(strcmp(buffer, "#t") == 0 ){
+		free(buffer);
 		return js_true;
 	}
 	if(strcmp(buffer, "#f") == 0 ){
+		free(buffer);
 		return js_false;
 	}
 
 	// realloc buffer to save memory and add string terminator.
 	buffer = realloc(buffer, current_size + 1);
 	buffer[current_size] = '\0';	
-
+	
 	return symbolTableGetOrAdd(buffer);	
 	//retVal = newSymbol(buffer);
 	//return retVal;
