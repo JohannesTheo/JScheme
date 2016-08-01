@@ -37,7 +37,8 @@ enum tag{
 	T_SYMBOL,
 	T_STRING,
 	T_FILESTREAM,
-	T_STRINGSTREAM
+	T_STRINGSTREAM,
+	T_CONS,
 };
 
 extern const char* tag_lookup[];
@@ -73,6 +74,12 @@ struct jschemeInteger{
 	jscheme_int64 intVal;
 };
 
+struct jschemeCons{
+	enum tag tag;
+	OBJ car;
+	OBJ cdr;
+};
+
 struct jschemeObject{
 
 	// More Types will be added
@@ -83,6 +90,7 @@ struct jschemeObject{
 		struct jschemeString string;
 		struct jschemeFileStream fileStream;
 		struct jschemeStringStream stringStream;
+		struct jschemeCons cons;
 	} u;
 };
 
@@ -96,6 +104,8 @@ struct jschemeObject{
 #endif
 
 #define TAG(o)		((o)->u.any.tag)
+#define CAR(o)		((o)->u.cons.car)
+#define CDR(o)		((o)->u.cons.cdr)
 #define INTVAL(o)	((o)->u.integer.intVal)
 #define SYMBOLVAL(o)	((o)->u.symbol.symbolVal)
 #define STRINGVAL(o)	((o)->u.string.stringVal)
@@ -106,6 +116,7 @@ struct jschemeObject{
 #define ISINTEGER(o)	(TAG(o) == T_INTEGER)
 #define ISSYMBOL(o)	(TAG(o) == T_SYMBOL)
 #define ISSTRING(o)	(TAG(o) == T_STRING)
+#define ISCONS(o)	(TAG(o) == T_CONS)
 
 /*
  * 	Forward declarations
@@ -120,6 +131,7 @@ OBJ newSymbol(char *);
 OBJ newString(char *);
 OBJ newFileStream(FILE *);
 OBJ newStringStream(char *);
+OBJ newCons(OBJ, OBJ);
 
 //reader
 OBJ js_read();
