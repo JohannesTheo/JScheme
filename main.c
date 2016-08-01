@@ -12,6 +12,11 @@ setupInitialEnvironment(){
 
 	environmentPut(symbolTableGetOrAdd("a"), newInteger(10));
 	environmentPut(symbolTableGetOrAdd("b"), newInteger(20));
+
+	environmentPut(symbolTableGetOrAdd("+"), newBuiltinFunction("+", builtin_plus));
+	environmentPut(symbolTableGetOrAdd("-"), newBuiltinFunction("-", builtin_minus));
+	environmentPut(symbolTableGetOrAdd("*"), newBuiltinFunction("*", builtin_times));
+	environmentPut(symbolTableGetOrAdd("/"), newBuiltinFunction("/", builtin_quotient));
 }
 
 void 
@@ -32,6 +37,7 @@ int
 main() {
 
 	initializeWellKnownObjects();
+	initEvalStack();
 	initSymbolTable();
 	initGlobalEnvironment();
 	selftest();
