@@ -75,7 +75,19 @@ newCons(OBJ car, OBJ cdr){
 	return (OBJ) theCons;
 }
 
-const char* tag_lookup[9] = {
+OBJ
+newBuiltinFunction(char *internalName, OBJFUNC theCode){
+	
+	struct jsBuiltinFunction *theFunction;
+	theFunction = (struct jsBuiltinFunction *)(malloc( sizeof(struct jsBuiltinFunction)));
+	theFunction->tag = T_BUILTINFUNCTION;
+	theFunction->internalName = internalName;
+	theFunction->theCode = theCode;
+	
+	return (OBJ) theFunction;	
+}
+
+const char* tag_lookup[10] = {
 	"T_NIL",
 	"T_TRUE",
 	"T_FALSE",
@@ -84,5 +96,6 @@ const char* tag_lookup[9] = {
 	"T_STRING",
 	"T_FILESTREAM",
 	"T_STRINGSTREAM",
-	"T_CONS"
+	"T_CONS",
+	"T_BUILTINFUNCTION",
 };
