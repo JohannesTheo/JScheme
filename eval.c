@@ -1,4 +1,46 @@
 #include "jscheme.h"
+#include <stdlib.h>
+
+#define INITIAL_STACK_SIZE 128
+
+OBJ *evalStack;
+int spIndex = 0;
+int stackLimit;
+
+void
+initEvalStack(){
+
+	stackLimit = INITIAL_STACK_SIZE;
+	evalStack = (OBJ *)(malloc( sizeof(OBJ) * INITIAL_STACK_SIZE));
+	spIndex = 0;
+}
+
+static OBJ
+evalCons(OBJ expr){
+	
+	OBJ functionSlot = CAR(expr);
+	OBJ evaluatedFunctionSlot = js_eval(functionSlot);
+	OBJ argList = CDR(expr);
+	OBJ restArgs;
+	int numArgs = 0;
+
+	if( !ISBUILTINF(evaluatedFunctionSlot)){
+		js_error("Eval: not a function: ", evaluatedFunctionSlot);		
+	}
+
+	restArgs = argList;
+	while( restArgs != js_nil) {
+		OBJ theArg = CAR(restArgs);
+		OBJ evaluatedArg;
+		restArgs = CDR(restArgs);
+
+		evaluatedArg = js_eval(theArg);
+		PUSH(evaluatedArg);
+		numArgs++;
+	}
+	return evaluatedFunctionSlot->u.builtinFunction.theCode(numArgs);
+
+}
 
 OBJ
 js_eval(OBJ expr){
@@ -22,5 +64,7 @@ js_eval(OBJ expr){
 				js_error("undefined variable", expr);
 			}
 			return value;
+		case T_CONS:
+			return evalCons(expr);
 	}
 }
