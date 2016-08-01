@@ -226,6 +226,59 @@ selftest(){
 	ASSERT( ISSTRING(t), "bad tag in string");
 	ASSERT( (strcmp(STRINGVAL(t), "abc123") == 0), "bad value in string");
 
+	// cons
+	t = js_readFromString("()");
+	ASSERT( ISCONS(t) == 0, "nil read failed");
+	ASSERT( ISNIL(t), "nil read failed");
+
+	t = js_readFromString("    (   )");
+	ASSERT( ISNIL(t), "nil read failed");
+
+	t = js_readFromString("(     )");
+	ASSERT( ISNIL(t), "nil read failed");
+
+	t = js_readFromString("(1)");
+	ASSERT( ISCONS(t), "list read failed");
+	ASSERT( ISINTEGER( CAR(t)), "list read failed");
+	ASSERT( ISNIL( CDR(t)), "list read failed");
+	ASSERT( INTVAL( CAR(t)) == 1, "list read failed");
+
+	t = js_readFromString("(1 2)");
+	ASSERT( ISCONS(t), "list read failed");
+	ASSERT( ISINTEGER( CAR(t)), "list read failed");
+	ASSERT( ISCONS( CDR(t)), "list read failed");
+	ASSERT( ISINTEGER( CAR( CDR(t))), "list read failed");
+	ASSERT( ISNIL( CDR( CDR(t))), "list read failed");
+
+	t = js_readFromString("(a 1 (  b \"string\" ) 2)");
+	// CAR: a CDR: 1 ( b "string" ) 2 )
+	ASSERT( ISCONS(t), "list read failed");
+	ASSERT( ISSYMBOL( CAR(t)), "list read failed");
+	ASSERT( (strcmp( SYMBOLVAL( CAR(t)), "a") == 0), "list read failed");
+	ASSERT( ISCONS( CDR(t)), "list read failed");
+	
+	// CAR: 1 CDR: ( b "string" ) 2 )
+	ASSERT( ISINTEGER( CAR( CDR(t))), "list read failed");
+	ASSERT( INTVAL( CAR( CDR(t))) == 1, "list read failed");
+	ASSERT( ISCONS( CDR( CDR(t))), "list read failed");
+	
+	// CAR: ( b "string" ) CDR: 2 ) 
+	// NESTED: CAR: b CDR: "string" )
+	ASSERT( ISCONS( CAR( CDR( CDR(t)))), "list read failed");
+	ASSERT( ISSYMBOL( CAR( CAR( CDR( CDR(t))))), "list read failed");
+	ASSERT( (strcmp( SYMBOLVAL( CAR( CAR( CDR( CDR(t))))), "b") == 0), "list read failed");
+	ASSERT( ISCONS( CDR( CAR( CDR( CDR(t))))), "list read failed");
+
+	// NESTED: CAR: "STRING" CDR: )
+	ASSERT( ISSTRING( CAR( CDR( CAR( CDR( CDR(t)))))), "list read failed");
+	ASSERT( (strcmp( STRINGVAL( (CAR( CDR( CAR( CDR( CDR(t))))))), "string") == 0), "list read failed");
+	ASSERT( ISNIL( CDR( CDR( CAR( CDR( CDR(t)))))), "list read failed");
+	
+	// CAR: 2 CDR: )
+	ASSERT( ISINTEGER( CAR( CDR( CDR( CDR(t))))), "list read failed");
+	ASSERT( INTVAL( CAR( CDR( CDR( CDR(t))))) == 2, "list read failed");
+	ASSERT( ISNIL( CDR( CDR( CDR( CDR(t))))), "list read failed");
+	
 	// negative test
 	// TODO
 
