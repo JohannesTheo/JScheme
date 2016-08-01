@@ -63,14 +63,26 @@ newString(char *chars){
 	return (OBJ)theString;
 }
 
+OBJ
+newCons(OBJ car, OBJ cdr){
 
-const char* tag_lookup[8] = {
+	struct jschemeCons *theCons;
+	theCons = (struct jschemeCons*)(malloc( sizeof( struct jschemeCons)));
+	theCons->tag = T_CONS;
+	theCons->car = car;
+	theCons->cdr = cdr;
+
+	return (OBJ) theCons;
+}
+
+const char* tag_lookup[9] = {
 	"T_NIL",
-	"T_TURE",
+	"T_TRUE",
 	"T_FALSE",
 	"T_INTEGER",
 	"T_SYMBOL",
 	"T_STRING",
 	"T_FILESTREAM",
-	"T_STRINGSTREAM"
+	"T_STRINGSTREAM",
+	"T_CONS"
 };
