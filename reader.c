@@ -102,6 +102,24 @@ isDigit(char ch) {
 	return (ch >= '0') && (ch <= '9');
 }
 
+static OBJ
+readList(OBJ inStream){
+	
+	int ch;
+	OBJ car, cdr;
+	
+	ch = skipWhiteSpace(inStream);
+	if( ch == ')'){
+		return js_nil;
+	}
+	unreadChar(inStream, ch);
+
+	car = js_read(inStream);
+	cdr = readList(inStream);
+	return newCons(car, cdr);
+}
+
+
 OBJ
 readNumber(OBJ inStream, char firstChar){
 	//printf(YEL "\nreadNumber>" RESET);
@@ -235,7 +253,10 @@ js_read(OBJ inStream){
 	prompt_off();
 	char ch = skipWhiteSpace(inStream);
 	
-	if(ch == '"'){
+	if(ch == '('){
+		retVal = readList(inStream);
+	}
+	else if(ch == '"'){
 		retVal = readString(inStream);
 	}
 	else if(isDigit(ch)){

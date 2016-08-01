@@ -1,6 +1,18 @@
 #include <stdio.h>
 #include "jscheme.h"
 
+static void
+print_list_rest(FILE* outFile, OBJ o){
+
+	js_print(outFile, CAR(o));
+	if(CDR(o) == js_nil){
+		fprintf(outFile, ")");
+		return;
+	}
+	fprintf(outFile, " ");
+	print_list_rest(outFile, CDR(o));
+}
+
 void
 js_print(FILE* outFile,OBJ o){
 
@@ -26,6 +38,9 @@ js_print(FILE* outFile,OBJ o){
 		case T_STRING:
 			fprintf(outFile,YEL"<JS string> "RESET);
 			break;
+		case T_CONS:
+			fprintf(outFile,YEL"<JS cons> "RESET);
+			break;
 		default:
 			fprintf(outFile,RED"<Debug error: tag not supported>\n"RESET);
 	}
@@ -49,6 +64,10 @@ js_print(FILE* outFile,OBJ o){
 			break;
 		case T_SYMBOL:
 			fprintf(outFile,"%s", o->u.symbol.symbolVal);
+			break;
+		case T_CONS:
+			fprintf(outFile, "( ");
+			print_list_rest(outFile, o);
 			break;
 		default:
 			fprintf(outFile,"<unimpl. (print)>");

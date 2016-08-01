@@ -5,9 +5,13 @@ js_eval(OBJ expr){
 
 	switch(TAG(expr)){
 		default:
-			//T_INTEGER
-			// ...
+			// T_INTEGER
+			// T_NIL
+			// T_TRUE
+			// T_FALSE
 			// T_STRING
+			// T_FILESTREAM
+			// T_STRINGSTREAM
 			return expr;
 
 		case T_SYMBOL:
