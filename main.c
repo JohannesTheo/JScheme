@@ -35,6 +35,7 @@ main() {
 	initSymbolTable();
 	initGlobalEnvironment();
 	selftest();
+	initGlobalEnvironment();
 
 	setupInitialEnvironment();
 
