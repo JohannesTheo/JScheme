@@ -22,6 +22,7 @@ builtin_plus(int numArgs){
 			js_error("(+): integer overflow", newInteger(*sum));	
 		};
 	}
+	printf("spIndex: %d\n", spIndex);
 	return newInteger(*sum);
 }
 
@@ -71,9 +72,26 @@ builtin_minus(int numArgs){
 }
 
 OBJ
-builtin_times(){
-	error("unimpl. times", __FILE__, __LINE__);
-	return js_nil;
+builtin_times(int numArgs){
+	jscheme_int64 *product= NULL;
+	jscheme_int64 start = 1;
+	product = &start;
+
+	for(int i = 0; i < numArgs; i++){
+		OBJ theArg = POP();
+		
+		if( !ISINTEGER(theArg)){
+			js_error("(*): non-integer argument", theArg);
+		}
+		if(__builtin_smull_overflow(*product,INTVAL(theArg),product)){
+			// clean stack
+			POPN((numArgs - 1) - i);
+			printf("spIndex: %d\n", spIndex);
+			js_error("(*): integer overflow", newInteger(*product));
+		}
+	}
+	printf("spIndex: %d\n", spIndex);
+	return newInteger(*product);
 }
 
 OBJ
