@@ -121,20 +121,49 @@ readList(OBJ inStream){
 
 
 OBJ
-readNumber(OBJ inStream, char firstChar){
+readNumber(OBJ inStream, char firstChar, int isNegative){
 	//printf(YEL "\nreadNumber>" RESET);
 
-	jscheme_int64 iVal = 0;
+	/*
+ 	* TO-DO refactor!	
+ 	*/	
+	jscheme_int64 *iVal = NULL;
 	char ch;
 	OBJ retVal;
 
 	// substract the ASCII value of '0' from char to get the actual value between 0 and 9.
-	iVal = (int)firstChar - '0';
+	jscheme_int64 start = (jscheme_int64) firstChar - '0';
+	if(isNegative) start *= -1;
+
+	iVal = &start;
 	while( isDigit( ch = nextChar(inStream) )){
-		iVal = iVal * 10 + ( (int)ch - '0');
+		//iVal = iVal * 10 + ( (int)ch - '0');
+
+		jscheme_int64 ch_val = (jscheme_int64) ch - '0';
+		
+		if(isNegative){
+			int mul = __builtin_smull_overflow(*iVal, 10, iVal);
+			int sub = __builtin_ssubl_overflow(*iVal, ch_val, iVal);
+			if( mul || sub ){
+				if(thisIsTheEnd(inStream)){
+					prompt_on();
+				}
+				js_error("readNumber: integer underflow", newInteger(*iVal));
+			}
+		}else{
+			int mul = __builtin_smull_overflow(*iVal, 10, iVal);
+			int add = __builtin_saddl_overflow(*iVal, ch_val, iVal);
+			if( mul || add ){
+				if(thisIsTheEnd(inStream)){
+					prompt_on();
+				}
+				js_error("readNumber: integer overflow", newInteger(*iVal));
+			}
+		
+		}
 	}
 	unreadChar(inStream, ch);
-	retVal = newInteger( iVal );
+	retVal = newInteger( *iVal );
 	return retVal;
 }
 
@@ -260,7 +289,20 @@ js_read(OBJ inStream){
 		retVal = readString(inStream);
 	}
 	else if(isDigit(ch)){
-		retVal = readNumber(inStream, ch);
+		retVal = readNumber(inStream, ch, 0);
+	
+	}else if(ch == '-'){
+		/*
+		 * TO-DO refactor: implement proper read ahead solution
+		 */
+		// simple read ahead to catch negative numbers
+		char nextCh = nextChar(inStream);
+		if(isDigit(nextCh)){
+			retVal = readNumber(inStream, nextCh, 1);	
+		}else{
+			unreadChar(inStream, nextCh);
+			retVal = readSymbol(inStream, ch);
+		}
 	}else{
 		retVal = readSymbol(inStream, ch);
 	}
