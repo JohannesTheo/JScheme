@@ -95,8 +95,86 @@ builtin_times(int numArgs){
 }
 
 OBJ
-builtin_quotient(){
-	error("unimpl. quotient", __FILE__, __LINE__);
+builtin_quotient(int numArgs){
+	
+	printf(RED "WARNING:" RESET " division is implemented for integers only and will truncate fractions!\n");
+	OBJ theArg;
+	switch (numArgs){
+		
+		case 0:
+			printf("spIndex: %d\n", spIndex);
+			js_error("(/): at least one arg expected", js_nil);
+			/* NOT REACHED */
+		case 1:
+			theArg = POP();
+			if( !ISINTEGER(theArg)){
+			printf("spIndex: %d\n", spIndex);
+				js_error("(/): non-integer argument", theArg);
+				/* NOT REACHED */
+			}
+			if( INTVAL(theArg) == 0){
+			printf("spIndex: %d\n", spIndex);
+				js_error("(/): division by zero", theArg);
+				/* NOT REACHED */
+			}
+			printf("spIndex: %d\n", spIndex);
+			return newInteger( 1 / INTVAL(theArg) );
+		default:
+			theArg = NTH_ARG(numArgs, 0);
+
+			if( !ISINTEGER(theArg)){
+				POPN(numArgs);
+				printf("spIndex: %d\n", spIndex);
+				js_error("(/): non-integer argument", theArg);
+				/* NOT REACHED */
+			}
+			if( INTVAL(theArg) == 0){
+
+				for(int i = 1; i < numArgs; i++){
+					
+					OBJ nextArg = NTH_ARG(numArgs, i);
+					if( !ISINTEGER(nextArg) ){
+						POPN(numArgs);
+						printf("spIndex: %d\n", spIndex);
+						js_error("(/): non-integer argument", theArg);
+						/* NOT REACHED */
+					}
+					if( INTVAL(nextArg) == 0){
+						POPN(numArgs);
+						printf("spIndex: %d\n", spIndex);
+						js_error("(/): division by zero", nextArg);
+						/* NOT REACHED */
+					}
+				}
+				POPN(numArgs);
+				printf("spIndex: %d\n", spIndex);
+				return newInteger(0);
+			}
+			
+			jscheme_int64 quotient = INTVAL(theArg);
+			for(int i = 1; i < numArgs; i++){
+				
+				OBJ nextArg = NTH_ARG(numArgs, i);
+				if( !ISINTEGER(nextArg) ){
+					POPN(numArgs);
+					printf("spIndex: %d\n", spIndex);
+					js_error("(/): non-integer argument", theArg);
+					/* NOT REACHED */
+				}
+				if( INTVAL(nextArg) == 0){
+					POPN(numArgs);
+					printf("spIndex: %d\n", spIndex);
+					js_error("(/): division by zero", nextArg);
+					/* NOT REACHED */
+				}
+
+				quotient = quotient / INTVAL(nextArg);
+			}
+			POPN(numArgs);
+			printf("spIndex: %d\n", spIndex);
+			return newInteger(quotient);
+	}
+	/* NOT REACHED */
 	return js_nil;
 }
 OBJ
