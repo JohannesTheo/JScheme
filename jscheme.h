@@ -212,3 +212,18 @@ POP(){
 #endif
 	return evalStack[--spIndex];
 }
+
+static inline void
+POPN(int n){
+	spIndex -= n;
+}
+
+static inline OBJ
+NTH_ARG(int numArgs, int index){
+#ifdef DEBUG
+	if(spIndex ==0){
+		error("stack underflow", __FILE__, __LINE__);
+	}
+#endif
+	return evalStack[spIndex - numArgs + index];
+}
