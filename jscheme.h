@@ -184,6 +184,11 @@ OBJ builtin_plus();
 OBJ builtin_minus();
 OBJ builtin_times();
 OBJ builtin_quotient();
+OBJ builtini_eqP();
+OBJ builtin_consP();
+OBJ builtin_car();
+OBJ builtin_cdr();
+OBJ builtin_cons();
 
 /*
  * eval stack
