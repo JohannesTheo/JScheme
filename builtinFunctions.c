@@ -195,7 +195,7 @@ builtin_eqP(int numArgs){
 	// case 1: same jscheme OBJ 
 	if( arg1 == arg2) return js_true;
 	// case 2: same INTEGER value
-	if(IS_INTEGER(arg1)){
+	if(ISINTEGER(arg1)){
 		if(ISINTEGER(arg2)){
 			if( INTVAL(arg1) == INTVAL(arg2)){
 				return js_true;
@@ -231,7 +231,7 @@ builtin_car(int numArgs){
 }
 
 OBJ
-builtin_cdr(){
+builtin_cdr(int numArgs){
 	if(numArgs != 1){
 		POPN(numArgs);
 		js_error("(cdr): expects 1 argument", js_nil);
@@ -244,7 +244,7 @@ builtin_cdr(){
 }
 
 OBJ
-builtin_cons(){
+builtin_cons(int numArgs){
 	if(numArgs != 2){
 		POPN(numArgs);
 		js_error("(cons): expects 2 arguments", js_nil);

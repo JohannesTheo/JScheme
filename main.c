@@ -17,6 +17,11 @@ setupInitialEnvironment(){
 	environmentPut(symbolTableGetOrAdd("-"), newBuiltinFunction("-", builtin_minus));
 	environmentPut(symbolTableGetOrAdd("*"), newBuiltinFunction("*", builtin_times));
 	environmentPut(symbolTableGetOrAdd("/"), newBuiltinFunction("/", builtin_quotient));
+	environmentPut(symbolTableGetOrAdd("eq?"), newBuiltinFunction("eq?", builtin_eqP));
+	environmentPut(symbolTableGetOrAdd("cons?"), newBuiltinFunction("cons?", builtin_consP));
+	environmentPut(symbolTableGetOrAdd("car"), newBuiltinFunction("car", builtin_car));
+	environmentPut(symbolTableGetOrAdd("cdr"), newBuiltinFunction("cdr", builtin_cdr));
+	environmentPut(symbolTableGetOrAdd("cons"), newBuiltinFunction("cons", builtin_cons));
 }
 
 void 
