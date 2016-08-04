@@ -4,13 +4,22 @@
 static void
 print_list_rest(FILE* outFile, OBJ o){
 
-	js_print(outFile, CAR(o));
-	if(CDR(o) == js_nil){
+	OBJ theRest;
+	js_print(outFile, CAR(o));	
+	theRest = CDR(o);
+
+	if(theRest == js_nil){
+		fprintf(outFile, ")");
+		return;
+	}
+	if( !ISCONS(theRest)){
+		fprintf(outFile, " . ");
+		js_print(outFile, theRest);
 		fprintf(outFile, ")");
 		return;
 	}
 	fprintf(outFile, " ");
-	print_list_rest(outFile, CDR(o));
+	print_list_rest(outFile, theRest);
 }
 
 void
