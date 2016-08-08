@@ -74,10 +74,10 @@ main() {
 		OBJ expr, result;
 		if(prompt_enabled) printf(CYN "JS> " RESET);
 	
-		expr = js_read(input);		// R ead
-		result = js_eval(expr);		// E valuate
-		js_print(stdout, result);	// P rint
-						// L oop
+		expr = js_read(input);				// R ead
+		result = js_eval(globalEnvironment, expr);	// E valuate
+		js_print(stdout, result);			// P rint
+								// L oop
 
 		printf("\n");
 	}

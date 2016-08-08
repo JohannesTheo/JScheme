@@ -212,6 +212,7 @@ OBJ builtin_define();
 extern OBJ *evalStack;
 extern int spIndex; // spIndex = index if next unused slot
 extern int stackLimit;
+extern OBJ globalEnvironment;
 
 static inline void
 PUSH(OBJ o) {

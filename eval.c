@@ -16,34 +16,53 @@ initEvalStack(){
 }
 
 static OBJ
-evalCons(OBJ expr){
+evalCons(OBJ env, OBJ expr){
 	
 	OBJ functionSlot = CAR(expr);
-	OBJ evaluatedFunctionSlot = js_eval(functionSlot);
+	OBJ evaluatedFunctionSlot = js_eval(env, functionSlot);
 	OBJ argList = CDR(expr);
 	OBJ restArgs;
-	int numArgs = 0;
 
-	if( !ISBUILTINF(evaluatedFunctionSlot)){
-		js_error("Eval: not a function: ", evaluatedFunctionSlot);		
+	switch( TAG(evaluatedFunctionSlot) ){
+
+		case T_BUILINFUNCTION:
+		{
+
+			int numArgs = 0;
+			restArgs = argList;
+			while( restArgs != js_nil) {
+				OBJ theArg = CAR(restArgs);
+				OBJ evaluatedArg;
+				restArgs = CDR(restArgs);
+
+				evaluatedArg = js_eval(env, theArg);
+				PUSH(evaluatedArg);
+				numArgs++;
+			}
+			return evaluatedFunctionSlot->u.builtinFunction.theCode(numArgs);
+		}
+
+		case T_BUILTINSYNTAX:
+		{
+			int numArgs = 0;
+			restArgs = argList;
+			while( restArgs != js_nil) {
+				OBJ theArg = CAR(restArgs);
+				restArgs = CDR(restArgs);
+
+				PUSH(theArg);	// NOT evaluated
+				numArgs++;
+			}
+			return evaluatedFunctionSlot->u.builtinSyntax.theCode(numArgs, env, argList);
+
+		}
+		default:
+			js_error("Eval: not a function: ", evaluatedFunctionSlot);
 	}
-
-	restArgs = argList;
-	while( restArgs != js_nil) {
-		OBJ theArg = CAR(restArgs);
-		OBJ evaluatedArg;
-		restArgs = CDR(restArgs);
-
-		evaluatedArg = js_eval(theArg);
-		PUSH(evaluatedArg);
-		numArgs++;
-	}
-	return evaluatedFunctionSlot->u.builtinFunction.theCode(numArgs);
-
 }
 
 OBJ
-js_eval(OBJ expr){
+js_eval(OBJ env, OBJ expr){
 
 	switch(TAG(expr)){
 		default:
@@ -65,6 +84,6 @@ js_eval(OBJ expr){
 			}
 			return value;
 		case T_CONS:
-			return evalCons(expr);
+			return evalCons(env, expr);
 	}
 }
