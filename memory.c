@@ -87,7 +87,19 @@ newBuiltinFunction(char *internalName, OBJFUNC theCode){
 	return (OBJ) theFunction;	
 }
 
-const char* tag_lookup[10] = {
+OBJ
+newBuiltinSyntax(char *internalName, OBJFUNC theCode){
+	
+	struct jsBuiltinSyntax *theSyntax;
+	theSyntax = (struct jsBuiltinSyntax *)(malloc( sizeof(struct jsBuiltinSyntax)));
+	theSyntax->tag = T_BUILTINSYNTAX;
+	theSyntax->internalName = internalName;
+	theSyntax->theCode = theCode;
+	
+	return (OBJ) theSyntax;	
+}
+
+const char* tag_lookup[12] = {
 	"T_NIL",
 	"T_TRUE",
 	"T_FALSE",
@@ -98,4 +110,6 @@ const char* tag_lookup[10] = {
 	"T_STRINGSTREAM",
 	"T_CONS",
 	"T_BUILTINFUNCTION",
+	"T_BUILTINSYNTAX",
+	"T_VOID",
 };

@@ -40,6 +40,8 @@ enum tag{
 	T_STRINGSTREAM,
 	T_CONS,
 	T_BUILTINFUNCTION,
+	T_BUILTINSYNTAX,
+	T_VOID,
 };
 
 extern const char* tag_lookup[];
@@ -90,6 +92,13 @@ struct jsBuiltinFunction{
 	OBJFUNC theCode;
 }; 
 
+struct jsBuiltinSyntax{
+	enum tag tag;
+
+	char *internalName;
+	OBJFUNC theCode;
+}; 
+
 struct jschemeObject{
 
 	// More Types will be added
@@ -102,6 +111,7 @@ struct jschemeObject{
 		struct jschemeStringStream stringStream;
 		struct jschemeCons cons;
 		struct jsBuiltinFunction builtinFunction;
+		struct jsBuiltinSyntax builtinSyntax;
 	} u;
 };
 
@@ -129,14 +139,15 @@ struct jschemeObject{
 #define ISSTRING(o)	(TAG(o) == T_STRING)
 #define ISCONS(o)	(TAG(o) == T_CONS)
 #define ISBUILTINF(o) 	(TAG(o) == T_BUILTINFUNCTION)
-
+#define ISBUILTINS(o)	(TAG(o) == T_BUILTINSYNTAX)
+#define ISVOID(o)	(TAG(o) == T_VOID)
 
 /*
  * 	Forward declarations
  */
 
 // well known objects
-OBJ js_nil, js_true, js_false;
+OBJ js_nil, js_true, js_false, js_void;
 
 // memory
 OBJ newInteger(jscheme_int64);
@@ -146,6 +157,7 @@ OBJ newFileStream(FILE *);
 OBJ newStringStream(char *);
 OBJ newCons(OBJ, OBJ);
 OBJ newBuiltinFunction(char *, OBJFUNC);
+OBJ newBuiltinSyntax(char *, OBJFUNC);
 
 //reader
 OBJ js_read();
@@ -189,6 +201,9 @@ OBJ builtin_consP();
 OBJ builtin_car();
 OBJ builtin_cdr();
 OBJ builtin_cons();
+
+// builtinSyntax
+OBJ builtin_define();
 
 /*
  * eval stack

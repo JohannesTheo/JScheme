@@ -53,6 +53,12 @@ js_print(FILE* outFile,OBJ o){
 		case T_BUILTINFUNCTION:
 			fprintf(outFile,YEL"<JS builtinFunction> "RESET);
 			break;
+		case T_BUILTINSYNTAX:
+			fprintf(outFile,YEL"<JS builtinSyntax> "RESET);
+			break;
+		case T_VOID:
+			fprintf(outFile,YEL"<JS void> "RESET);
+			break;
 		default:
 			fprintf(outFile,RED"<Debug error: tag not supported>\n"RESET);
 	}
@@ -83,6 +89,12 @@ js_print(FILE* outFile,OBJ o){
 			break;
 		case T_BUILTINFUNCTION:
 			fprintf(outFile, "<builtin procedure '%s'>", o->u.builtinFunction.internalName);
+			break;
+		case T_BUILTINSYNTAX:
+			fprintf(outFile, "<builtin syntax %s>", o->u.builtinSyntax.internalName);
+			break;
+		case T_VOID:
+			fprintf(outFile, "#void");
 			break;
 		default:
 			fprintf(outFile,"<unimpl. (print)>");
