@@ -12,7 +12,8 @@ setupInitialEnvironment(){
 
 	environmentPut(symbolTableGetOrAdd("a"), newInteger(10));
 	environmentPut(symbolTableGetOrAdd("b"), newInteger(20));
-
+	
+	// builtin functions
 	environmentPut(symbolTableGetOrAdd("+"), newBuiltinFunction("+", builtin_plus));
 	environmentPut(symbolTableGetOrAdd("-"), newBuiltinFunction("-", builtin_minus));
 	environmentPut(symbolTableGetOrAdd("*"), newBuiltinFunction("*", builtin_times));
@@ -22,6 +23,10 @@ setupInitialEnvironment(){
 	environmentPut(symbolTableGetOrAdd("car"), newBuiltinFunction("car", builtin_car));
 	environmentPut(symbolTableGetOrAdd("cdr"), newBuiltinFunction("cdr", builtin_cdr));
 	environmentPut(symbolTableGetOrAdd("cons"), newBuiltinFunction("cons", builtin_cons));
+	
+	// builtin syntax
+	environmentPut(symbolTableGetOrAdd("define"), newBuiltinSyntax("define", builtin_define));
+
 }
 
 void 
@@ -35,6 +40,9 @@ initializeWellKnownObjects(){
 	
 	js_false = (OBJ)(malloc( sizeof( struct jschemeAny)));
 	js_false->u.any.tag = T_FALSE;
+
+	js_void = (OBJ)(malloc( sizeof( struct jschemeAny)));
+	js_void->u.any.tag = T_VOID;
 }
 
 
