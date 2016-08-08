@@ -255,3 +255,13 @@ builtin_cons(int numArgs){
 	return newCons(arg1, arg2);
 }
 
+/*
+ * syntax
+ */
+
+OBJ
+builtin_define(int numArgs, OBJ env, OBJ ignoredArgList){
+
+	return js_void;
+}
+
