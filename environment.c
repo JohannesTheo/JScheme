@@ -3,27 +3,40 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <stddef.h>
 
 #define INITIAL_ENVIRONMENTSIZE 511	// one below a power of 2
 
-
-struct environmentEntry{
-	OBJ key;	// must be a symbol
-	OBJ value;	// can be any OBJ
-};
-typedef struct environmentEntry ENV_ENTRY;
-
-
-static ENV_ENTRY *globalEnvironment;
+OBJ globalEnvironment;
 static int globalEnvironmentSize = INITIAL_ENVIRONMENTSIZE;
 static int globalEnvironmentFillSize = 0;
 
+OBJ
+newEnvironment(int numSlots, OBJ parentEnv){
+
+	int size = offsetof(struct jsEnvironment, slots) + sizeof(JS_ENV_ENTRY)*numSlots;
+
+	OBJ newEnv = (OBJ)(malloc( size));
+	newEnv->u.environment.tag = T_LOCALENVIRONMENT;
+	newEnv->u.environment.parentEnvironment = parentEnv;
+	newEnv->u.environment.numSlots = numSlots;
+	return newEnv;
+}
+
+OBJ
+newGlobalEnvironment(int size){
+
+	OBJ newEnv;
+
+	newEnv = newEnvironment(size, NULL);
+	newEnv->u.environment.tag = T_GLOBALENVIRONMENT;
+	memset((void *)(&(newEnv->u.environment.slots)), 0, (sizeof(JS_ENV_ENTRY) * size));
+	return newEnv;
+}
+
 void
 initGlobalEnvironment(){
-
-	globalEnvironmentSize = INITIAL_ENVIRONMENTSIZE;
-	globalEnvironment = (ENV_ENTRY *) malloc(sizeof(ENV_ENTRY) * globalEnvironmentSize);
-	memset((void *) globalEnvironment, 0, (sizeof(ENV_ENTRY) * globalEnvironmentSize));
+	globalEnvironment = newGlobalEnvironment(INITIAL_ENVIRONMENTSIZE);
 }
 
 void
@@ -31,17 +44,16 @@ globalEnvironmentRehash(){
 
 	int oldSize = globalEnvironmentSize;
 	int newSize = ( oldSize + 1 ) * 2 - 1; // one blow the next power of 2
-	ENV_ENTRY *oldGlobalEnvironment = globalEnvironment;
-	ENV_ENTRY *newGlobalEnvironment;
+	OBJ oldGlobalEnv = globalEnvironment;
+	OBJ newGlobalEnv;
 	int indexInOldTable;
 
 	// allocate new global env
-	newGlobalEnvironment = (ENV_ENTRY *) malloc(sizeof(ENV_ENTRY) * newSize);
-	memset((void *) newGlobalEnvironment, 0, (sizeof(ENV_ENTRY) * newSize));
+	newGlobalEnv = newGlobalEnvironment(newSize);
 
 	for(indexInOldTable = 0; indexInOldTable < oldSize; indexInOldTable++){
 	
-		ENV_ENTRY *oldEntry = &(oldGlobalEnvironment[indexInOldTable]);
+		JS_ENV_ENTRY *oldEntry = &(oldGlobalEnv->u.environment.slots[indexInOldTable]);
 		if(oldEntry->key != NULL){
 		
 			uint32_t newHash = (int)(oldEntry->key);
@@ -52,12 +64,12 @@ globalEnvironmentRehash(){
 			for(;;){
 			
 				OBJ try;
-				try = newGlobalEnvironment[nextIndex].key;
+				try = newGlobalEnv->u.environment.slots[nextIndex].key;
 
 				// case 1: slot is empty
 				if(try == NULL){
-					newGlobalEnvironment[nextIndex].key = oldEntry->key;
-					newGlobalEnvironment[nextIndex].value = oldEntry->value;
+					newGlobalEnv->u.environment.slots[nextIndex].key = oldEntry->key;
+					newGlobalEnv->u.environment.slots[nextIndex].value = oldEntry->value;
 					break; // inner fill loop
 				}
 				// case 2: slot not empty, hash collision -> probing
@@ -69,9 +81,9 @@ globalEnvironmentRehash(){
 			}		
 		}
 	}
-	globalEnvironment = newGlobalEnvironment;
+	globalEnvironment = newGlobalEnv;
 	globalEnvironmentSize = newSize;
-	free(oldGlobalEnvironment);
+	free(oldGlobalEnv);
 }
 
 void
@@ -84,19 +96,19 @@ environmentPut(OBJ storedKey, OBJ storedValue){
 
 	for(;;){
 	
-		try = globalEnvironment[nextIndex].key;
+		try = globalEnvironment->u.environment.slots[nextIndex].key;
 
 		// case 1: already there -> replace
 		if(try == storedKey){
 
-			globalEnvironment[nextIndex].value = storedValue;
+			globalEnvironment->u.environment.slots[nextIndex].value = storedValue;
 			return;
 		}
 		// case 2: new -> insert
 		if(try == NULL){
 			
-			globalEnvironment[nextIndex].key = storedKey;
-			globalEnvironment[nextIndex].value = storedValue;
+			globalEnvironment->u.environment.slots[nextIndex].key = storedKey;
+			globalEnvironment->u.environment.slots[nextIndex].value = storedValue;
 			globalEnvironmentFillSize++;
 
 			if( globalEnvironmentFillSize > ( globalEnvironmentSize * 3 / 4)){
@@ -124,11 +136,11 @@ environmentGet(OBJ searchedKey){
 
 	for(;;){
 
-		try = globalEnvironment[nextIndex].key;
+		try = globalEnvironment->u.environment.slots[nextIndex].key;
 
 		// case 1: found key -> return value
 		if(try == searchedKey){
-			return globalEnvironment[nextIndex].value;
+			return globalEnvironment->u.environment.slots[nextIndex].value;
 		}
 		// case 2: no key -> return NULL
 		if(try == NULL){
