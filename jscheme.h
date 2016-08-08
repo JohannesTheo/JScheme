@@ -42,6 +42,8 @@ enum tag{
 	T_BUILTINFUNCTION,
 	T_BUILTINSYNTAX,
 	T_VOID,
+	T_GLOBALENVIRONMENT,
+	T_LOCALENVIRONMENT,
 };
 
 extern const char* tag_lookup[];
@@ -97,7 +99,20 @@ struct jsBuiltinSyntax{
 
 	char *internalName;
 	OBJFUNC theCode;
-}; 
+};
+
+struct jsEnvironmentEntry{
+	OBJ key;	// must be a symbol
+	OBJ value;	// any object
+};
+typedef struct jsEnvironmentEntry JS_ENV_ENTRY;
+
+struct jsEnvironment{
+	enum tag tag;
+	int numSlots;
+	OBJ parentEnvironment;
+	JS_ENV_ENTRY slots[];
+};
 
 struct jschemeObject{
 
@@ -112,6 +127,7 @@ struct jschemeObject{
 		struct jschemeCons cons;
 		struct jsBuiltinFunction builtinFunction;
 		struct jsBuiltinSyntax builtinSyntax;
+		struct jsEnvironment environment;
 	} u;
 };
 
@@ -158,6 +174,7 @@ OBJ newStringStream(char *);
 OBJ newCons(OBJ, OBJ);
 OBJ newBuiltinFunction(char *, OBJFUNC);
 OBJ newBuiltinSyntax(char *, OBJFUNC);
+OBJ newEnvironment(int numSlots, OBJ parentEnv);
 
 //reader
 OBJ js_read();
