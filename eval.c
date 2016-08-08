@@ -25,7 +25,7 @@ evalCons(OBJ env, OBJ expr){
 
 	switch( TAG(evaluatedFunctionSlot) ){
 
-		case T_BUILINFUNCTION:
+		case T_BUILTINFUNCTION:
 		{
 
 			int numArgs = 0;
@@ -59,6 +59,8 @@ evalCons(OBJ env, OBJ expr){
 		default:
 			js_error("Eval: not a function: ", evaluatedFunctionSlot);
 	}
+	// NOT REACHED
+	return js_nil;
 }
 
 OBJ
