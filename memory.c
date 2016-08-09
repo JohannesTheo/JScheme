@@ -99,7 +99,36 @@ newBuiltinSyntax(char *internalName, OBJFUNC theCode){
 	return (OBJ) theSyntax;	
 }
 
-const char* tag_lookup[12] = {
+// length helper method
+int
+length(OBJ list) {
+	int len = 0;
+
+	while( list != js_nil){
+		if( !ISCONS(list)){
+			js_error("bad element in list", list);	
+		}
+		len++;
+		list = CDR(list);
+	}
+	return len;
+}
+
+OBJ
+newUserDefinedFunction(char *internalName, OBJ argList, OBJ bodyList){
+
+	struct jsUserDefinedFunction *theUDF;
+	theUDF = (struct jsUserDefinedFunction *)(malloc (sizeof(struct jsUserDefinedFunction)));
+	theUDF->tag = T_USERDEFINEDFUNCTION;
+	theUDF->internalName = internalName;
+	theUDF->argList = argList;
+	theUDF->bodyList = bodyList;
+	theUDF->numArgs = length(argList);
+
+	return (OBJ) theUDF;
+}
+
+const char* tag_lookup[13] = {
 	"T_NIL",
 	"T_TRUE",
 	"T_FALSE",
@@ -112,4 +141,5 @@ const char* tag_lookup[12] = {
 	"T_BUILTINFUNCTION",
 	"T_BUILTINSYNTAX",
 	"T_VOID",
+	"T_USERDEFINEDFUNCTION",
 };

@@ -44,6 +44,7 @@ enum tag{
 	T_VOID,
 	T_GLOBALENVIRONMENT,
 	T_LOCALENVIRONMENT,
+	T_USERDEFINEDFUNCTION,
 };
 
 extern const char* tag_lookup[];
@@ -101,6 +102,15 @@ struct jsBuiltinSyntax{
 	OBJFUNC theCode;
 };
 
+struct jsUserDefinedFunction{
+	enum tag tag;
+	
+	char *internalName;
+	int numArgs;
+	OBJ argList;
+	OBJ bodyList;
+};
+
 struct jsEnvironmentEntry{
 	OBJ key;	// must be a symbol
 	OBJ value;	// any object
@@ -128,6 +138,7 @@ struct jschemeObject{
 		struct jsBuiltinFunction builtinFunction;
 		struct jsBuiltinSyntax builtinSyntax;
 		struct jsEnvironment environment;
+		struct jsUserDefinedFunction userDefinedFunction;
 	} u;
 };
 
@@ -157,6 +168,7 @@ struct jschemeObject{
 #define ISBUILTINF(o) 	(TAG(o) == T_BUILTINFUNCTION)
 #define ISBUILTINS(o)	(TAG(o) == T_BUILTINSYNTAX)
 #define ISVOID(o)	(TAG(o) == T_VOID)
+#define ISUDF(o)	(TAG(o) == T_USERDEFINEDFUNCTION)
 
 /*
  * 	Forward declarations
@@ -175,6 +187,7 @@ OBJ newCons(OBJ, OBJ);
 OBJ newBuiltinFunction(char *, OBJFUNC);
 OBJ newBuiltinSyntax(char *, OBJFUNC);
 OBJ newEnvironment(int numSlots, OBJ parentEnv);
+OBJ newUserDefinedFunction(char *, OBJ argList, OBJ bodyList);
 
 //reader
 OBJ js_read();
@@ -222,6 +235,7 @@ OBJ builtin_cons();
 // builtinSyntax
 OBJ builtin_define();
 OBJ builtin_if();
+OBJ builtin_lambda();
 
 /*
  * eval stack
