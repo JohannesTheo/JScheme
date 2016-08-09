@@ -322,6 +322,26 @@ builtin_if(int numArgs, OBJ env, OBJ ignoredArgList){
 }
 
 OBJ
-builtin_lambda(int numArgs, OBJ env, OBJ lamdaArgList){
-	return js_nil;
+builtin_lambda(int numArgs, OBJ env, OBJ lambdaArgList){
+	
+	printEvalStack();
+	if( numArgs < 2){
+		POPN(numArgs);
+		js_error("(lambda): expects at least 2 arguments", js_nil);
+	}
+
+	OBJ argList, bodyList;
+
+	argList = NTH_ARG(numArgs,0);
+	if( ! (argList == js_nil || ISCONS(argList) )){
+		POPN(numArgs);
+		js_error("(lambda): invalid argument list", argList);
+	}
+	/*
+	 * all bodies are on the stack BUT we need them as list -> use CDR(lambdaArgList) instead!
+	 */
+	bodyList = CDR(lambdaArgList);
+	
+	POPN(numArgs);
+	return newUserDefinedFunction( "anonymous lambda", argList, bodyList);
 }
