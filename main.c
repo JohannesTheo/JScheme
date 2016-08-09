@@ -26,6 +26,7 @@ setupInitialEnvironment(){
 	
 	// builtin syntax
 	environmentPut(symbolTableGetOrAdd("define"), newBuiltinSyntax("define", builtin_define));
+	environmentPut(symbolTableGetOrAdd("if"), newBuiltinSyntax("if", builtin_if));
 
 }
 

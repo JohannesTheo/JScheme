@@ -221,6 +221,7 @@ OBJ builtin_cons();
 
 // builtinSyntax
 OBJ builtin_define();
+OBJ builtin_if();
 
 /*
  * eval stack

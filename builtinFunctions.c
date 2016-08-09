@@ -287,3 +287,37 @@ builtin_define(int numArgs, OBJ env, OBJ ignoredArgList){
 	return js_nil;
 }
 
+OBJ
+builtin_if(int numArgs, OBJ env, OBJ ignoredArgList){
+	OBJ condExpr, ifExpr, elseExpr, condValue;
+	
+	if( numArgs == 2){
+		// case 1: else-less if -> (if cond <expr>)
+		elseExpr = js_nil;
+
+	} else if( numArgs == 3){
+		// case 2: regular if -> (if cond <ifExpr> <elseExpr>)
+		elseExpr = NTH_ARG(numArgs, 2);
+	} else {
+		POPN(numArgs);
+		js_error("(if): expects 2 or 3 arguments", js_nil);
+	}
+
+	condExpr = NTH_ARG(numArgs, 0);
+	ifExpr = NTH_ARG(numArgs, 1);
+	POPN(numArgs);
+
+	condValue = js_eval(env, condExpr);
+	if (condValue == js_true){
+		return (js_eval(env, ifExpr));
+	}
+	if (condValue == js_false){
+		return (js_eval(env,elseExpr));
+	}
+
+	// TO-DO implement #t #f rules for all kind of OBJs
+	js_error("(if): non-boolean condition value", condValue);
+	// NOT REACHED
+	return js_nil;
+}
+
