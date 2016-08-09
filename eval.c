@@ -56,6 +56,63 @@ evalCons(OBJ env, OBJ expr){
 			return evaluatedFunctionSlot->u.builtinSyntax.theCode(numArgs, env, argList);
 
 		}
+
+		case T_USERDEFINEDFUNCTION:
+		{
+			// 1. check if the udfs expected numArgs is equal to the given args
+			// 2. put the given args in a new env and bind them to the expected formal args
+			// 3. eval every body in bodylist in the new env
+			// 4. return last bodies value
+			//
+			// given:
+			// 	evaluatedFunctionslot -> theUDF
+			// 	argList -> the non formal args passed to the udf
+
+			// this is can be an overhead since we dont expect that case to happen often
+			// -> refactor to checking args number while building env
+			int numFormalArgs = evaluatedFunctionSlot->u.userDefinedFunction.numArgs;
+			int numArgs = length(argList);
+
+			if( numFormalArgs != numArgs){
+				js_function_error("(lambda): function expects %d args given %d", evaluatedFunctionSlot, numFormalArgs, numArgs);
+			}
+
+			// fill new environment
+			OBJ newEnv = newEnvironment(numFormalArgs, globalEnvironment);
+			OBJ restFormalArgs = evaluatedFunctionSlot->u.userDefinedFunction.argList;
+			restArgs = argList;
+			int slotIndex = 0;
+
+			while( restFormalArgs != js_nil){
+			
+				// expected formal arguments
+				OBJ nextFormalArg = CAR(restFormalArgs);
+				restFormalArgs = CDR(restFormalArgs);
+				
+				// given arguments
+				OBJ unevaluatedArg = CAR(restArgs);
+				restArgs = CDR(restArgs);
+				
+				// put evaluated arg in new env
+				OBJ evaluatedArg = js_eval(env, unevaluatedArg);
+				newEnv->u.environment.slots[slotIndex].key = nextFormalArg;
+				newEnv->u.environment.slots[slotIndex].value = evaluatedArg;
+				slotIndex++;	
+			}
+
+			// eval bodylist
+			OBJ restBodyList = evaluatedFunctionSlot->u.userDefinedFunction.bodyList;
+			OBJ lastValue;
+			while( restBodyList != js_nil) {
+
+				// bodies to evaluate
+				OBJ nextBody = CAR(restBodyList);
+				restBodyList = CDR(restBodyList);
+
+				lastValue = js_eval(newEnv, nextBody);
+			}
+			return lastValue;
+		}
 		default:
 			js_error("Eval: not a function: ", evaluatedFunctionSlot);
 	}
