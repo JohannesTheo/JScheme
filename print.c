@@ -1,6 +1,21 @@
 #include <stdio.h>
 #include "jscheme.h"
 
+
+void
+printEvalStack(){
+	
+	fprintf(stdout, "Eval Stack: \n");
+	fprintf(stdout, "--------------\n");
+	for(int i = (spIndex-1); i >= 0; i--){
+		
+		fprintf(stdout, "%d : ", i);
+		js_print(stdout, NTH_ARG(spIndex,i) );
+		fprintf(stdout, "\n");	
+	}
+	fprintf(stdout, "--------------\n");
+}
+
 static void
 print_list_rest(FILE* outFile, OBJ o){
 

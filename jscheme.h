@@ -199,6 +199,7 @@ void initEvalStack();
 
 // print
 void js_print(FILE *, OBJ);
+void printEvalStack();
 
 // main
 void prompt_on();
