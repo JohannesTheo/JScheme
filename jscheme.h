@@ -188,6 +188,7 @@ OBJ newBuiltinFunction(char *, OBJFUNC);
 OBJ newBuiltinSyntax(char *, OBJFUNC);
 OBJ newEnvironment(int numSlots, OBJ parentEnv);
 OBJ newUserDefinedFunction(char *, OBJ argList, OBJ bodyList);
+int length();
 
 //reader
 OBJ js_read();
@@ -209,6 +210,7 @@ void getMeOutOfHere();
 //error
 void error(char *, char *, int);
 void js_error(char *, OBJ);
+void js_function_error(char*, OBJ, int, int);
 
 // selftest
 void selftest();

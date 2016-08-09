@@ -19,3 +19,11 @@ js_error(char* msg, OBJ arg){
 	fflush(stdout);
 	getMeOutOfHere();
 }
+
+void
+js_function_error(char* msg, OBJ arg, int expected, int given){
+
+	char msgBuffer[512];
+	snprintf(msgBuffer, sizeof(msgBuffer), msg, expected, given);
+	js_error(msgBuffer, arg);
+}
