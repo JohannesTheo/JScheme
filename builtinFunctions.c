@@ -261,7 +261,29 @@ builtin_cons(int numArgs){
 
 OBJ
 builtin_define(int numArgs, OBJ env, OBJ ignoredArgList){
+	
+	if( numArgs < 2){
+		POPN(numArgs);
+		js_error("(define): expects at least  2 arguments", js_nil);
+	}
+	OBJ arg1 = NTH_ARG(numArgs, 0);	// evaluated
+	OBJ arg2 = NTH_ARG(numArgs, 1);	// not evaluated
 
-	return js_void;
+	// case 1: define SYMBOL -> (define symbol expression)
+	if( ISSYMBOL(arg1)) {
+		if( numArgs != 2){
+			POPN(numArgs);
+			js_error("(define): this form expects exactly 2 arguments", js_nil);
+		}
+		environmentPut(arg1, js_eval(globalEnvironment, arg2));
+		POPN(2);
+		return js_void;
+	}
+
+	POPN(numArgs);
+	error("define form unimplemented", __FILE__, __LINE__);
+
+	// NOT REACHED
+	return js_nil;
 }
 
