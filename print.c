@@ -59,6 +59,9 @@ js_print(FILE* outFile,OBJ o){
 		case T_VOID:
 			fprintf(outFile,YEL"<JS void> "RESET);
 			break;
+		case T_USERDEFINEDFUNCTION:
+			fprintf(outFile,YEL"<js userDefinedFunction>"RESET);
+			break;
 		default:
 			fprintf(outFile,RED"<Debug error: tag not supported>\n"RESET);
 	}
@@ -95,6 +98,12 @@ js_print(FILE* outFile,OBJ o){
 			break;
 		case T_VOID:
 			fprintf(outFile, "#void");
+			break;
+		case T_USERDEFINEDFUNCTION:
+			fprintf(outFile, "(lambda ");
+			js_print(outFile, o->u.userDefinedFunction.argList);
+			fprintf(outFile, " ");
+			js_print(outFile, o->u.userDefinedFunction.bodyList);
 			break;
 		default:
 			fprintf(outFile,"<unimpl. (print)>");
