@@ -321,3 +321,7 @@ builtin_if(int numArgs, OBJ env, OBJ ignoredArgList){
 	return js_nil;
 }
 
+OBJ
+builtin_lambda(int numArgs, OBJ env, OBJ lamdaArgList){
+	return js_nil;
+}
