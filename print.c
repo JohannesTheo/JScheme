@@ -75,7 +75,13 @@ js_print(FILE* outFile,OBJ o){
 			fprintf(outFile,YEL"<JS void> "RESET);
 			break;
 		case T_USERDEFINEDFUNCTION:
-			fprintf(outFile,YEL"<JS userDefinedFunction>"RESET);
+			fprintf(outFile,YEL"<JS userDefinedFunction> "RESET);
+			break;
+		case T_LOCALENVIRONMENT:
+			fprintf(outFile,YEL"<JS local environment> "RESET);
+			break;
+		case T_GLOBALENVIRONMENT:
+			fprintf(outFile,YEL"<JS global environment> "RESET);
 			break;
 		default:
 			fprintf(outFile,RED"<Debug error: tag not supported>\n"RESET);
@@ -119,6 +125,12 @@ js_print(FILE* outFile,OBJ o){
 			js_print(outFile, o->u.userDefinedFunction.argList);
 			fprintf(outFile, " ");
 			print_list_rest(outFile, o->u.userDefinedFunction.bodyList);
+			break;
+		case T_LOCALENVIRONMENT:
+			fprintf(outFile,"#env local");
+			break;
+		case T_GLOBALENVIRONMENT:
+			fprintf(outFile,"#env global");
 			break;
 		default:
 			fprintf(outFile,"<unimpl. (print)>");
