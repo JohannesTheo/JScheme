@@ -17,6 +17,7 @@ newEnvironment(int numSlots, OBJ parentEnv){
 	int size = offsetof(struct jsEnvironment, slots) + sizeof(JS_ENV_ENTRY)*numSlots;
 
 	OBJ newEnv = (OBJ)(malloc( size));
+	memset((void *)(&(newEnv->u.environment.slots)), 0, (sizeof(JS_ENV_ENTRY) * numSlots));
 	newEnv->u.environment.tag = T_LOCALENVIRONMENT;
 	newEnv->u.environment.parentEnvironment = parentEnv;
 	newEnv->u.environment.numSlots = numSlots;
@@ -164,15 +165,21 @@ localEnvironmentPut(OBJ env, OBJ storedKey, OBJ storedValue){
 	for(int i = 0; i < numEnvSlots; i++){
 		
 		nextKeyInEnv = env->u.environment.slots[i].key;
-
+		
+		/*
+		 *	TO-DO: Dr.Racket throws an error here: duplicated argument!
+		 */
 		// case 1: key already there -> replace
 		if( nextKeyInEnv == storedKey) {
+
 			env->u.environment.slots[i].value = storedValue;
+			return;
 		}
 		// case 2: empty slot -> insert key, value
 		if( nextKeyInEnv == NULL){
 			env->u.environment.slots[i].key = storedKey;
 			env->u.environment.slots[i].value = storedValue;
+			return;
 		}
 	}
 	// case 3: no slot is empty -> env is full
