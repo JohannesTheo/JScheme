@@ -81,7 +81,7 @@ evalCons(OBJ env, OBJ expr){
 			OBJ newEnv = newEnvironment(numFormalArgs, globalEnvironment);
 			OBJ restFormalArgs = evaluatedFunctionSlot->u.userDefinedFunction.argList;
 			restArgs = argList;
-			int slotIndex = 0;
+			//int slotIndex = 0;
 
 			while( restFormalArgs != js_nil){
 			
@@ -95,9 +95,10 @@ evalCons(OBJ env, OBJ expr){
 				
 				// put evaluated arg in new env
 				OBJ evaluatedArg = js_eval(env, unevaluatedArg);
-				newEnv->u.environment.slots[slotIndex].key = nextFormalArg;
-				newEnv->u.environment.slots[slotIndex].value = evaluatedArg;
-				slotIndex++;	
+				environmentPut(env, nextFormalArg, evaluatedArg);
+				//newEnv->u.environment.slots[slotIndex].key = nextFormalArg;
+				//newEnv->u.environment.slots[slotIndex].value = evaluatedArg;
+				//slotIndex++;	
 			}
 
 			// eval bodylist
@@ -137,7 +138,7 @@ js_eval(OBJ env, OBJ expr){
 		case T_SYMBOL:
 			printf("Address of symbol: %p\n", expr); 
 			
-			OBJ value = environmentGet(expr);
+			OBJ value = environmentGet(env, expr);
 			if(value == NULL){
 				js_error("undefined variable", expr);
 			}

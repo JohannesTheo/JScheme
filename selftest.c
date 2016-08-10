@@ -57,7 +57,7 @@ globalEnvironmentFillTest(){
 				
 				storeSymbol = symbolTableGetOrAdd(testSymbolCopy);		
 				OBJ theString = newString(testSymbolCopy);
-				environmentPut(storeSymbol, theString);
+				environmentPut(globalEnvironment, storeSymbol, theString);
 			}
 		}
 	}
@@ -76,7 +76,7 @@ globalEnvironmentFillTest(){
 				strcpy(testSymbolCopy, testSymbol);
 				searchSymbol = symbolTableGetOrAdd(testSymbolCopy);		
 
-				retrieveString = environmentGet(searchSymbol);
+				retrieveString = environmentGet(globalEnvironment, searchSymbol);
 				
 				ASSERT( retrieveString->u.any.tag == T_STRING , "bad tag in string");
 				ASSERT( strcmp(STRINGVAL(retrieveString), testSymbolCopy) == 0 , "bad value in string");
@@ -122,21 +122,21 @@ selftest(){
 		OBJ val_BEBE;
 		OBJ val_retrieved;
 
-		val_retrieved = environmentGet(world_key);
+		val_retrieved = environmentGet(globalEnvironment, world_key);
 		
 		// test - no entry for key in environment
 		ASSERT(val_retrieved == NULL, "Oo - already knows about the world");
 
 		// insert 2 key, value pairs
 		val_AFFE = newInteger(0xAFFE);
-		environmentPut(hello_key, val_AFFE);	
+		environmentPut(globalEnvironment, hello_key, val_AFFE);	
 		val_BEBE = newInteger(0xBEBE);
-		environmentPut(world_key, val_BEBE);
+		environmentPut(globalEnvironment, world_key, val_BEBE);
 
 		// test - values of the 2 keys
-		val_retrieved = environmentGet(hello_key);
+		val_retrieved = environmentGet(globalEnvironment, hello_key);
 		ASSERT(val_retrieved == val_AFFE, "global environment problem");
-		val_retrieved = environmentGet(world_key);
+		val_retrieved = environmentGet(globalEnvironment, world_key);
 		ASSERT(val_retrieved == val_BEBE, "global environment problem");
 
 		globalEnvironmentFillTest();

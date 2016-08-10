@@ -10,24 +10,24 @@ static jmp_buf whereEverythingWasFine;
 void
 setupInitialEnvironment(){	
 
-	environmentPut(symbolTableGetOrAdd("a"), newInteger(10));
-	environmentPut(symbolTableGetOrAdd("b"), newInteger(20));
+	globalEnvironmentPut(symbolTableGetOrAdd("a"), newInteger(10));
+	globalEnvironmentPut(symbolTableGetOrAdd("b"), newInteger(20));
 	
 	// builtin functions
-	environmentPut(symbolTableGetOrAdd("+"), newBuiltinFunction("+", builtin_plus));
-	environmentPut(symbolTableGetOrAdd("-"), newBuiltinFunction("-", builtin_minus));
-	environmentPut(symbolTableGetOrAdd("*"), newBuiltinFunction("*", builtin_times));
-	environmentPut(symbolTableGetOrAdd("/"), newBuiltinFunction("/", builtin_quotient));
-	environmentPut(symbolTableGetOrAdd("eq?"), newBuiltinFunction("eq?", builtin_eqP));
-	environmentPut(symbolTableGetOrAdd("cons?"), newBuiltinFunction("cons?", builtin_consP));
-	environmentPut(symbolTableGetOrAdd("car"), newBuiltinFunction("car", builtin_car));
-	environmentPut(symbolTableGetOrAdd("cdr"), newBuiltinFunction("cdr", builtin_cdr));
-	environmentPut(symbolTableGetOrAdd("cons"), newBuiltinFunction("cons", builtin_cons));
-	
+	globalEnvironmentPut(symbolTableGetOrAdd("+"), newBuiltinFunction("+", builtin_plus));
+	globalEnvironmentPut(symbolTableGetOrAdd("-"), newBuiltinFunction("-", builtin_minus));
+	globalEnvironmentPut(symbolTableGetOrAdd("*"), newBuiltinFunction("*", builtin_times));
+	globalEnvironmentPut(symbolTableGetOrAdd("/"), newBuiltinFunction("/", builtin_quotient));
+	globalEnvironmentPut(symbolTableGetOrAdd("eq?"), newBuiltinFunction("eq?", builtin_eqP));
+	globalEnvironmentPut(symbolTableGetOrAdd("cons?"), newBuiltinFunction("cons?", builtin_consP));
+	globalEnvironmentPut(symbolTableGetOrAdd("car"), newBuiltinFunction("car", builtin_car));
+	globalEnvironmentPut(symbolTableGetOrAdd("cdr"), newBuiltinFunction("cdr", builtin_cdr));
+	globalEnvironmentPut(symbolTableGetOrAdd("cons"), newBuiltinFunction("cons", builtin_cons));
+
 	// builtin syntax
-	environmentPut(symbolTableGetOrAdd("define"), newBuiltinSyntax("define", builtin_define));
-	environmentPut(symbolTableGetOrAdd("if"), newBuiltinSyntax("if", builtin_if));
-	environmentPut(symbolTableGetOrAdd("lambda"), newBuiltinSyntax("lambda", builtin_lambda));
+	globalEnvironmentPut(symbolTableGetOrAdd("define"), newBuiltinSyntax("define", builtin_define));
+	globalEnvironmentPut(symbolTableGetOrAdd("if"), newBuiltinSyntax("if", builtin_if));
+	globalEnvironmentPut(symbolTableGetOrAdd("lambda"), newBuiltinSyntax("lambda", builtin_lambda));
 
 }
 

@@ -275,7 +275,7 @@ builtin_define(int numArgs, OBJ env, OBJ ignoredArgList){
 			POPN(numArgs);
 			js_error("(define): this form expects exactly 2 arguments", js_nil);
 		}
-		environmentPut(arg1, js_eval(globalEnvironment, arg2));
+		environmentPut(env, arg1, js_eval(globalEnvironment, arg2));
 		POPN(2);
 		return js_void;
 	}
