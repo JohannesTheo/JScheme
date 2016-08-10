@@ -2,7 +2,7 @@ OBJS=main.o reader.o print.o memory.o selftest.o error.o eval.o symboltable.o en
 
 CC=clang
 
-CFLAGS=-g -Wall -Wextra
+CFLAGS=-g -Wall -Wextra -std=c99
 
 js: $(OBJS)
 	$(CC) -o jscheme $(OBJS)
