@@ -87,7 +87,7 @@ globalEnvironmentRehash(){
 }
 
 void
-environmentPut(OBJ storedKey, OBJ storedValue){
+globalEnvironmentPut(OBJ storedKey, OBJ storedValue){
 	
 	uint32_t h = (int) storedKey;
 	int startIndex = h % globalEnvironmentSize;
@@ -126,7 +126,7 @@ environmentPut(OBJ storedKey, OBJ storedValue){
 }
 
 OBJ
-environmentGet(OBJ searchedKey){
+globalEnvironmentGet(OBJ searchedKey){
 	
 	uint32_t h = (int) searchedKey;
 	int startIndex = h % globalEnvironmentSize;
@@ -153,5 +153,77 @@ environmentGet(OBJ searchedKey){
 			error("global environment error - no empty slot", __FILE__, __LINE__);
 		}
 	}
+}
+
+void
+localEnvironmentPut(OBJ env, OBJ storedKey, OBJ storedValue){
+	
+	OBJ nextKeyInEnv;
+	int numEnvSlots = env->u.environment.numSlots;
+
+	for(int i = 0; i < numEnvSlots; i++){
+		
+		nextKeyInEnv = env->u.environment.slots[i].key;
+
+		// case 1: key already there -> replace
+		if( nextKeyInEnv == storedKey) {
+			env->u.environment.slots[i].value = storedValue;
+		}
+		// case 2: empty slot -> insert key, value
+		if( nextKeyInEnv == NULL){
+			env->u.environment.slots[i].key = storedKey;
+			env->u.environment.slots[i].value = storedValue;
+		}
+	}
+	// case 3: no slot is empty -> env is full
+	error("local environment error - no empty slot", __FILE__, __LINE__);
+}
+
+OBJ
+localEnvironmentGet(OBJ env, OBJ searchedKey){
+	
+	/*
+	 *	return the searched key from the closest env or NULL if not present ( from globalEnv )
+	 */
+	OBJ nextKeyInEnv;
+	int numEnvSlots = env->u.environment.numSlots;
+
+	for(int i = 0; i < numEnvSlots; i++){
+		
+		nextKeyInEnv = env->u.environment.slots[i].key;
+		if( nextKeyInEnv == searchedKey){
+			return env->u.environment.slots[i].value;
+		}
+	}
+
+	OBJ parentEnv = env->u.environment.parentEnvironment;
+	return environmentGet(parentEnv, searchedKey);
+}
+
+void
+environmentPut(OBJ env, OBJ storedKey, OBJ storedValue){
+
+	if( TAG(env) == T_GLOBALENVIRONMENT ){
+		return globalEnvironmentPut(storedKey, storedValue);
+	} 
+	if( TAG(env) == T_LOCALENVIRONMENT ){
+		return localEnvironmentPut(env, storedKey, storedValue);
+	} 
+	js_error("environment put: not an environment", env);
+}
+
+OBJ
+environmentGet(OBJ env, OBJ searchedKey){
+
+	if( TAG(env) == T_GLOBALENVIRONMENT ){
+		return globalEnvironmentGet(searchedKey);
+	} 
+	if( TAG(env) == T_LOCALENVIRONMENT ){
+		return localEnvironmentGet(env, searchedKey);
+	} 
+	js_error("environment get: not an environment", env);
+
+	// NOT REACHED
+	return js_nil;
 }
 

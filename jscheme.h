@@ -221,8 +221,10 @@ OBJ symbolTableGetOrAdd(char* );
 
 // environment
 void initGlobalEnvironment();
-void environmentPut(OBJ storedKey, OBJ storedValue);
-OBJ environmentGet(OBJ searchedKey);
+void environmentPut(OBJ env, OBJ storedKey, OBJ storedValue);
+OBJ environmentGet(OBJ env, OBJ searchedKey);
+void globalEnvironmentPut(OBJ storedKey, OBJ storedValue);
+OBJ globalEnvironmentGet(OBJ searchedKey);
 
 // builtinFuntions
 OBJ builtin_plus();
