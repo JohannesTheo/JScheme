@@ -95,7 +95,7 @@ evalCons(OBJ env, OBJ expr){
 				
 				// put evaluated arg in new env
 				OBJ evaluatedArg = js_eval(env, unevaluatedArg);
-				environmentPut(env, nextFormalArg, evaluatedArg);
+				environmentPut(newEnv, nextFormalArg, evaluatedArg);
 				//newEnv->u.environment.slots[slotIndex].key = nextFormalArg;
 				//newEnv->u.environment.slots[slotIndex].value = evaluatedArg;
 				//slotIndex++;	
