@@ -279,6 +279,20 @@ builtin_define(int numArgs, OBJ env, OBJ ignoredArgList){
 		POPN(2);
 		return js_void;
 	}
+	// case 2: define CONS ( function ) -> (define (name args*) (body*) )
+	if( ISCONS(arg1)){
+		
+		OBJ name = CAR(arg1);
+		if( ISSYMBOL(name) ){
+			OBJ formalArgList = CDR(arg1);
+			OBJ bodyList = CDR(ignoredArgList);
+			OBJ newUDF;
+
+			newUDF = newUserDefinedFunction("anonymous lambda", formalArgList, bodyList);
+			environmentPut(env, name, newUDF);
+			return js_void;
+		}
+	}
 
 	POPN(numArgs);
 	error("define form unimplemented", __FILE__, __LINE__);
