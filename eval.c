@@ -72,13 +72,14 @@ evalCons(OBJ env, OBJ expr){
 			// -> refactor to checking args number while building env
 			int numFormalArgs = evaluatedFunctionSlot->u.userDefinedFunction.numArgs;
 			int numArgs = length(argList);
+			int numLocals = evaluatedFunctionSlot->u.userDefinedFunction.numLocals;
 
 			if( numFormalArgs != numArgs){
 				js_function_error("(lambda): function expects %d args given %d", evaluatedFunctionSlot, numFormalArgs, numArgs);
 			}
 
 			// fill new environment
-			OBJ newEnv = newEnvironment(numFormalArgs, globalEnvironment);
+			OBJ newEnv = newEnvironment((numFormalArgs + numLocals), globalEnvironment);
 			OBJ restFormalArgs = evaluatedFunctionSlot->u.userDefinedFunction.argList;
 			restArgs = argList;
 			//int slotIndex = 0;
