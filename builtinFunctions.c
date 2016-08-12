@@ -259,6 +259,28 @@ builtin_cons(int numArgs){
  * syntax
  */
 
+static int
+isDefine(OBJ expr){
+
+	if( ISCONS(expr) && (CAR(expr) == js_sym_define) ){
+			return 1;
+	}
+	return 0;
+}
+
+static int
+count_defines(OBJ bodyList){
+
+	int count = 0;
+	while( bodyList != js_nil){
+		if( isDefine( CAR( bodyList))){
+			count++;
+		}
+		bodyList = CDR(bodyList);
+	}
+	return count;
+}
+
 OBJ
 builtin_define(int numArgs, OBJ env, OBJ ignoredArgList){
 	
@@ -289,7 +311,9 @@ builtin_define(int numArgs, OBJ env, OBJ ignoredArgList){
 			OBJ newUDF;
 
 			newUDF = newUserDefinedFunction("anonymous lambda", formalArgList, bodyList);
+			newUDF->u.userDefinedFunction.numLocals = count_defines(bodyList);
 			environmentPut(env, name, newUDF);
+
 			return js_void;
 		}
 	}
@@ -357,5 +381,8 @@ builtin_lambda(int numArgs, OBJ env, OBJ lambdaArgList){
 	bodyList = CDR(lambdaArgList);
 	
 	POPN(numArgs);
-	return newUserDefinedFunction( "anonymous lambda", argList, bodyList);
+	OBJ newUDF = newUserDefinedFunction( "anonymous lambda", argList, bodyList);
+	newUDF->u.userDefinedFunction.numLocals = count_defines(bodyList);
+			
+	return newUDF;
 }
