@@ -243,6 +243,7 @@ OBJ builtin_cons();
 OBJ builtin_define();
 OBJ builtin_if();
 OBJ builtin_lambda();
+OBJ builtin_quote();
 
 /*
  * eval stack

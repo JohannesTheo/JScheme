@@ -386,3 +386,12 @@ builtin_lambda(int numArgs, OBJ env, OBJ lambdaArgList){
 			
 	return newUDF;
 }
+
+OBJ
+builtin_quote(int numArgs, OBJ env, OBJ argList){
+
+	if( (!ISCONS(argList)) || ( CDR(argList) != js_nil) ){
+		js_error("(quote): expects exactly 1 argument", js_nil);
+	}
+	return CAR(argList);
+}
