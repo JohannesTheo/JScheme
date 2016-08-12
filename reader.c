@@ -285,6 +285,13 @@ js_read(OBJ inStream){
 	if(ch == '('){
 		retVal = readList(inStream);
 	}
+	else if(ch =='\''){
+		OBJ expr = js_read(inStream);
+
+		// (quote (expr* (nil))) -> expr must be a cons
+		return newCons(symbolTableGetOrAdd("quote"), 
+				newCons(expr, js_nil));
+	}
 	else if(ch == '"'){
 		retVal = readString(inStream);
 	}
