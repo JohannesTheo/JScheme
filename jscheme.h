@@ -106,6 +106,7 @@ struct jsUserDefinedFunction{
 	enum tag tag;
 	
 	char *internalName;
+	int numLocals;
 	int numArgs;
 	OBJ argList;
 	OBJ bodyList;
@@ -176,6 +177,7 @@ struct jschemeObject{
 
 // well known objects
 OBJ js_nil, js_true, js_false, js_void;
+OBJ js_sym_define;
 
 // memory
 OBJ newInteger(jscheme_int64);
