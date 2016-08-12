@@ -45,15 +45,17 @@ initializeWellKnownObjects(){
 
 	js_void = (OBJ)(malloc( sizeof( struct jschemeAny)));
 	js_void->u.any.tag = T_VOID;
+
+	js_sym_define = symbolTableGetOrAdd("define");
 }
 
 
 int
 main() {
 
+	initSymbolTable();
 	initializeWellKnownObjects();
 	initEvalStack();
-	initSymbolTable();
 	initGlobalEnvironment();
 	selftest();
 	initGlobalEnvironment();
