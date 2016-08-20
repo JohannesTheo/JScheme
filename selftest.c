@@ -443,7 +443,89 @@ selftest(){
 	ASSERT( (t_count == 3), "bad number of members in multi-read test");
 	free(t_stream);
 
+	/*
+	 *	eval tests
+	 */
 
+	// simple OBJs
+	OBJ nil = js_nil;
+	OBJ jstrue = js_true;
+	OBJ jsfalse = js_false;
+	OBJ integer = newInteger(1);
+	OBJ string = newString("string");
+	OBJ jsvoid = js_void;
+
+	OBJ simple_return;
+
+	simple_return = js_eval(globalEnvironment, nil);
+	ASSERT( ISNIL(simple_return) , "error in eval nil");
+
+	simple_return = js_eval(globalEnvironment, jstrue);
+	ASSERT( ISTRUE(jstrue) , "error in eval true");
+	
+	simple_return = js_eval(globalEnvironment, jsfalse);
+	ASSERT( ISFALSE(simple_return) , "error in eval false");
+	
+	simple_return = js_eval(globalEnvironment, integer);
+	ASSERT( ISINTEGER(simple_return) , "error in eval integer");
+	ASSERT( INTVAL(simple_return) == 1, "bad value in integer");
+	
+	simple_return = js_eval(globalEnvironment, string);
+	ASSERT( ISSTRING(simple_return) , "error in eval string");
+	ASSERT( (strcmp(STRINGVAL(simple_return), "string") == 0), "bad value in string");
+	
+	simple_return = js_eval(globalEnvironment, jsvoid);
+	ASSERT( ISVOID(simple_return) , "error in eval void");
+	
+	/*
+	 * builtinsyntax
+	 */
+
+	OBJ cons, result, result2;
+
+	// define integer	
+	cons = js_readFromString("(define a 1)");
+	result = js_eval(globalEnvironment, cons);
+	result2 = js_eval(globalEnvironment, symbolTableGetOrAdd("a"));
+	
+	ASSERT( ISVOID(result) , "error in eval cons: define");
+	ASSERT( ISINTEGER(result2) , "error in eval symbol");
+	ASSERT( INTVAL(result2) == 1, "bad value in integer");
+
+	// define UDF function v1
+	cons = js_readFromString("(define (f a b c) (+ a b c))");
+	result = js_eval(globalEnvironment, cons);
+	result2 = js_eval(globalEnvironment, symbolTableGetOrAdd("f"));
+	
+	ASSERT( ISVOID(result) , "error in eval cons: define");
+	ASSERT( ISUDF(result2) , "error in eval symbol");
+	
+	// define UDF function v2
+	cons = js_readFromString("(define f (lambda (a b c) (+ a b c)) )");
+	result = js_eval(globalEnvironment, cons);
+	result2 = js_eval(globalEnvironment, symbolTableGetOrAdd("f"));
+	
+	ASSERT( ISVOID(result) , "error in eval cons: define");
+	ASSERT( ISUDF(result2) , "error in eval symbol");
+
+	// eval f
+	cons = js_readFromString("(f 100 200 300)");
+	result = js_eval(globalEnvironment, cons);
+	
+	ASSERT( ISINTEGER(result) , "error in eval cons: udf");
+	ASSERT( INTVAL(result) == 600, "bad integer value after eval udf");
+	
+	// lambda
+	cons = js_readFromString("(lambda (a b) (* a b))");
+	result = js_eval(globalEnvironment, cons);
+	ASSERT( ISUDF(result) , "error in eval cons: udf");
+
+	cons = js_readFromString("((lambda (a b) (* a b)) 100 10)");
+	result = js_eval(globalEnvironment, cons);
+	
+	ASSERT( ISINTEGER(result) , "error in eval cons: udf");
+	ASSERT( INTVAL(result) == 1000, "bad integer value after eval udf");
+	
 	/*
 	 *	END OF SELFTEST :)
 	 */
