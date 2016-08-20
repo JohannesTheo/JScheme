@@ -67,6 +67,8 @@ main() {
 	printf("Welcome to (JS)cheme\n");
 
 	if( setjmp(whereEverythingWasFine) ){
+		// reset Stack index
+		spIndex = 0;
 		printf("back in wonderland\n");
 	}	
 	printf("start REPL...\n");
