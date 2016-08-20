@@ -58,9 +58,10 @@ main() {
 	initializeWellKnownObjects();
 	initEvalStack();
 	initGlobalEnvironment();
+	setupInitialEnvironment();
 	selftest();
-	initGlobalEnvironment();
 
+	initGlobalEnvironment();
 	setupInitialEnvironment();
 
 	printf("Welcome to (JS)cheme\n");
