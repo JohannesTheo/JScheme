@@ -130,3 +130,6 @@ fabric.properties
 
 ## jscheme ##
 jscheme
+
+## text files ##
+*.txt
