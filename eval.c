@@ -44,17 +44,7 @@ evalCons(OBJ env, OBJ expr){
 
 		case T_BUILTINSYNTAX:
 		{
-			int numArgs = 0;
-			restArgs = argList;
-			while( restArgs != js_nil) {
-				OBJ theArg = CAR(restArgs);
-				restArgs = CDR(restArgs);
-
-				PUSH(theArg);	// NOT evaluated
-				numArgs++;
-			}
-			return evaluatedFunctionSlot->u.builtinSyntax.theCode(numArgs, env, argList);
-
+			return evaluatedFunctionSlot->u.builtinSyntax.theCode(env, argList);
 		}
 
 		case T_USERDEFINEDFUNCTION:

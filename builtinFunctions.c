@@ -282,23 +282,27 @@ count_defines(OBJ bodyList){
 }
 
 OBJ
-builtin_define(int numArgs, OBJ env, OBJ ignoredArgList){
-	
-	if( numArgs < 2){
-		POPN(numArgs);
+builtin_define(OBJ env, OBJ argList){
+
+	if( !ISCONS(argList) ){
 		js_error("(define): expects at least  2 arguments", js_nil);
 	}
-	OBJ arg1 = NTH_ARG(numArgs, 0);	// evaluated
-	OBJ arg2 = NTH_ARG(numArgs, 1);	// not evaluated
+	
+	OBJ arg1 = CAR(argList);
+	argList = CDR(argList);
+
+	if( !ISCONS(argList) ){
+		js_error("(define): expects at least  2 arguments", js_nil);
+	}
 
 	// case 1: define SYMBOL -> (define symbol expression)
 	if( ISSYMBOL(arg1)) {
-		if( numArgs != 2){
-			POPN(numArgs);
+		OBJ arg2 = CAR(argList);
+		argList = CDR(argList);
+		if( argList != js_nil ){
 			js_error("(define): this form expects exactly 2 arguments", js_nil);
 		}
-		environmentPut(env, arg1, js_eval(globalEnvironment, arg2));
-		POPN(2);
+		environmentPut(env, arg1, js_eval(env, arg2));
 		return js_void;
 	}
 	// case 2: define CONS ( function ) -> (define (name args*) (body*) )
@@ -307,7 +311,7 @@ builtin_define(int numArgs, OBJ env, OBJ ignoredArgList){
 		OBJ name = CAR(arg1);
 		if( ISSYMBOL(name) ){
 			OBJ formalArgList = CDR(arg1);
-			OBJ bodyList = CDR(ignoredArgList);
+			OBJ bodyList = argList;
 			OBJ newUDF;
 
 			newUDF = newUserDefinedFunction("anonymous lambda", formalArgList, bodyList);
@@ -317,8 +321,6 @@ builtin_define(int numArgs, OBJ env, OBJ ignoredArgList){
 			return js_void;
 		}
 	}
-
-	POPN(numArgs);
 	error("define form unimplemented", __FILE__, __LINE__);
 
 	// NOT REACHED
@@ -326,24 +328,23 @@ builtin_define(int numArgs, OBJ env, OBJ ignoredArgList){
 }
 
 OBJ
-builtin_if(int numArgs, OBJ env, OBJ ignoredArgList){
+builtin_if(OBJ env, OBJ argList){
 	OBJ condExpr, ifExpr, elseExpr, condValue;
 	
+	int numArgs = length(argList);
 	if( numArgs == 2){
 		// case 1: else-less if -> (if cond <expr>)
 		elseExpr = js_nil;
 
 	} else if( numArgs == 3){
 		// case 2: regular if -> (if cond <ifExpr> <elseExpr>)
-		elseExpr = NTH_ARG(numArgs, 2);
+		elseExpr = CAR( CDR( CDR( argList )));
 	} else {
-		POPN(numArgs);
 		js_error("(if): expects 2 or 3 arguments", js_nil);
 	}
 
-	condExpr = NTH_ARG(numArgs, 0);
-	ifExpr = NTH_ARG(numArgs, 1);
-	POPN(numArgs);
+	condExpr = CAR(argList); 
+	ifExpr = CAR( CDR(argList));
 
 	condValue = js_eval(env, condExpr);
 	if (condValue == js_true){
@@ -360,35 +361,27 @@ builtin_if(int numArgs, OBJ env, OBJ ignoredArgList){
 }
 
 OBJ
-builtin_lambda(int numArgs, OBJ env, OBJ lambdaArgList){
+builtin_lambda(OBJ env, OBJ argList){
 	
 	printEvalStack();
-	if( numArgs < 2){
-		POPN(numArgs);
+	if( !ISCONS(argList) ){
 		js_error("(lambda): expects at least 2 arguments", js_nil);
 	}
 
-	OBJ argList, bodyList;
-
-	argList = NTH_ARG(numArgs,0);
-	if( ! (argList == js_nil || ISCONS(argList) )){
-		POPN(numArgs);
-		js_error("(lambda): invalid argument list", argList);
+	OBJ lambdaArgList = CAR(argList);
+	if( ! (lambdaArgList == js_nil || ISCONS(lambdaArgList) )){
+		js_error("(lambda): invalid argument list", lambdaArgList);
 	}
-	/*
-	 * all bodies are on the stack BUT we need them as list -> use CDR(lambdaArgList) instead!
-	 */
-	bodyList = CDR(lambdaArgList);
+	OBJ bodyList = CDR(argList);
 	
-	POPN(numArgs);
-	OBJ newUDF = newUserDefinedFunction( "anonymous lambda", argList, bodyList);
+	OBJ newUDF = newUserDefinedFunction( "anonymous lambda", lambdaArgList, bodyList);
 	newUDF->u.userDefinedFunction.numLocals = count_defines(bodyList);
 			
 	return newUDF;
 }
 
 OBJ
-builtin_quote(int numArgs, OBJ env, OBJ argList){
+builtin_quote(OBJ env, OBJ argList){
 
 	if( (!ISCONS(argList)) || ( CDR(argList) != js_nil) ){
 		js_error("(quote): expects exactly 1 argument", js_nil);
