@@ -3,6 +3,41 @@
 
 
 void
+printIndent(int indentLevel){
+	
+	for(int i = 0; i < indentLevel; i++){
+		fprintf(stdout, INDENT);
+	}
+}
+
+void
+printLocalEnv(int intendLevel, OBJ localEnv){
+
+	OBJ key, value;
+	fprintf(stdout, " -> %p\n", localEnv);
+	printIndent(indentLevel);
+	fprintf(stdout, "-----------------------------------\n");
+	for(int i = 0; i < localEnv->u.environment.numSlots; i++){
+			
+		printIndent(indentLevel);
+		fprintf(stdout, "%d : ", i);
+		key  = localEnv->u.environment.slots[i].key;
+		if(key != NULL){	
+			value  = localEnv->u.environment.slots[i].value;
+			fprintf(stdout, "key: " GRN);
+			js_print(stdout, key);
+			fprintf(stdout,RESET " value: " GRN);
+			js_print(stdout, value);
+			fprintf(stdout, RESET "\n");	
+		} else {
+			fprintf(stdout, "NULL\n");
+		}
+	}
+	printIndent(indentLevel);
+	fprintf(stdout, "-----------------------------------\n\n");
+}
+
+void
 printEvalStack(){
 	
 	fprintf(stdout, "Eval Stack: \n");
@@ -108,7 +143,7 @@ js_print(FILE* outFile,OBJ o){
 			fprintf(outFile,"%s", o->u.symbol.symbolVal);
 			break;
 		case T_CONS:
-			fprintf(outFile, "( ");
+			fprintf(outFile, "(");
 			print_list_rest(outFile, o);
 			break;
 		case T_BUILTINFUNCTION:
