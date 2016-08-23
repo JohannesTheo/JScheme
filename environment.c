@@ -202,8 +202,15 @@ localEnvironmentGet(OBJ env, OBJ searchedKey){
 			return env->u.environment.slots[i].value;
 		}
 	}
-
+	
 	OBJ parentEnv = env->u.environment.parentEnvironment;
+
+	if( TAG(parentEnv) == T_GLOBALENVIRONMENT) {
+		fprintf(stdout, RED" -> " CYN "(GLOBAL)" RESET);
+	} else {
+		fprintf(stdout,  RED" -> " YEL "(%p)" RESET, parentEnv);
+	}
+
 	return environmentGet(parentEnv, searchedKey);
 }
 
