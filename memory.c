@@ -128,7 +128,7 @@ newUserDefinedFunction(char *internalName, OBJ argList, OBJ bodyList){
 	return (OBJ) theUDF;
 }
 
-const char* tag_lookup[13] = {
+const char* tag_lookup[15] = {
 	"T_NIL",
 	"T_TRUE",
 	"T_FALSE",
@@ -141,5 +141,7 @@ const char* tag_lookup[13] = {
 	"T_BUILTINFUNCTION",
 	"T_BUILTINSYNTAX",
 	"T_VOID",
+	"T_GLOBALENVIRONMENT",
+	"T_LOCALENVIRONMENT",
 	"T_USERDEFINEDFUNCTION",
 };
