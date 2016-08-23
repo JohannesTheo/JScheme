@@ -311,7 +311,25 @@ builtin_define(OBJ env, OBJ argList){
 		if( argList != js_nil ){
 			js_error("(define): this form expects exactly 2 arguments", js_nil);
 		}
-		environmentPut(env, arg1, js_eval(env, arg2));
+		OBJ value = js_eval(env, arg2);
+		environmentPut(env, arg1, value);
+
+// PRINT TRACE
+		printIndent(indentLevel);
+		fprintf(stdout, RED"DEFINE "RESET);
+		js_print(stdout, arg1);       
+		fprintf(stdout, " -> ");
+		js_print(stdout, value);
+
+		if( TAG(env) == T_GLOBALENVIRONMENT ){
+
+			fprintf(stdout," in " CYN "GLOBAL" RESET " (%p)\n", env);
+		} 
+		if( TAG(env) == T_LOCALENVIRONMENT ){
+			fprintf(stdout," in " YEL "LOCAL" RESET " (%p)\n", env);
+		}
+// PRINT TRACE
+
 		return js_void;
 	}
 	// case 2: define CONS ( function ) -> (define (name args*) (body*) )
@@ -327,6 +345,21 @@ builtin_define(OBJ env, OBJ argList){
 			newUDF->u.userDefinedFunction.numLocals = count_defines(bodyList);
 			environmentPut(env, name, newUDF);
 
+// PRINT TRACE
+			printIndent(indentLevel);
+			fprintf(stdout, RED"DEFINE "RESET);
+			js_print(stdout, name);       
+			fprintf(stdout, " -> ");
+			js_print(stdout, newUDF);
+
+			if( TAG(env) == T_GLOBALENVIRONMENT ){
+
+				fprintf(stdout," in " CYN "GLOBAL" RESET " (%p)\n", env);
+			} 
+			if( TAG(env) == T_LOCALENVIRONMENT ){
+				fprintf(stdout," in " YEL "LOCAL" RESET " (%p)\n", env);
+			}
+// PRINT TRACE
 			return js_void;
 		}
 	}
