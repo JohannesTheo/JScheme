@@ -48,6 +48,7 @@ initializeWellKnownObjects(){
 	js_void->u.any.tag = T_VOID;
 
 	js_sym_define = symbolTableGetOrAdd("define");
+	js_sym_lambda = symbolTableGetOrAdd("lambda");
 }
 
 
@@ -69,6 +70,7 @@ main() {
 	if( setjmp(whereEverythingWasFine) ){
 		// reset Stack index
 		spIndex = 0;
+		indentLevel = 0;
 		printf("back in wonderland\n");
 	}	
 	printf("start REPL...\n");
