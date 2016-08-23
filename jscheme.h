@@ -205,7 +205,7 @@ void initEvalStack();
 // print
 void js_print(FILE *, OBJ);
 void printEvalStack();
-void printLocalEnv(int, OBJ);
+void printLocalEnv(OBJ);
 void printIndent(int);
 
 // main

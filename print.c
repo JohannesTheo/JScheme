@@ -11,7 +11,7 @@ printIndent(int indentLevel){
 }
 
 void
-printLocalEnv(int intendLevel, OBJ localEnv){
+printLocalEnv(OBJ localEnv){
 
 	OBJ key, value;
 	fprintf(stdout, " -> %p\n", localEnv);
