@@ -3,7 +3,9 @@
  *	One header file to confuse them all ( and myself )
  */
 
-#define DEBUG
+//#define DEBUG
+#define INDENT "      "
+extern int indentLevel;
 
 #ifdef __WIN32__
 typedef int jscheme_int32;
@@ -177,7 +179,7 @@ struct jschemeObject{
 
 // well known objects
 OBJ js_nil, js_true, js_false, js_void;
-OBJ js_sym_define;
+OBJ js_sym_define, js_sym_lambda;
 
 // memory
 OBJ newInteger(jscheme_int64);
@@ -203,6 +205,8 @@ void initEvalStack();
 // print
 void js_print(FILE *, OBJ);
 void printEvalStack();
+void printLocalEnv(int, OBJ);
+void printIndent(int);
 
 // main
 void prompt_on();
@@ -240,6 +244,8 @@ OBJ builtin_cdr();
 OBJ builtin_cons();
 
 // builtinSyntax
+int isDefine();
+int isLambda();
 OBJ builtin_define();
 OBJ builtin_if();
 OBJ builtin_lambda();
