@@ -23,7 +23,7 @@ builtin_plus(int numArgs){
 			js_error("(+): integer overflow", newInteger(*sum));	
 		};
 	}
-	printf("spIndex: %d\n", spIndex);
+//	printf("spIndex: %d\n", spIndex);
 	return newInteger(*sum);
 }
 
@@ -67,7 +67,7 @@ builtin_minus(int numArgs){
 				};
 			}
 			POPN(numArgs);
-			printf("spIndex: %d\n", spIndex);
+//			printf("spIndex: %d\n", spIndex);
 			return newInteger(*difference);
 	}	
 	/* NOT REACHED */
@@ -94,7 +94,7 @@ builtin_times(int numArgs){
 			js_error("(*): integer overflow", newInteger(*product));
 		}
 	}
-	printf("spIndex: %d\n", spIndex);
+//	printf("spIndex: %d\n", spIndex);
 	return newInteger(*product);
 }
 
@@ -128,7 +128,7 @@ builtin_quotient(int numArgs){
 
 			if( !ISINTEGER(theArg)){
 				POPN(numArgs);
-				printf("spIndex: %d\n", spIndex);
+//				printf("spIndex: %d\n", spIndex);
 				js_error("(/): non-integer argument", theArg);
 				/* NOT REACHED */
 			}
@@ -139,19 +139,19 @@ builtin_quotient(int numArgs){
 					OBJ nextArg = NTH_ARG(numArgs, i);
 					if( !ISINTEGER(nextArg) ){
 						POPN(numArgs);
-						printf("spIndex: %d\n", spIndex);
+//						printf("spIndex: %d\n", spIndex);
 						js_error("(/): non-integer argument", theArg);
 						/* NOT REACHED */
 					}
 					if( INTVAL(nextArg) == 0){
 						POPN(numArgs);
-						printf("spIndex: %d\n", spIndex);
+//						printf("spIndex: %d\n", spIndex);
 						js_error("(/): division by zero", nextArg);
 						/* NOT REACHED */
 					}
 				}
 				POPN(numArgs);
-				printf("spIndex: %d\n", spIndex);
+//				printf("spIndex: %d\n", spIndex);
 				return newInteger(0);
 			}
 			
@@ -175,7 +175,7 @@ builtin_quotient(int numArgs){
 				quotient = quotient / INTVAL(nextArg);
 			}
 			POPN(numArgs);
-			printf("spIndex: %d\n", spIndex);
+//			printf("spIndex: %d\n", spIndex);
 			return newInteger(quotient);
 	}
 	/* NOT REACHED */
@@ -259,7 +259,16 @@ builtin_cons(int numArgs){
  * syntax
  */
 
-static int
+int
+isLambda(OBJ expr){
+
+	if( ISCONS(expr) && (CAR(expr) == js_sym_lambda) ){
+			return 1;
+	}
+	return 0;
+}
+
+int
 isDefine(OBJ expr){
 
 	if( ISCONS(expr) && (CAR(expr) == js_sym_define) ){
@@ -363,7 +372,6 @@ builtin_if(OBJ env, OBJ argList){
 OBJ
 builtin_lambda(OBJ env, OBJ argList){
 	
-	printEvalStack();
 	if( !ISCONS(argList) ){
 		js_error("(lambda): expects at least 2 arguments", js_nil);
 	}
