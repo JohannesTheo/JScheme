@@ -4,19 +4,20 @@
 
 void
 error(char* msg, char* fileName, int line){
-	fprintf(stderr, "%s [%d]: %s\n", fileName, line, msg);
+	fprintf(stderr, RESET "%s [%d]: %s\n", fileName, line, msg);
 	abort();
 }
 
 void
 js_error(char* msg, OBJ arg){
 
-	fprintf(stderr,"-------------\n");
+
+	fflush(stdout);
+	fprintf(stderr,RESET "\n-------------\n");
 	fprintf(stderr,"JS-error: %s ", msg);
 	js_print(stderr, arg);
 	fprintf(stderr,"\n-------------\n");
 	
-	fflush(stdout);
 	getMeOutOfHere();
 }
 
