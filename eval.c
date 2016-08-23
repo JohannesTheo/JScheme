@@ -3,6 +3,12 @@
 
 #define INITIAL_STACK_SIZE 128
 
+// PRINT TRACE
+int indentLevel = 0;
+int oldIndentLevel = 0;
+int PAUSE_INDENT_FLAG = 0;
+// PRINT TRACE
+
 OBJ *evalStack;
 int spIndex = 0;
 int stackLimit;
@@ -27,7 +33,10 @@ evalCons(OBJ env, OBJ expr){
 
 		case T_BUILTINFUNCTION:
 		{
-
+// PRINT TRACE
+		printIndent(indentLevel);
+		fprintf(stdout, MAG "ARGS FOR BUILTINFUNC\n" RESET);
+// PRINT TRACE
 			int numArgs = 0;
 			restArgs = argList;
 			while( restArgs != js_nil) {
@@ -49,6 +58,11 @@ evalCons(OBJ env, OBJ expr){
 
 		case T_USERDEFINEDFUNCTION:
 		{
+// PRINT TRACE
+		printIndent(indentLevel);
+		fprintf(stdout, RED"EVAL UDF"RESET);
+// PRINT TRACE
+			
 			// 1. check if the udfs expected numArgs is equal to the given args
 			// 2. put the given args in a new env and bind them to the expected formal args
 			// 3. eval every body in bodylist in the new env
@@ -69,11 +83,18 @@ evalCons(OBJ env, OBJ expr){
 			}
 
 			// fill new environment
-			OBJ newEnv = newEnvironment((numFormalArgs + numLocals), globalEnvironment);
+			OBJ newEnv = newEnvironment((numFormalArgs + numLocals), env);
 			OBJ restFormalArgs = evaluatedFunctionSlot->u.userDefinedFunction.argList;
 			restArgs = argList;
 			//int slotIndex = 0;
 
+
+// PRINT TRACE
+			fprintf(stdout, "\n");
+			printIndent(indentLevel);
+			fprintf(stdout, MAG "PREPARE NEW ENV" YEL " (%p)" RESET, newEnv);
+			fprintf(stdout, " numFArgs: %d numLocals: %d\n", numFormalArgs, numLocals);
+// PRINT TRACE
 			while( restFormalArgs != js_nil){
 			
 				// expected formal arguments
@@ -84,22 +105,50 @@ evalCons(OBJ env, OBJ expr){
 				OBJ unevaluatedArg = CAR(restArgs);
 				restArgs = CDR(restArgs);
 				
+// PRINT TRACE
+				printIndent(indentLevel);
+				fprintf(stdout, "binding " GRN); js_print(stdout, nextFormalArg);
+				fprintf(stdout, RESET " to -> ");
+				oldIndentLevel = indentLevel;
+				indentLevel = 0;
+				if( ISCONS(unevaluatedArg)) PAUSE_INDENT_FLAG = 1;
+// PRINT TRACE
+				
 				// put evaluated arg in new env
 				OBJ evaluatedArg = js_eval(env, unevaluatedArg);
 				environmentPut(newEnv, nextFormalArg, evaluatedArg);
 				//newEnv->u.environment.slots[slotIndex].key = nextFormalArg;
 				//newEnv->u.environment.slots[slotIndex].value = evaluatedArg;
 				//slotIndex++;	
+				
+// PRINT TRACE
+				indentLevel = oldIndentLevel;
+				oldIndentLevel = 0;
+// PRINT TRACE
 			}
+
+// PRINT TRACE
+			fprintf(stdout,"\n");
+// PRINT TRACE
 
 			// eval bodylist
 			OBJ restBodyList = evaluatedFunctionSlot->u.userDefinedFunction.bodyList;
 			OBJ lastValue;
+			
+			int numBodies = length(restBodyList);
+			int currentBody = 0;
+
 			while( restBodyList != js_nil) {
 
 				// bodies to evaluate
 				OBJ nextBody = CAR(restBodyList);
 				restBodyList = CDR(restBodyList);
+				
+// PRINT TRACE
+				if(currentBody > 0) fprintf(stdout, "\n");
+				printIndent(indentLevel);
+				fprintf(stdout, MAG "EVAL BODY %d of %d\n" RESET, ++currentBody, numBodies);
+// PRINT TRACE
 
 				lastValue = js_eval(newEnv, nextBody);
 			}
@@ -115,6 +164,22 @@ evalCons(OBJ env, OBJ expr){
 OBJ
 js_eval(OBJ env, OBJ expr){
 
+// PRINT TRACE
+	printIndent(indentLevel);
+	if( TAG(env) == T_GLOBALENVIRONMENT){
+		printf("eval in " CYN "GLOBAL" RESET " (%p): ", env);
+	}else{
+		printf("eval in " YEL "LOCAL" RESET " (%p): ", env);
+	}
+	js_print(stdout, expr);
+	
+	if(PAUSE_INDENT_FLAG){
+	       	indentLevel += oldIndentLevel;
+		PAUSE_INDENT_FLAG = 0;
+	}
+// PRINT TRACE
+
+	OBJ value;
 	switch(TAG(expr)){
 		default:
 			// T_INTEGER
@@ -124,17 +189,55 @@ js_eval(OBJ env, OBJ expr){
 			// T_STRING
 			// T_FILESTREAM
 			// T_STRINGSTREAM
+// PRINT TRACE
+			fprintf(stdout, " -> " GRN); 
+			js_print(stdout, expr);
+			fprintf(stdout,"\n" RESET);
+// PRINT TRACE
 			return expr;
 
 		case T_SYMBOL:
-			printf("Address of symbol: %p\n", expr); 
-			
-			OBJ value = environmentGet(env, expr);
+			//printf("Address of symbol: %p\n", exp	
+			value = environmentGet(env, expr);
 			if(value == NULL){
 				js_error("undefined variable", expr);
 			}
+
+// PRINT TRACE
+			fprintf(stdout, " -> " GRN); 
+			js_print(stdout, value);
+			fprintf(stdout, "\n" RESET);
+// PRINT TRACE
+		
 			return value;
 		case T_CONS:
-			return evalCons(env, expr);
+// PRINT TRACE
+			indentLevel++;
+			fprintf(stdout,"\n");
+
+			if( (TAG(env) == T_LOCALENVIRONMENT) && 
+			    (!ISCONS( CAR(expr))) &&
+			    (!isDefine(expr)) &&
+			    (!isLambda(expr))
+			  )
+			{
+				
+				fprintf(stdout,"\n");
+				printIndent(indentLevel);
+				fprintf(stdout,"ARGS in");
+				printLocalEnv(env);
+			}
+// PRINT TRACE
+			value = evalCons(env, expr);
+
+// PRINT TRACE
+			printIndent(indentLevel);
+			fprintf(stdout, "<< ");
+			js_print(stdout, value);
+			fprintf(stdout, "\n");
+			indentLevel--;
+// PRINT TRACE
+			return value;
+			
 	}
 }
