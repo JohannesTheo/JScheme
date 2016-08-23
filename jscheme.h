@@ -110,6 +110,7 @@ struct jsUserDefinedFunction{
 	char *internalName;
 	int numLocals;
 	int numArgs;
+	OBJ home;
 	OBJ argList;
 	OBJ bodyList;
 };

@@ -343,6 +343,7 @@ builtin_define(OBJ env, OBJ argList){
 
 			newUDF = newUserDefinedFunction("anonymous lambda", formalArgList, bodyList);
 			newUDF->u.userDefinedFunction.numLocals = count_defines(bodyList);
+			newUDF->u.userDefinedFunction.home = env;
 			environmentPut(env, name, newUDF);
 
 // PRINT TRACE
@@ -417,6 +418,7 @@ builtin_lambda(OBJ env, OBJ argList){
 	
 	OBJ newUDF = newUserDefinedFunction( "anonymous lambda", lambdaArgList, bodyList);
 	newUDF->u.userDefinedFunction.numLocals = count_defines(bodyList);
+	newUDF->u.userDefinedFunction.home = env;
 			
 	return newUDF;
 }

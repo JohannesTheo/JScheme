@@ -124,6 +124,7 @@ newUserDefinedFunction(char *internalName, OBJ argList, OBJ bodyList){
 	theUDF->argList = argList;
 	theUDF->bodyList = bodyList;
 	theUDF->numArgs = length(argList);
+	theUDF->home = js_nil;
 
 	return (OBJ) theUDF;
 }
