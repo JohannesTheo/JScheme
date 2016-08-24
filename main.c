@@ -58,19 +58,24 @@ main() {
 	initSymbolTable();
 	initializeWellKnownObjects();
 	initEvalStack();
+#ifdef DEBUG
+	initDebugOptions();
+	
 	initGlobalEnvironment();
 	setupInitialEnvironment();
 	selftest();
-
+#endif
 	initGlobalEnvironment();
 	setupInitialEnvironment();
 
 	printf("Welcome to (JS)cheme\n");
 
 	if( setjmp(whereEverythingWasFine) ){
+#ifdef DEBUG
+		indentLevel = 0;
+#endif
 		// reset Stack index
 		spIndex = 0;
-		indentLevel = 0;
 		printf("back in wonderland\n");
 	}	
 	printf("start REPL...\n");

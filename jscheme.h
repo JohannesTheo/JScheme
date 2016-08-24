@@ -3,9 +3,7 @@
  *	One header file to confuse them all ( and myself )
  */
 
-//#define DEBUG
-#define INDENT "      "
-extern int indentLevel;
+#define DEBUG
 
 #ifdef __WIN32__
 typedef int jscheme_int32;
@@ -152,7 +150,7 @@ struct jschemeObject{
 #ifdef DEBUG
 #define ASSERT(expr,msg){ ((!(expr)) ? error(msg, __FILE__, __LINE__): 0); }
 #else
-#define ASSERT(expr,msg) 
+#define ASSERT(expr,msg) {}
 #endif
 
 #define TAG(o)		((o)->u.any.tag)
@@ -206,8 +204,10 @@ void initEvalStack();
 // print
 void js_print(FILE *, OBJ);
 void printEvalStack();
+#ifdef DEBUG
 void printLocalEnv(OBJ);
 void printIndent(int);
+#endif 
 
 // main
 void prompt_on();
@@ -295,3 +295,25 @@ NTH_ARG(int numArgs, int index){
 #endif
 	return evalStack[spIndex - numArgs + index];
 }
+
+#ifdef DEBUG
+/*
+ * debug tracing
+ */
+
+#define INDENT "      "
+extern int indentLevel;
+extern int oldIndentLevel;
+extern int PAUSE_INDENT_FLAG;
+
+extern struct debugOption *DETAILED_TYPES;
+extern struct debugOption *EVAL_TRACE; 
+
+struct debugOption{
+	char *name;
+	char *identifier;
+	int state;
+};
+void switchDebugOptions(OBJ);
+void initDebugOptions();
+#endif
