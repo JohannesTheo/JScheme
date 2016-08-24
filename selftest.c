@@ -107,6 +107,7 @@ selftest(){
 		ASSERT( (sym1 == sym3), "bad symbol table behaviour");
 		ASSERT( (sym1 != sym2), "bad symbol table behaviour");
 		
+		sym1 = sym2 = sym3 = NULL;	// make compiler happy when compiled without DEBUG		
 		symbolTableFillTest();
 
 		printf("SymTable: " GRN "OK\n" RESET);
