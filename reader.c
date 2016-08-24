@@ -310,7 +310,16 @@ js_read(OBJ inStream){
 			unreadChar(inStream, nextCh);
 			retVal = readSymbol(inStream, ch);
 		}
-	}else{
+	}
+#ifdef DEBUG
+	else if(ch == '%'){
+		ch = nextChar(inStream);
+		OBJ debugOption = readSymbol(inStream, ch);
+		switchDebugOptions( debugOption );
+		retVal = js_void;
+	}
+#endif
+	else {
 		retVal = readSymbol(inStream, ch);
 	}
 	
