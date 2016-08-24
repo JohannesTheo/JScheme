@@ -205,11 +205,15 @@ localEnvironmentGet(OBJ env, OBJ searchedKey){
 	
 	OBJ parentEnv = env->u.environment.parentEnvironment;
 
+#ifdef DEBUG
+if( EVAL_TRACE->state ){
 	if( TAG(parentEnv) == T_GLOBALENVIRONMENT) {
 		fprintf(stdout, RED" -> " CYN "(GLOBAL)" RESET);
 	} else {
 		fprintf(stdout,  RED" -> " YEL "(%p)" RESET, parentEnv);
 	}
+}
+#endif
 
 	return environmentGet(parentEnv, searchedKey);
 }

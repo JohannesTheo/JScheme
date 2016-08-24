@@ -314,7 +314,9 @@ builtin_define(OBJ env, OBJ argList){
 		OBJ value = js_eval(env, arg2);
 		environmentPut(env, arg1, value);
 
+#ifdef DEBUG
 // PRINT TRACE
+if( EVAL_TRACE->state) {
 		printIndent(indentLevel);
 		fprintf(stdout, RED"DEFINE "RESET);
 		js_print(stdout, arg1);       
@@ -328,7 +330,8 @@ builtin_define(OBJ env, OBJ argList){
 		if( TAG(env) == T_LOCALENVIRONMENT ){
 			fprintf(stdout," in " YEL "LOCAL" RESET " (%p)\n", env);
 		}
-// PRINT TRACE
+}
+#endif
 
 		return js_void;
 	}
@@ -346,7 +349,9 @@ builtin_define(OBJ env, OBJ argList){
 			newUDF->u.userDefinedFunction.home = env;
 			environmentPut(env, name, newUDF);
 
+#ifdef DEBUG
 // PRINT TRACE
+if( EVAL_TRACE->state ){
 			printIndent(indentLevel);
 			fprintf(stdout, RED"DEFINE "RESET);
 			js_print(stdout, name);       
@@ -360,7 +365,8 @@ builtin_define(OBJ env, OBJ argList){
 			if( TAG(env) == T_LOCALENVIRONMENT ){
 				fprintf(stdout," in " YEL "LOCAL" RESET " (%p)\n", env);
 			}
-// PRINT TRACE
+}
+#endif
 			return js_void;
 		}
 	}

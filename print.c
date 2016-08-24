@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "jscheme.h"
 
-
+#ifdef DEBUG
 void
 printIndent(int indentLevel){
 	
@@ -50,6 +50,7 @@ printEvalStack(){
 	}
 	fprintf(stdout, "--------------\n");
 }
+#endif
 
 static void
 print_list_rest(FILE* outFile, OBJ o){
@@ -78,6 +79,8 @@ js_print(FILE* outFile,OBJ o){
 	enum tag kindOf = o->u.any.tag;
 
 #ifdef DEBUG
+
+	if( DETAILED_TYPES->state ){
 	switch(kindOf){
 		case T_NIL:
 			fprintf(outFile,YEL"<JS nil> "RESET);
@@ -120,6 +123,7 @@ js_print(FILE* outFile,OBJ o){
 			break;
 		default:
 			fprintf(outFile,RED"<Debug error: tag not supported>\n"RESET);
+	}
 	}
 #endif
 
