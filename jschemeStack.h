@@ -2,8 +2,9 @@
  * eval stack
  */
 
-extern OBJ *evalStack;
+extern OBJ *jStack;
 extern int SP 			// spIndex = index of next unused slot
+extern int AP
 extern int stackLimit;
 extern OBJ globalEnvironment;
 
@@ -14,7 +15,7 @@ PUSH(OBJ o) {
 		error("stack overflow", __FILE__, __LINE__);
 	}
 #endif
-	evalStack[SP++] = o;
+	jStack[SP++] = o;
 }
 
 static inline OBJ
@@ -24,7 +25,7 @@ POP(){
 		error("stack underflow", __FILE__, __LINE__);
 	}
 #endif
-	return evalStack[--SP];
+	return jStack[--SP];
 }
 
 static inline void
@@ -39,5 +40,5 @@ NTH_ARG(int numArgs, int index){
 		error("stack underflow", __FILE__, __LINE__);
 	}
 #endif
-	return evalStack[SP - numArgs + index];
+	return jStack[SP - numArgs + index];
 }

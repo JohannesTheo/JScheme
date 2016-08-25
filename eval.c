@@ -3,7 +3,7 @@
 
 #define INITIAL_STACK_SIZE 128
 
-OBJ *evalStack;
+OBJ *jStack;
 int SP = 0;
 int stackLimit;
 
@@ -11,7 +11,7 @@ void
 initEvalStack(){
 
 	stackLimit = INITIAL_STACK_SIZE;
-	evalStack = (OBJ *)(malloc( sizeof(OBJ) * INITIAL_STACK_SIZE));
+	jStack = (OBJ *)(malloc( sizeof(OBJ) * INITIAL_STACK_SIZE));
 	SP = 0;
 }
 
