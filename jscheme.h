@@ -87,6 +87,7 @@ struct jschemeCons{
 };
 
 typedef OBJ (*OBJFUNC)();
+typedef void* (*VOIDPTRFUNC)();
 
 struct jsBuiltinFunction{
 	enum tag tag;
@@ -213,6 +214,7 @@ void printIndent(int);
 void prompt_on();
 void prompt_off();
 void getMeOutOfHere();
+void trampoline(VOIDPTRFUNC);
 
 //error
 void error(char *, char *, int);
