@@ -19,11 +19,9 @@ builtin_plus(int numArgs){
 	       	if(__builtin_saddl_overflow( *sum, INTVAL(theArg), sum)){
 			// clean evalStack
 			POPN((numArgs - 1) - i);
-			printf("spIndex: %d\n", spIndex);
 			js_error("(+): integer overflow", newInteger(*sum));	
 		};
 	}
-//	printf("spIndex: %d\n", spIndex);
 	return newInteger(*sum);
 }
 
@@ -62,12 +60,10 @@ builtin_minus(int numArgs){
 				if(__builtin_ssubl_overflow(*difference, INTVAL(nextArg), difference)){
 					// clean stack
 					POPN(numArgs);
-					printf("spIndex: %d\n", spIndex);
 					js_error("(-): integer overflow", newInteger(*difference));
 				};
 			}
 			POPN(numArgs);
-//			printf("spIndex: %d\n", spIndex);
 			return newInteger(*difference);
 	}	
 	/* NOT REACHED */
@@ -90,11 +86,9 @@ builtin_times(int numArgs){
 		if(__builtin_smull_overflow(*product,INTVAL(theArg),product)){
 			// clean stack
 			POPN((numArgs - 1) - i);
-			printf("spIndex: %d\n", spIndex);
 			js_error("(*): integer overflow", newInteger(*product));
 		}
 	}
-//	printf("spIndex: %d\n", spIndex);
 	return newInteger(*product);
 }
 
@@ -106,29 +100,24 @@ builtin_quotient(int numArgs){
 	switch (numArgs){
 		
 		case 0:
-			printf("spIndex: %d\n", spIndex);
 			js_error("(/): at least one arg expected", js_nil);
 			/* NOT REACHED */
 		case 1:
 			theArg = POP();
 			if( !ISINTEGER(theArg)){
-			printf("spIndex: %d\n", spIndex);
 				js_error("(/): non-integer argument", theArg);
 				/* NOT REACHED */
 			}
 			if( INTVAL(theArg) == 0){
-			printf("spIndex: %d\n", spIndex);
 				js_error("(/): division by zero", theArg);
 				/* NOT REACHED */
 			}
-			printf("spIndex: %d\n", spIndex);
 			return newInteger( 1 / INTVAL(theArg) );
 		default:
 			theArg = NTH_ARG(numArgs, 0);
 
 			if( !ISINTEGER(theArg)){
 				POPN(numArgs);
-//				printf("spIndex: %d\n", spIndex);
 				js_error("(/): non-integer argument", theArg);
 				/* NOT REACHED */
 			}
@@ -139,19 +128,16 @@ builtin_quotient(int numArgs){
 					OBJ nextArg = NTH_ARG(numArgs, i);
 					if( !ISINTEGER(nextArg) ){
 						POPN(numArgs);
-//						printf("spIndex: %d\n", spIndex);
 						js_error("(/): non-integer argument", theArg);
 						/* NOT REACHED */
 					}
 					if( INTVAL(nextArg) == 0){
 						POPN(numArgs);
-//						printf("spIndex: %d\n", spIndex);
 						js_error("(/): division by zero", nextArg);
 						/* NOT REACHED */
 					}
 				}
 				POPN(numArgs);
-//				printf("spIndex: %d\n", spIndex);
 				return newInteger(0);
 			}
 			
@@ -161,13 +147,11 @@ builtin_quotient(int numArgs){
 				OBJ nextArg = NTH_ARG(numArgs, i);
 				if( !ISINTEGER(nextArg) ){
 					POPN(numArgs);
-					printf("spIndex: %d\n", spIndex);
 					js_error("(/): non-integer argument", theArg);
 					/* NOT REACHED */
 				}
 				if( INTVAL(nextArg) == 0){
 					POPN(numArgs);
-					printf("spIndex: %d\n", spIndex);
 					js_error("(/): division by zero", nextArg);
 					/* NOT REACHED */
 				}
@@ -175,7 +159,6 @@ builtin_quotient(int numArgs){
 				quotient = quotient / INTVAL(nextArg);
 			}
 			POPN(numArgs);
-//			printf("spIndex: %d\n", spIndex);
 			return newInteger(quotient);
 	}
 	/* NOT REACHED */

@@ -42,10 +42,10 @@ printEvalStack(){
 	
 	fprintf(stdout, "Eval Stack: \n");
 	fprintf(stdout, "--------------\n");
-	for(int i = (spIndex-1); i >= 0; i--){
+	for(int i = (SP-1); i >= 0; i--){
 		
 		fprintf(stdout, "%d : ", i);
-		js_print(stdout, NTH_ARG(spIndex,i) );
+		js_print(stdout, NTH_ARG(SP,i) );
 		fprintf(stdout, "\n");	
 	}
 	fprintf(stdout, "--------------\n");

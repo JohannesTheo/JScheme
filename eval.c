@@ -4,7 +4,7 @@
 #define INITIAL_STACK_SIZE 128
 
 OBJ *evalStack;
-int spIndex = 0;
+int SP = 0;
 int stackLimit;
 
 void
@@ -12,7 +12,7 @@ initEvalStack(){
 
 	stackLimit = INITIAL_STACK_SIZE;
 	evalStack = (OBJ *)(malloc( sizeof(OBJ) * INITIAL_STACK_SIZE));
-	spIndex = 0;
+	SP = 0;
 }
 
 static OBJ
