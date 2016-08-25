@@ -1,4 +1,4 @@
-#include <stdio.h>
+
 #include <stdlib.h>
 #include "jscheme.h"
 #include <setjmp.h>
@@ -51,6 +51,28 @@ initializeWellKnownObjects(){
 	js_sym_lambda = symbolTableGetOrAdd("lambda");
 }
 
+/*
+ *	jREPL: normal read evaluate print loop
+ */
+
+void
+jREPL(OBJ input){
+	/*
+	* Jojo Scheme REPL 
+	*/
+	for(;;){
+		
+		OBJ expr, result;
+		if(prompt_enabled) printf(CYN "JS> " RESET);
+	
+		expr = js_read(input);				// R ead
+		result = js_eval(globalEnvironment, expr);	// E valuate
+		js_print(stdout, result);			// P rint
+								// L oop
+		printf("\n");
+	}
+}
+
 
 int
 main() {
@@ -79,23 +101,11 @@ main() {
 		printf("back in wonderland\n");
 	}	
 	printf("start REPL...\n");
-
 	OBJ input = newFileStream(stdin);
-	/*
-	 * Jojo Scheme REPL 
-	 */
-	for(;;){
-		
-		OBJ expr, result;
-		if(prompt_enabled) printf(CYN "JS> " RESET);
-	
-		expr = js_read(input);				// R ead
-		result = js_eval(globalEnvironment, expr);	// E valuate
-		js_print(stdout, result);			// P rint
-								// L oop
 
-		printf("\n");
-	}
+	jREPL(input);
+	//CP_jREPL();
+
 	return 0;
 }
 
@@ -114,3 +124,16 @@ getMeOutOfHere(){
 	longjmp(whereEverythingWasFine, 1);
 }
 
+void
+trampoline( VOIDPTRFUNC funcToCall ){
+	
+	fprintf(stdout, "Enter trampoline...\n");
+	void *nextFunc;
+	
+	while( funcToCall != NULL ){
+		nextFunc = funcToCall();
+		funcToCall = (VOIDPTRFUNC)(nextFunc);
+	}
+
+	fprintf(stdout, "Leave trampoline...\n");
+}
