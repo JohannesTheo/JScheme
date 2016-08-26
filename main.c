@@ -6,7 +6,6 @@
 static int prompt_enabled = 1;
 static jmp_buf whereEverythingWasFine;
 
-
 void
 setupInitialEnvironment(){	
 
@@ -73,16 +72,55 @@ jREPL(OBJ input){
 	}
 }
 
+/*
+ *	CP_jREPL: read evaluate print loop using continuation passing
+ */
+OBJ
+enterTrampoline1(OBJ input){
+	
+	PUSH(input);
+	PUSH(NULL);
+	VOIDPTRFUNC CP_jREPL();
+	trampoline((VOIDPTRFUNC)CP_jREPL);
+
+	return js_nil;
+}
+
+VOIDPTRFUNC
+CP_jREPL(){
+	
+	fprintf(stdout, "jREPL\n");
+	OBJ inputStream = ARG(0);
+
+	OBJ expr;
+	VOIDPTRFUNC CP_jREPL2();
+
+	if(prompt_enabled) printf(CYN "JS> " RESET);
+	expr = js_read(inputStream);				// R ead
+	CALL1( CP_js_eval, expr, CP_jREPL2);	// E val
+}
+
+VOIDPTRFUNC
+CP_jREPL2(){
+	
+	OBJ result = RETVAL;
+	fprintf(stdout, "jREPL2\n");
+	js_print(stdout, result);			// P rint
+							// L oop
+	printf("\n");
+
+	OBJ inputStream = ARG(0);
+	TAILCALL1((VOIDPTRFUNC)CP_jREPL, inputStream);	
+}
 
 int
 main() {
 
 	initSymbolTable();
 	initializeWellKnownObjects();
-	initEvalStack();
+	initJStack();
 #ifdef DEBUG
-	initDebugOptions();
-	
+	initDebugOptions();	
 	initGlobalEnvironment();
 	setupInitialEnvironment();
 	selftest();
@@ -97,14 +135,14 @@ main() {
 		indentLevel = 0;
 #endif
 		// reset Stack index
-		spIndex = 0;
+		SP = 0;
 		printf("back in wonderland\n");
 	}	
 	printf("start REPL...\n");
-	OBJ input = newFileStream(stdin);
+	OBJ inputStream = newFileStream(stdin);
 
-	jREPL(input);
-	//CP_jREPL();
+	//jREPL(input);
+	enterTrampoline1(inputStream);
 
 	return 0;
 }
@@ -125,7 +163,7 @@ getMeOutOfHere(){
 }
 
 void
-trampoline( VOIDPTRFUNC funcToCall ){
+trampoline( VOIDPTRFUNC funcToCall){
 	
 	fprintf(stdout, "Enter trampoline...\n");
 	void *nextFunc;
