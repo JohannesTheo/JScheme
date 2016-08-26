@@ -25,7 +25,7 @@ void initJStack();
 
 // print
 void js_print(FILE *, OBJ);
-void printEvalStack();
+void printJStack();
 #ifdef DEBUG
 void printLocalEnv(OBJ);
 void printIndent(int);
