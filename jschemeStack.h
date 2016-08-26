@@ -55,7 +55,7 @@ ARG(int n0based ){
 }
 
 static inline int
-oldAP(){
+savedAP(){
 	return (int)jStack[AP-1];
 }
 
@@ -65,11 +65,12 @@ oldAP(){
 static inline VOIDPTRFUNC
 CALL1_helper(VOIDPTRFUNC func, OBJ arg1, VOIDPTRFUNC continuation){
 	
-	// save old AP
-	PUSH(((OBJ)(INT)AP));
-
 	// prepare new stackFrame
+	PUSH((OBJ) func);
+	PUSH(((OBJ)(INT)AP));
 	AP = SP;
+
+	// push args
 	PUSH(arg1);
 	PUSH((OBJ)continuation);
 	return func;
@@ -100,8 +101,8 @@ RETURN_helper(OBJ retVal){
 	
 	RETVAL = retVal;
 	VOIDPTRFUNC retAddr = (VOIDPTRFUNC)(POP());
-	AP = oldAP();
-	SP = AP - 1;
+	AP = savedAP();
+	SP = AP - 2;
 	return retAddr;
 }
 
