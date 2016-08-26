@@ -15,6 +15,7 @@ initJStack(){
 	stackLimit = INITIAL_STACK_SIZE;
 	jStack = (OBJ *)(malloc( sizeof(OBJ) * INITIAL_STACK_SIZE));
 	SP = 0;
+	AP = 0;
 }
 
 static OBJ
