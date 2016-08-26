@@ -3,6 +3,9 @@
 VOIDPTRFUNC
 CP_js_eval(){
 
+//	fprintf(stdout, "\nStack in CP_js_eval:\n");
+	printJStack(__FILE__,__LINE__,__FUNCTION__);
+
 	OBJ env = globalEnvironment;
 	OBJ expr = ARG(0);	
 

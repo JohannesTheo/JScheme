@@ -78,9 +78,16 @@ jREPL(OBJ input){
 OBJ
 enterTrampoline1(OBJ input){
 	
-	PUSH(input);
-	PUSH(NULL);
+	//fprintf(stdout, "\nStack before Trampoline:\n");
+	printJStack(__FILE__,__LINE__,__FUNCTION__);
 	VOIDPTRFUNC CP_jREPL();
+
+	PUSH((OBJ)CP_jREPL);
+	AP = SP;	
+	PUSH(input);
+	PUSH(NULL);	// last continuation
+	VOIDPTRFUNC CP_jREPL();
+
 	trampoline((VOIDPTRFUNC)CP_jREPL);
 
 	return js_nil;
@@ -89,6 +96,9 @@ enterTrampoline1(OBJ input){
 VOIDPTRFUNC
 CP_jREPL(){
 	
+	//fprintf(stdout, "\nStack in CP_jREPL:\n");
+	printJStack(__FILE__,__LINE__,__FUNCTION__);
+
 	fprintf(stdout, "jREPL\n");
 	OBJ inputStream = ARG(0);
 
@@ -103,6 +113,9 @@ CP_jREPL(){
 VOIDPTRFUNC
 CP_jREPL2(){
 	
+	//fprintf(stdout, "\nStack in CP_jREPL2:\n");
+	printJStack(__FILE__,__LINE__,__FUNCTION__);
+
 	OBJ result = RETVAL;
 	fprintf(stdout, "jREPL2\n");
 	js_print(stdout, result);			// P rint
