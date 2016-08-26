@@ -5,10 +5,12 @@
 
 OBJ *jStack;
 int SP = 0;
+int AP = 0;
+OBJ RETVAL;
 int stackLimit;
 
 void
-initEvalStack(){
+initJStack(){
 
 	stackLimit = INITIAL_STACK_SIZE;
 	jStack = (OBJ *)(malloc( sizeof(OBJ) * INITIAL_STACK_SIZE));
