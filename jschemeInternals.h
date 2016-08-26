@@ -78,5 +78,6 @@ OBJ builtin_quote();
 /*
  *	Continuation passing
  */
+void trampoline(VOIDPTRFUNC);
 VOIDPTRFUNC CP_js_eval();
 
