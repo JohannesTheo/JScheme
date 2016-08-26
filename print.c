@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "jscheme.h"
 
 #ifdef DEBUG
@@ -37,18 +39,143 @@ printLocalEnv(OBJ localEnv){
 	fprintf(stdout, "-----------------------------------\n\n");
 }
 
+char* 
+functionName(VOIDPTRFUNC addr){
+
+	extern VOIDPTRFUNC CP_jREPL(), CP_jREPL2();
+	extern VOIDPTRFUNC CP_js_eval();
+
+	if(addr == (VOIDPTRFUNC)(CP_jREPL)) return "CP_jREPL";
+	if(addr == (VOIDPTRFUNC)(CP_jREPL2)) return "CP_jREPL2";
+	if(addr == (VOIDPTRFUNC)(CP_js_eval)) return "CP_js_eval";
+	if(addr == NULL) return "NULL";
+
+	static char buffer[64];
+	sprintf(buffer, "(?func: %p)", addr);
+	return buffer;
+}
+
+char*
+objName(OBJ o){
+
+
+	enum tag kindOf = o->u.any.tag;
+	switch(kindOf){
+		case T_NIL:
+			return "nil";
+		case T_TRUE:
+			return "#t";
+		case T_FALSE:
+			return "#f";
+		case T_INTEGER:
+			{
+			char* intBuffer = (char*) malloc(64);
+			sprintf(intBuffer, "%lu", o->u.integer.intVal);
+			return intBuffer;
+			}
+		case T_STRING:
+			{
+			char* string  = o->u.string.stringVal;
+			int size = strlen(string);
+			char* strBuffer = (char*) (malloc( (size * sizeof(char))+2));
+			sprintf(strBuffer, "\"%s\"", string);
+			return strBuffer;
+			}
+		case T_SYMBOL:
+			return o->u.symbol.symbolVal;
+		case T_CONS:
+			return "cons";
+		case T_BUILTINFUNCTION:
+			{
+			char* string  = o->u.builtinFunction.internalName;
+			int size = strlen(string);
+			char* bltBuffer = (char*) (malloc( (size * sizeof(char))+10));
+			sprintf(bltBuffer, "builtin (%s)", string);
+			return bltBuffer;
+			}
+		case T_BUILTINSYNTAX:
+			{
+			char* string  = o->u.builtinSyntax.internalName;
+			int size = strlen(string);
+			char* bltBuffer = (char*) (malloc( (size * sizeof(char))+10));
+			sprintf(bltBuffer, "builtin (%s)", string);
+			return bltBuffer;
+			}
+		case T_VOID:
+			return "#void";
+		case T_USERDEFINEDFUNCTION:
+			return "lambda";
+		case T_LOCALENVIRONMENT:
+			{
+			char* envBuffer = (char*) malloc(64);
+			sprintf(envBuffer, "local Env: (%p)", o);
+			return envBuffer;
+			}
+		case T_GLOBALENVIRONMENT:
+			{
+			char* envBuffer = (char*) malloc(64);
+			sprintf(envBuffer, "GLOBAL ENV (%p)", o);
+			return envBuffer;
+			}
+			return "#env global";
+		case T_FILESTREAM:
+			return "#file stream";
+		case T_STRINGSTREAM:
+			return "#string stream";
+		default:
+			return "<unimpl. (objName)>";
+	}
+}
+
+
 void
-printEvalStack(){
+printCentered(int width, char* value){
+
+	int sLength = strlen(value);
+	int before = (width - sLength) / 2;
+	int after = width - before - sLength;
+
+	fprintf(stdout, "%*s%s%*s|", before, " ", value, after, " ");
+}
+
+void
+printJStack(char *file,int line, char* func){
 	
-	fprintf(stdout, "Eval Stack: \n");
-	fprintf(stdout, "--------------\n");
-	for(int i = (SP-1); i >= 0; i--){
+	fprintf(stdout, "\nJS Stack in "YEL"%s()"RESET" [%s:%d]\n",func, file, line);
+	fprintf(stdout, "----------------------------------\n");
+	for(int sp = (SP); sp >= 0; sp--){
+
+		fprintf(stdout, "| %d : ", sp);
 		
-		fprintf(stdout, "%d : ", i);
-		js_print(stdout, NTH_ARG(SP,i) );
+		if( sp == SP-1 || sp == AP - 2 || ((sp == 0) && (AP > 0))){
+			VOIDPTRFUNC func = (VOIDPTRFUNC)(jStack[sp]);
+			char* funcName = functionName((VOIDPTRFUNC)func);
+			printCentered(27, funcName);	
+		}
+		else if( sp == (AP-1) && (AP-1) > 0){
+			static char intBuffer[64];
+			sprintf(intBuffer, "%lu", (INT)jStack[sp]);
+			printCentered(27, intBuffer);
+		}
+		else if( sp == SP){
+			fprintf(stdout,"                           |");
+		}
+		else{
+			OBJ stackElement = (OBJ) jStack[sp];
+			if( stackElement == NULL ){
+				printCentered(27, "NULL");
+			}else{
+				printCentered(27, objName(stackElement));
+			}
+		}
+		
+		if( sp == SP) fprintf(stdout, " <- SP");
+		if( sp == AP) fprintf(stdout, " <- AP");
+		if( sp == AP - 1) fprintf(stdout, " (saved AP)");
+		
 		fprintf(stdout, "\n");	
 	}
-	fprintf(stdout, "--------------\n");
+	fprintf(stdout, "----------------------------------\n");
 }
 #endif
 
@@ -120,6 +247,12 @@ js_print(FILE* outFile,OBJ o){
 			break;
 		case T_GLOBALENVIRONMENT:
 			fprintf(outFile,YEL"<JS global environment> "RESET);
+			break;	
+		case T_FILESTREAM:
+			fprintf(outFile,YEL"<JS file stream> "RESET);
+			break;
+		case T_STRINGSTREAM:
+			fprintf(outFile,YEL"<JS string stream> "RESET);
 			break;
 		default:
 			fprintf(outFile,RED"<Debug error: tag not supported>\n"RESET);
@@ -170,6 +303,12 @@ js_print(FILE* outFile,OBJ o){
 			break;
 		case T_GLOBALENVIRONMENT:
 			fprintf(outFile,"#env global");
+			break;
+		case T_FILESTREAM:
+			fprintf(outFile,"#file stream");
+			break;
+		case T_STRINGSTREAM:
+			fprintf(outFile,"#string stream");
 			break;
 		default:
 			fprintf(outFile,"<unimpl. (print)>");
