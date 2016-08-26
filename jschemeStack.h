@@ -3,10 +3,11 @@
  */
 
 extern OBJ *jStack;
-extern int SP 			// spIndex = index of next unused slot
-extern int AP
+extern int SP; 			// spIndex = index of next unused slot
+extern int AP;
 extern int stackLimit;
-extern OBJ globalEnvironment;
+extern OBJ RETVAL;
+
 
 static inline void
 PUSH(OBJ o) {
@@ -21,7 +22,7 @@ PUSH(OBJ o) {
 static inline OBJ
 POP(){
 #ifdef DEBUG
-	if(spIndex == 0){
+	if(SP == 0){
 		error("stack underflow", __FILE__, __LINE__);
 	}
 #endif
@@ -30,7 +31,7 @@ POP(){
 
 static inline void
 POPN(int n){
-	spIndex -= n;
+	SP -= n;
 }
 
 static inline OBJ
@@ -42,3 +43,73 @@ NTH_ARG(int numArgs, int index){
 #endif
 	return jStack[SP - numArgs + index];
 }
+
+static inline OBJ
+ARG(int n0based ){
+
+	/*
+	 ASSERT( ((AP + n0based) >= SP), "arg index error");
+	 ASSERT( ((AP + n0based) >= SP), "arg index error");
+	 */
+	return jStack[AP + n0based];
+}
+
+static inline int
+oldAP(){
+	return (int)jStack[AP-1];
+}
+
+/*
+ * Continuation helpers
+ */
+static inline VOIDPTRFUNC
+CALL1_helper(VOIDPTRFUNC func, OBJ arg1, VOIDPTRFUNC continuation){
+	
+	// save old AP
+	PUSH(((OBJ)(INT)AP));
+
+	// prepare new stackFrame
+	AP = SP;
+	PUSH(arg1);
+	PUSH((OBJ)continuation);
+	return func;
+}
+#define CALL1(func, arg1, continuation)\
+{ \
+	return CALL1_helper((VOIDPTRFUNC)func, arg1, (VOIDPTRFUNC) continuation);\
+}
+
+static inline VOIDPTRFUNC
+TAILCALL1_helper(VOIDPTRFUNC func, OBJ arg1){
+	
+	VOIDPTRFUNC retAddr = (VOIDPTRFUNC)(POP());
+	
+	jStack[AP] = arg1;
+	SP = AP + 1;
+	PUSH((OBJ)retAddr);
+	return func;
+}
+#define TAILCALL1(func, arg1)\
+{ \
+	return TAILCALL1_helper((VOIDPTRFUNC)func, arg1);\
+}
+
+
+static inline VOIDPTRFUNC
+RETURN_helper(OBJ retVal){
+	
+	RETVAL = retVal;
+	VOIDPTRFUNC retAddr = (VOIDPTRFUNC)(POP());
+	AP = oldAP();
+	SP = AP - 1;
+	return retAddr;
+}
+
+#define RETURN(retVal)\
+{ \
+	return RETURN_helper(retVal);\
+}
+
+
+
+
