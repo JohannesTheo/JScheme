@@ -29,6 +29,7 @@ void printJStack();
 #ifdef DEBUG
 void printLocalEnv(OBJ);
 void printIndent(int);
+char* functionName(VOIDPTRFUNC);
 #endif 
 
 // main
