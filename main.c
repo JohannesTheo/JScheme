@@ -107,7 +107,7 @@ CP_jREPL(){
 
 	if(prompt_enabled) printf(CYN "JS> " RESET);
 	expr = js_read(inputStream);				// R ead
-	CALL1( CP_js_eval, expr, CP_jREPL2);	// E val
+	CALL2( CP_js_eval,globalEnvironment, expr, CP_jREPL2);	// E val
 }
 
 VOIDPTRFUNC
@@ -154,7 +154,7 @@ main() {
 	printf("start REPL...\n");
 	OBJ inputStream = newFileStream(stdin);
 
-	//jREPL(input);
+	//jREPL(inputStream);
 	enterTrampoline1(inputStream);
 
 	return 0;
