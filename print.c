@@ -43,11 +43,13 @@ char*
 functionName(VOIDPTRFUNC addr){
 
 	extern VOIDPTRFUNC CP_jREPL(), CP_jREPL2();
-	extern VOIDPTRFUNC CP_js_eval();
+	extern VOIDPTRFUNC CP_js_eval(), CP_evalCons(), CP_evalCons2();
 
 	if(addr == (VOIDPTRFUNC)(CP_jREPL)) return "CP_jREPL";
 	if(addr == (VOIDPTRFUNC)(CP_jREPL2)) return "CP_jREPL2";
 	if(addr == (VOIDPTRFUNC)(CP_js_eval)) return "CP_js_eval";
+	if(addr == (VOIDPTRFUNC)(CP_evalCons)) return "CP_evalCons";
+	if(addr == (VOIDPTRFUNC)(CP_evalCons2)) return "CP_evalCons2";
 	if(addr == NULL) return "NULL";
 
 	static char buffer[64];
@@ -108,16 +110,15 @@ objName(OBJ o){
 		case T_LOCALENVIRONMENT:
 			{
 			char* envBuffer = (char*) malloc(64);
-			sprintf(envBuffer, "local Env: (%p)", o);
+			sprintf(envBuffer, "ENV: (%p)", o);
 			return envBuffer;
 			}
 		case T_GLOBALENVIRONMENT:
 			{
 			char* envBuffer = (char*) malloc(64);
-			sprintf(envBuffer, "GLOBAL ENV (%p)", o);
+			sprintf(envBuffer, "GLOBAL: (%p)", o);
 			return envBuffer;
 			}
-			return "#env global";
 		case T_FILESTREAM:
 			return "#file stream";
 		case T_STRINGSTREAM:
@@ -139,26 +140,32 @@ printCentered(int width, char* value){
 }
 
 void
-printJStack(char *file,int line, char* func){
-	
-	fprintf(stdout, "\nJS Stack in "YEL"%s()"RESET" [%s:%d]\n",func, file, line);
-	fprintf(stdout, "----------------------------------\n");
-	for(int sp = (SP); sp >= 0; sp--){
+printStackFrame(int globalSP, int frameSP, int frameAP, int frameBP){
 
-		fprintf(stdout, "| %d : ", sp);
-		
-		if( sp == SP-1 || sp == AP - 2 || ((sp == 0) && (AP > 0))){
+	for(int sp = frameSP; sp >= frameBP; sp--){
+
+		if( SP < 10){
+		       	fprintf(stdout, "| %d : ", sp);
+		}
+	       	else if( SP < 100 && sp < 10){
+		       	fprintf(stdout, "|  %d : ", sp);
+		}else{
+		       	fprintf(stdout, "| %d : ", sp);
+		}
+			
+		if( sp == globalSP){	
+			fprintf(stdout,"                           |");
+		}
+		else if( (sp == globalSP && sp == frameSP-1) || (sp != globalSP && sp == frameSP)  || sp == frameBP + 2 || sp == 0 ){
+		//else if( sp == SP-1 || sp == BP + 2 || ((BP == 0) && (SP > 0)) ){
 			VOIDPTRFUNC func = (VOIDPTRFUNC)(jStack[sp]);
 			char* funcName = functionName((VOIDPTRFUNC)func);
 			printCentered(27, funcName);	
 		}
-		else if( sp == (AP-1) && (AP-1) > 0){
+		else if( ((frameBP > 0) && ( (sp == frameBP) || (sp == frameBP + 1))) ){
 			static char intBuffer[64];
 			sprintf(intBuffer, "%lu", (INT)jStack[sp]);
 			printCentered(27, intBuffer);
-		}
-		else if( sp == SP){
-			fprintf(stdout,"                           |");
 		}
 		else{
 			OBJ stackElement = (OBJ) jStack[sp];
@@ -168,13 +175,45 @@ printJStack(char *file,int line, char* func){
 				printCentered(27, objName(stackElement));
 			}
 		}
+
+		if( frameSP == globalSP ){
 		
-		if( sp == SP) fprintf(stdout, " <- SP");
-		if( sp == AP) fprintf(stdout, " <- AP");
-		if( sp == AP - 1) fprintf(stdout, " (saved AP)");
+			if( sp == frameSP) fprintf(stdout, " <- SP");
+			if( sp == frameAP) fprintf(stdout, " <- AP");
+			if( (sp == frameBP + 1) && ( frameAP > 1) ) fprintf(stdout, " (saved AP)");
+			if( sp == frameBP){
+				fprintf(stdout, " <- BP");
+			}
+		}
+		
+		if( sp == frameBP && frameBP > 0){
+			if( globalSP < 10) fprintf(stdout, "\n| ------------------------------ |");
+			else if( globalSP < 100) fprintf(stdout, "\n| ------------------------------- |");
+		}
 		
 		fprintf(stdout, "\n");	
 	}
+
+
+}
+
+void
+printJStack(char *file,int line, char* func){
+	
+	fprintf(stdout, "\nJS Stack in "YEL"%s()"RESET" [%s:%d]\n",func, file, line);
+	fprintf(stdout, "----------------------------------\n");
+	
+	int frameSP = SP; 
+	int frameAP = AP;
+	int frameBP = BP;
+	while( frameSP >= 0){
+
+		printStackFrame(SP, frameSP, frameAP, frameBP);
+		frameSP = frameBP - 1; 
+		frameAP = (int)jStack[frameBP+1];
+		frameBP = (int)jStack[frameBP];
+	}
+	
 	fprintf(stdout, "----------------------------------\n");
 }
 #endif
