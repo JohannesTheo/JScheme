@@ -6,6 +6,7 @@
 OBJ *jStack;
 int SP = 0;
 int AP = 0;
+int BP = 0;
 OBJ RETVAL;
 int stackLimit;
 
