@@ -420,3 +420,77 @@ builtin_quote(OBJ env, OBJ argList){
 	}
 	return CAR(argList);
 }
+
+/*
+ *
+ *	CONTINUATION VERSIONS of
+ *	1. DEFINE
+ *	2. LAMBDA
+ *	
+ */
+
+VOIDPTRFUNC
+CP_builtin_define(){
+
+
+	OBJ env = ARG(0);
+	OBJ argList = LOCAL(1);
+
+	if( !ISCONS(argList) ){
+		js_error("(define): expects at least  2 arguments", js_nil);
+	}
+	
+	OBJ arg1 = CAR(argList);
+	argList = CDR(argList);
+
+	if( !ISCONS(argList) ){
+		js_error("(define): expects at least  2 arguments", js_nil);
+	}
+
+	// case 1: define SYMBOL -> (define symbol expression)
+	if( ISSYMBOL(arg1)) {
+		OBJ arg2 = CAR(argList);
+		argList = CDR(argList);
+		VOIDPTRFUNC CP_builtin_define2();
+
+		if( argList != js_nil ){
+			js_error("(define): this form expects exactly 2 arguments", js_nil);
+		}
+		CREATE_LOCALS(1);
+		SET_LOCAL(0, arg1);
+		printJStack(__FILE__,__LINE__,__FUNCTION__);
+		CALL2(CP_js_eval, env, arg2, CP_builtin_define2);
+	}
+	// case 2: define CONS ( function ) -> (define (name args*) (body*) )
+	if( ISCONS(arg1)){
+		
+		OBJ name = CAR(arg1);
+		if( ISSYMBOL(name) ){
+			OBJ formalArgList = CDR(arg1);
+			OBJ bodyList = argList;
+			OBJ newUDF;
+
+			newUDF = newUserDefinedFunction("anonymous lambda", formalArgList, bodyList);
+			newUDF->u.userDefinedFunction.numLocals = count_defines(bodyList);
+			newUDF->u.userDefinedFunction.home = env;
+			environmentPut(env, name, newUDF);
+			printJStack(__FILE__,__LINE__,__FUNCTION__);
+			RETURN(js_void);
+		}
+	}
+	error("define form unimplemented", __FILE__, __LINE__);
+	// NOT REACHED
+	return NULL;
+}
+
+VOIDPTRFUNC
+CP_builtin_define2(){
+	
+	OBJ value = RETVAL;
+	OBJ env = ARG(0);
+	OBJ symbol = LOCAL(0);
+
+	printJStack(__FILE__,__LINE__,__FUNCTION__);
+	environmentPut(env, symbol, value);
+	RETURN(js_void);
+}
