@@ -84,8 +84,8 @@ CP_evalCons2(){
 		}
 		case T_BUILTINSYNTAX:
 		{
-			error("T_BULTINSYNTAX unimpl.", __FILE__, __LINE__);
-			//return evaluatedFunctionSlot->u.builtinSyntax.theCode(env, argList);
+			//error("T_BULTINSYNTAX unimpl.", __FILE__, __LINE__);
+			TAILCALL2(evaluatedFunctionSlot->u.CP_builtinSyntax.theCode, env, restArgs);
 		}
 
 		case T_USERDEFINEDFUNCTION:
@@ -155,7 +155,7 @@ CP_evalCons2(){
 			js_error("Eval: not a function: ", evaluatedFunctionSlot);
 	}
 	// NOT REACHED
-	return js_nil;
+	return NULL;
 	
 }
 
