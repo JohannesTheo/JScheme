@@ -517,3 +517,15 @@ CP_builtin_lambda(){
 
 	RETURN(newUDF);
 }
+
+VOIDPTRFUNC
+CP_builtin_quote(){
+
+	OBJ env = ARG(0);
+	OBJ argList = ARG(1);
+
+	if( (!ISCONS(argList)) || ( CDR(argList) != js_nil) ){
+		js_error("(quote): expects exactly 1 argument", js_nil);
+	}
+	RETURN( CAR(argList));
+}
