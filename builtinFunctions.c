@@ -521,11 +521,62 @@ CP_builtin_lambda(){
 VOIDPTRFUNC
 CP_builtin_quote(){
 
-	OBJ env = ARG(0);
+//	OBJ env = ARG(0);
 	OBJ argList = ARG(1);
 
 	if( (!ISCONS(argList)) || ( CDR(argList) != js_nil) ){
 		js_error("(quote): expects exactly 1 argument", js_nil);
 	}
 	RETURN( CAR(argList));
+}
+
+VOIDPTRFUNC
+CP_builtin_if(){
+
+	OBJ env = ARG(0);
+	OBJ argList = ARG(1);
+
+	OBJ condExpr, ifExpr, elseExpr = NULL;
+	
+	int numArgs = length(argList);
+	if( numArgs == 2){
+		// case 1: else-less if -> (if cond <expr>)
+		elseExpr = js_nil;
+
+	} else if( numArgs == 3){
+		// case 2: regular if -> (if cond <ifExpr> <elseExpr>)
+		elseExpr = CAR( CDR( CDR( argList )));
+	} else {
+		js_error("(if): expects 2 or 3 arguments", js_nil);
+	}
+
+	condExpr = CAR(argList); 
+	ifExpr = CAR( CDR(argList));
+	
+	CREATE_LOCALS(2);
+	SET_LOCAL(0, ifExpr);
+	SET_LOCAL(1, elseExpr);
+	CALL2(CP_js_eval, env, condExpr, CP_builtin_if2);
+}
+
+VOIDPTRFUNC
+CP_builtin_if2(){
+
+	OBJ env = ARG(0);
+	
+	OBJ condValue = RETVAL;
+	OBJ ifExpr = LOCAL(0);
+	OBJ elseExpr = LOCAL(1);
+	
+	if (condValue == js_true){
+		TAILCALL2(CP_js_eval, env, ifExpr);
+	}
+	if (condValue == js_false){
+		TAILCALL2(CP_js_eval, env, elseExpr);
+	}
+	
+	// TO-DO implement #t #f rules for all kind of OBJs
+	js_error("(if): non-boolean condition value", condValue);
+	//NOT REACHED
+	return NULL;
 }

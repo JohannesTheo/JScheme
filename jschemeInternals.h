@@ -82,6 +82,8 @@ VOIDPTRFUNC CP_builtin_define();
 VOIDPTRFUNC CP_builtin_define2();
 VOIDPTRFUNC CP_builtin_lambda();
 VOIDPTRFUNC CP_builtin_quote();
+VOIDPTRFUNC CP_builtin_if();
+VOIDPTRFUNC CP_builtin_if2();
 
 /*
  *	Continuation passing
