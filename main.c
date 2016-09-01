@@ -38,7 +38,7 @@ setupInitialEnvironmentCP(){
 	// CP builtin syntax
 	globalEnvironmentPut(symbolTableGetOrAdd("define"), CP_newBuiltinSyntax("define", (VOIDPTRFUNC)CP_builtin_define));
 	//globalEnvironmentPut(symbolTableGetOrAdd("if"), newBuiltinSyntax("if", builtin_if));
-	//globalEnvironmentPut(symbolTableGetOrAdd("lambda"), newBuiltinSyntax("lambda", builtin_lambda));
+	globalEnvironmentPut(symbolTableGetOrAdd("lambda"), CP_newBuiltinSyntax("lambda", (VOIDPTRFUNC)CP_builtin_lambda));
 	//globalEnvironmentPut(symbolTableGetOrAdd("quote"), newBuiltinSyntax("quote", builtin_quote));
 
 }

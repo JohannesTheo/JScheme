@@ -80,6 +80,7 @@ OBJ builtin_quote();
 // CP bultinSyntax
 VOIDPTRFUNC CP_builtin_define();
 VOIDPTRFUNC CP_builtin_define2();
+VOIDPTRFUNC CP_builtin_lambda();
 
 /*
  *	Continuation passing

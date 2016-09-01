@@ -494,3 +494,26 @@ CP_builtin_define2(){
 	environmentPut(env, symbol, value);
 	RETURN(js_void);
 }
+
+VOIDPTRFUNC
+CP_builtin_lambda(){
+	
+	OBJ env = ARG(0);
+	OBJ argList = ARG(1);
+
+	if( !ISCONS(argList) ){
+		js_error("(lambda): expects at least 2 arguments", js_nil);
+	}
+
+	OBJ lambdaArgList = CAR(argList);
+	if( ! (lambdaArgList == js_nil || ISCONS(lambdaArgList) )){
+		js_error("(lambda): invalid argument list", lambdaArgList);
+	}
+	OBJ bodyList = CDR(argList);
+	
+	OBJ newUDF = newUserDefinedFunction( "anonymous lambda", lambdaArgList, bodyList);
+	newUDF->u.userDefinedFunction.numLocals = count_defines(bodyList);
+	newUDF->u.userDefinedFunction.home = env;
+
+	RETURN(newUDF);
+}
