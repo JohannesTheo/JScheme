@@ -149,6 +149,8 @@ main() {
 #endif
 		// reset Stack index
 		SP = 0;
+		AP = 0;
+		BP = 0;
 		printf("back in wonderland\n");
 	}	
 	printf("start REPL...\n");
