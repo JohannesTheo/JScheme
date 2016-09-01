@@ -43,13 +43,14 @@ char*
 functionName(VOIDPTRFUNC addr){
 
 	extern VOIDPTRFUNC CP_jREPL(), CP_jREPL2();
-	extern VOIDPTRFUNC CP_js_eval(), CP_evalCons(), CP_evalCons2();
+	extern VOIDPTRFUNC CP_js_eval(), CP_evalCons(), CP_evalCons2(), CP_evalCons3();
 
 	if(addr == (VOIDPTRFUNC)(CP_jREPL)) return "CP_jREPL";
 	if(addr == (VOIDPTRFUNC)(CP_jREPL2)) return "CP_jREPL2";
 	if(addr == (VOIDPTRFUNC)(CP_js_eval)) return "CP_js_eval";
 	if(addr == (VOIDPTRFUNC)(CP_evalCons)) return "CP_evalCons";
 	if(addr == (VOIDPTRFUNC)(CP_evalCons2)) return "CP_evalCons2";
+	if(addr == (VOIDPTRFUNC)(CP_evalCons3)) return "CP_evalCons3";
 	if(addr == NULL) return "NULL";
 
 	static char buffer[64];
@@ -60,6 +61,7 @@ functionName(VOIDPTRFUNC addr){
 char*
 objName(OBJ o){
 
+	//if (o == 9) return "PRINT ERROR for 9";
 
 	enum tag kindOf = o->u.any.tag;
 	switch(kindOf){
@@ -143,49 +145,60 @@ void
 printStackFrame(int globalSP, int frameSP, int frameAP, int frameBP){
 
 	for(int sp = frameSP; sp >= frameBP; sp--){
-
-		if( SP < 10){
-		       	fprintf(stdout, "| %d : ", sp);
+		
+		// print index with indentation
+		if( SP < 10) 			fprintf(stdout, "| %d : ", sp);
+		else if( SP < 100 && sp < 10) 	fprintf(stdout, "|  %d : ", sp);
+		else			       	fprintf(stdout, "| %d : ", sp);
+		
+		// print empyt slot at SP	
+		if( sp == globalSP){
+		       	fprintf(stdout,"                           |");
 		}
-	       	else if( SP < 100 && sp < 10){
-		       	fprintf(stdout, "|  %d : ", sp);
-		}else{
-		       	fprintf(stdout, "| %d : ", sp);
-		}
+		// print function names of calle and continuation		
+		else if( ((frameBP > 0) && (sp == frameBP+2 || sp == frameBP+3)) || (sp < 2) ){
 			
-		if( sp == globalSP){	
-			fprintf(stdout,"                           |");
-		}
-		else if( (sp == globalSP && sp == frameSP-1) || (sp != globalSP && sp == frameSP)  || sp == frameBP + 2 || sp == 0 ){
-		//else if( sp == SP-1 || sp == BP + 2 || ((BP == 0) && (SP > 0)) ){
 			VOIDPTRFUNC func = (VOIDPTRFUNC)(jStack[sp]);
 			char* funcName = functionName((VOIDPTRFUNC)func);
 			printCentered(27, funcName);	
 		}
-		else if( ((frameBP > 0) && ( (sp == frameBP) || (sp == frameBP + 1))) ){
-			static char intBuffer[64];
-			sprintf(intBuffer, "%lu", (INT)jStack[sp]);
-			printCentered(27, intBuffer);
+		// print INT val of oldAP, oldBP, numArgs in LOCALS
+		else if( (((frameBP > 0) && ( sp == frameBP || sp == frameBP + 1))) || sp == frameAP + 4){
+			
+			// if numArgs in LOCALS is still js_nil print nil
+			if( jStack[sp] == js_nil){
+				printCentered(27, objName( (OBJ) jStack[sp]));
+			}else{
+				static char intBuffer[64];
+				sprintf(intBuffer, "%lu", (INT)jStack[sp]);
+				printCentered(27, intBuffer);
+			}
 		}
+		// print OBJs with objName
 		else{
+			// print args
 			OBJ stackElement = (OBJ) jStack[sp];
+			
+			// safety 
 			if( stackElement == NULL ){
-				printCentered(27, "NULL");
+				printCentered(27, "ARG NULL");
 			}else{
 				printCentered(27, objName(stackElement));
 			}
 		}
 
-		if( frameSP == globalSP ){
+		// if the stackFrame is the current Stack Frame print SP, AP, BP, etc.
+		if(frameSP == globalSP){
 		
 			if( sp == frameSP) fprintf(stdout, " <- SP");
 			if( sp == frameAP) fprintf(stdout, " <- AP");
-			if( (sp == frameBP + 1) && ( frameAP > 1) ) fprintf(stdout, " (saved AP)");
-			if( sp == frameBP){
-				fprintf(stdout, " <- BP");
-			}
+			if((sp == frameBP + 1) && ( frameAP > 2) ) fprintf(stdout, " (saved AP)");
+			if( frameBP > 0 && sp == frameBP) fprintf(stdout, " (saved BP)");
+			if( sp == frameBP) fprintf(stdout, " <- BP");
+			if( (frameBP > 0 && sp == frameBP+3) || (frameBP == 0 && sp == frameBP+1)) fprintf(stdout, " (continuation/return)");
 		}
 		
+		// print stackFrame border
 		if( sp == frameBP && frameBP > 0){
 			if( globalSP < 10) fprintf(stdout, "\n| ------------------------------ |");
 			else if( globalSP < 100) fprintf(stdout, "\n| ------------------------------- |");
@@ -201,6 +214,7 @@ void
 printJStack(char *file,int line, char* func){
 	
 	fprintf(stdout, "\nJS Stack in "YEL"%s()"RESET" [%s:%d]\n",func, file, line);
+	//fprintf(stdout, " -> (SP:%d AP:%d BP:%d)\n", SP, AP, BP);
 	fprintf(stdout, "----------------------------------\n");
 	
 	int frameSP = SP; 
