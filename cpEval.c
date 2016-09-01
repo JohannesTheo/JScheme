@@ -3,7 +3,6 @@
 VOIDPTRFUNC
 CP_js_eval(){
 
-//	fprintf(stdout, "\nStack in CP_js_eval:\n");
 	printJStack(__FILE__,__LINE__,__FUNCTION__);
 
 	OBJ env = ARG(0);
@@ -13,13 +12,7 @@ CP_js_eval(){
 	OBJ value;
 	switch(TAG(expr)){
 		default:
-			// T_INTEGER
-			// T_NIL
-			// T_TRUE
-			// T_FALSE
-			// T_STRING
-			// T_FILESTREAM
-			// T_STRINGSTREAM
+			// ALL TYPES BUT T_SYMBOL && T_CONS
 			RETURN(expr);
 
 		case T_SYMBOL:
@@ -28,8 +21,8 @@ CP_js_eval(){
 			if(value == NULL){
 				js_error("undefined variable", expr);
 			}
-		
 			RETURN(value);
+
 		case T_CONS:
 			TAILCALL2(CP_evalCons, env, expr);
 	}
@@ -38,7 +31,6 @@ CP_js_eval(){
 VOIDPTRFUNC
 CP_evalCons(){
 	
-
 	OBJ env = ARG(0);
 	OBJ expr = ARG(1);
 	OBJ functionSlot = CAR(expr);
@@ -68,7 +60,7 @@ CP_evalCons2(){
 	OBJ evaluatedFunctionSlot = RETVAL;
 	OBJ env = ARG(0);
 	OBJ expr = ARG(1);
-	OBJ restArgs = CDR(CDR(expr));
+	OBJ restArgs = CDR(expr);
 	int numArgs = 0;
 
 	SET_LOCAL(0, evaluatedFunctionSlot);
@@ -82,28 +74,14 @@ CP_evalCons2(){
 
 		case T_BUILTINFUNCTION:
 		{
-			//error("cur shit", __FILE__,__LINE__);
-			OBJ firstArg = CAR(CDR(expr));
-			CALL2(CP_js_eval, env, firstArg, CP_evalCons3); 
-		
-		/*	int numArgs = 0;
-			//restArgs = argList;
-			while( restArgs != js_nil) {
-				OBJ theArg = CAR(restArgs);
-				restArgs = CDR(restArgs);
-
-				CALL2(CP_js_eval, env, theArg, CP_evalCons3);
-
-				OBJ evaluatedArg = js_eval(env, theArg);
-				PUSH(evaluatedArg);
-				numArgs++;
+			if( restArgs != js_nil){
+				OBJ firstArg = CAR(restArgs);
+				CALL2(CP_js_eval, env, firstArg, CP_evalCons3); 
+			}else{
+				OBJ value = evaluatedFunctionSlot->u.builtinFunction.theCode(numArgs);
+				RETURN(value);
 			}
-			// All args need to be on Stack...
-			OBJ value = evaluatedFunctionSlot->u.builtinFunction.theCode(numArgs);
-			RETURN(value);
-			*/
 		}
-
 		case T_BUILTINSYNTAX:
 		{
 			error("T_BULTINSYNTAX unimpl.", __FILE__, __LINE__);
@@ -181,74 +159,32 @@ CP_evalCons2(){
 	
 }
 
+/*
+ *	An argument for a builtinFunction has been evaluated
+ */
 VOIDPTRFUNC
 CP_evalCons3(){
 	
-
 	OBJ evaluatedArg = RETVAL;
 	PUSH(evaluatedArg);
 
 	OBJ env = ARG(0);
-	OBJ restArgs = LOCAL(1);
+	OBJ restArgs = CDR(LOCAL(1));
+	SET_LOCAL(1, restArgs);
+	
 	int numArgs = (int) LOCAL(2);
 	numArgs++;
+	SET_LOCAL(2, (OBJ)((INT)numArgs));
 
 	if( restArgs != js_nil){
 	
 		OBJ nextArg = CAR(restArgs);
-		restArgs = CDR(restArgs);
-		SET_LOCAL(1, restArgs);
-		SET_LOCAL(2, (OBJ)((INT)numArgs));
-
 		printJStack(__FILE__,__LINE__,__FUNCTION__);	
 		CALL2(CP_js_eval, env, nextArg, CP_evalCons3);	
 	}
 
-	SET_LOCAL(2, (OBJ)((INT)numArgs));
 	printJStack(__FILE__,__LINE__,__FUNCTION__);	
-
 	OBJ function = LOCAL(0);
-
 	OBJ value = function->u.builtinFunction.theCode(numArgs);
 	RETURN(value);
-
-	error("unimpl.", __FILE__, __LINE__);
-	//OBJ function = 
-	//OBJ value = 
-	
-
-	/*
-	switch( TAG(evaluatedFunctionSlot) ){
-
-		case T_BUILTINFUNCTION:
-		{
-
-			error("T_BULTINFUNCTION unimpl.", __FILE__, __LINE__);
-			int numArgs = 0;
-			restArgs = argList;
-			while( restArgs != js_nil) {
-				OBJ theArg = CAR(restArgs);
-				OBJ evaluatedArg;
-				restArgs = CDR(restArgs);
-
-				evaluatedArg = js_eval(env, theArg);
-				PUSH(evaluatedArg);
-				numArgs++;
-			}
-			return evaluatedFunctionSlot->u.builtinFunction.theCode(numArgs);
-		}
-
-		case T_BUILTINSYNTAX:
-		{
-			error("T_BULTINSYNTAX unimpl.", __FILE__, __LINE__);
-			//return evaluatedFunctionSlot->u.builtinSyntax.theCode(env, argList);
-		}
-
-		}
-		default:
-			js_error("Eval: not a function: ", evaluatedFunctionSlot);
-	}
-	// NOT REACHED
-	return js_nil;
-	*/
 }
