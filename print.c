@@ -44,6 +44,7 @@ functionName(VOIDPTRFUNC addr){
 
 	extern VOIDPTRFUNC CP_jREPL(), CP_jREPL2();
 	extern VOIDPTRFUNC CP_js_eval(), CP_evalCons(), CP_evalCons2(), CP_evalCons3();
+	extern VOIDPTRFUNC CP_builtin_define(), CP_builtin_define2();
 
 	if(addr == (VOIDPTRFUNC)(CP_jREPL)) return "CP_jREPL";
 	if(addr == (VOIDPTRFUNC)(CP_jREPL2)) return "CP_jREPL2";
@@ -51,6 +52,8 @@ functionName(VOIDPTRFUNC addr){
 	if(addr == (VOIDPTRFUNC)(CP_evalCons)) return "CP_evalCons";
 	if(addr == (VOIDPTRFUNC)(CP_evalCons2)) return "CP_evalCons2";
 	if(addr == (VOIDPTRFUNC)(CP_evalCons3)) return "CP_evalCons3";
+	if(addr == (VOIDPTRFUNC)(CP_builtin_define)) return "CP_builtin_define";
+	if(addr == (VOIDPTRFUNC)(CP_builtin_define2)) return "CP_builtin_define2";
 	if(addr == NULL) return "NULL";
 
 	static char buffer[64];
