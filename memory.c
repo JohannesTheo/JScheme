@@ -99,6 +99,18 @@ newBuiltinSyntax(char *internalName, OBJFUNC theCode){
 	return (OBJ) theSyntax;	
 }
 
+OBJ
+CP_newBuiltinSyntax(char *internalName, VOIDPTRFUNC theCode){
+	
+	struct CP_jsBuiltinSyntax *theSyntax;
+	theSyntax = (struct CP_jsBuiltinSyntax *)(malloc( sizeof(struct CP_jsBuiltinSyntax)));
+	theSyntax->tag = T_BUILTINSYNTAX;
+	theSyntax->internalName = internalName;
+	theSyntax->theCode = theCode;
+	
+	return (OBJ) theSyntax;	
+}
+
 // length helper method
 int
 length(OBJ list) {

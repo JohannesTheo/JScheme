@@ -123,6 +123,13 @@ struct jsBuiltinSyntax{
 	OBJFUNC theCode;
 };
 
+struct CP_jsBuiltinSyntax{
+	enum tag tag;
+
+	char *internalName;
+	VOIDPTRFUNC theCode;
+};
+
 struct jsUserDefinedFunction{
 	enum tag tag;
 	
@@ -160,6 +167,7 @@ struct jschemeObject{
 		struct jschemeCons cons;
 		struct jsBuiltinFunction builtinFunction;
 		struct jsBuiltinSyntax builtinSyntax;
+		struct CP_jsBuiltinSyntax CP_builtinSyntax;
 		struct jsEnvironment environment;
 		struct jsUserDefinedFunction userDefinedFunction;
 	} u;

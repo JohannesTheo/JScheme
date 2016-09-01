@@ -14,6 +14,8 @@ OBJ newBuiltinSyntax(char *, OBJFUNC);
 OBJ newEnvironment(int numSlots, OBJ parentEnv);
 OBJ newUserDefinedFunction(char *, OBJ argList, OBJ bodyList);
 int length();
+// CP memory
+OBJ CP_newBuiltinSyntax(char *, VOIDPTRFUNC);
 
 //reader
 OBJ js_read();
@@ -75,6 +77,9 @@ OBJ builtin_define();
 OBJ builtin_if();
 OBJ builtin_lambda();
 OBJ builtin_quote();
+// CP bultinSyntax
+VOIDPTRFUNC CP_builtin_define();
+VOIDPTRFUNC CP_builtin_define2();
 
 /*
  *	Continuation passing
