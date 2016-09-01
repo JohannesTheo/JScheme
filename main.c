@@ -83,9 +83,9 @@ enterTrampoline1(OBJ input){
 	VOIDPTRFUNC CP_jREPL();
 
 	PUSH((OBJ)CP_jREPL);
+	PUSH(NULL);	// last continuation
 	AP = SP;	
 	PUSH(input);
-	PUSH(NULL);	// last continuation
 	VOIDPTRFUNC CP_jREPL();
 
 	trampoline((VOIDPTRFUNC)CP_jREPL);
