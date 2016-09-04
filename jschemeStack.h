@@ -58,20 +58,20 @@ ARG(int n0based ){
 static inline OBJ
 LOCAL(int n0based ){
 
-	/*
-	 ASSERT( ((AP + n0based) >= SP), "arg index error");
-	 ASSERT( ((AP + n0based) >= SP), "arg index error");
-	 */
+
+	ASSERT( ((AP + 2 + n0based) < SP), "get local arg index error");
+	//ASSERT( ((AP + n0based) >= SP), "arg index error");
+	 
 	return jStack[AP + 2 + n0based];
 }
 
 static inline void
 SET_LOCAL(int n0based, OBJ o){
 
-	/*
-	 ASSERT( ((AP + n0based) >= SP), "arg index error");
-	 ASSERT( ((AP + n0based) >= SP), "arg index error");
-	 */
+	
+	ASSERT( ((AP + 2 + n0based) < SP), "set local arg index error");
+	//ASSERT( ((AP + n0based) >= SP), "arg index error");
+	
 	jStack[AP + 2 + n0based] = o;
 }
 
@@ -81,11 +81,14 @@ SET_LOCAL(int n0based, OBJ o){
 
 static inline int
 savedAP(){
+	
+	ASSERT( ((BP + 1) < SP), "saved AP index error");
 	return (int)jStack[BP+1];
 }
 
 static inline VOIDPTRFUNC
 getContinuation(){
+	ASSERT( ((BP + 3) < SP), "CONT index error");
 	return (VOIDPTRFUNC)jStack[BP+3];
 }
 
