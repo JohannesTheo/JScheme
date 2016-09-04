@@ -43,7 +43,7 @@ char*
 functionName(VOIDPTRFUNC addr){
 
 	extern VOIDPTRFUNC CP_jREPL(), CP_jREPL2();
-	extern VOIDPTRFUNC CP_js_eval(), CP_evalCons(), CP_evalCons2(), CP_evalCons3();
+	extern VOIDPTRFUNC CP_js_eval(), CP_evalCons(), CP_evalCons2(), CP_evalCons3(), CP_evalCons4(), CP_evalCons5();
 	extern VOIDPTRFUNC CP_builtin_define(), CP_builtin_define2();
 	extern VOIDPTRFUNC CP_builtin_lambda(), CP_builtin_quote();
 	extern VOIDPTRFUNC CP_builtin_if(), CP_builtin_if2();
@@ -54,6 +54,8 @@ functionName(VOIDPTRFUNC addr){
 	if(addr == (VOIDPTRFUNC)(CP_evalCons)) return "CP_evalCons";
 	if(addr == (VOIDPTRFUNC)(CP_evalCons2)) return "CP_evalCons2";
 	if(addr == (VOIDPTRFUNC)(CP_evalCons3)) return "CP_evalCons3";
+	if(addr == (VOIDPTRFUNC)(CP_evalCons4)) return "CP_evalCons4";
+	if(addr == (VOIDPTRFUNC)(CP_evalCons5)) return "CP_evalCons5";
 	if(addr == (VOIDPTRFUNC)(CP_builtin_define)) return "CP_builtin_define";
 	if(addr == (VOIDPTRFUNC)(CP_builtin_define2)) return "CP_builtin_define2";
 	if(addr == (VOIDPTRFUNC)(CP_builtin_lambda)) return "CP_builtin_lambda";
@@ -64,6 +66,7 @@ functionName(VOIDPTRFUNC addr){
 
 	static char buffer[64];
 	sprintf(buffer, "(?func: %p)", addr);
+	
 	return buffer;
 }
 
@@ -71,7 +74,7 @@ char*
 objName(OBJ o){
 
 	//if (o == 9) return "PRINT ERROR for 9";
-
+	//return "object";
 	enum tag kindOf = o->u.any.tag;
 	switch(kindOf){
 		case T_NIL:
@@ -90,7 +93,7 @@ objName(OBJ o){
 			{
 			char* string  = o->u.string.stringVal;
 			int size = strlen(string);
-			char* strBuffer = (char*) (malloc( (size * sizeof(char))+2));
+			char* strBuffer = (char*) (malloc( (size * sizeof(char))+2+1));
 			sprintf(strBuffer, "\"%s\"", string);
 			return strBuffer;
 			}
@@ -102,7 +105,7 @@ objName(OBJ o){
 			{
 			char* string  = o->u.builtinFunction.internalName;
 			int size = strlen(string);
-			char* bltBuffer = (char*) (malloc( (size * sizeof(char))+10));
+			char* bltBuffer = (char*) (malloc( (size * sizeof(char))+10+1));
 			sprintf(bltBuffer, "builtin (%s)", string);
 			return bltBuffer;
 			}
@@ -110,7 +113,7 @@ objName(OBJ o){
 			{
 			char* string  = o->u.builtinSyntax.internalName;
 			int size = strlen(string);
-			char* bltBuffer = (char*) (malloc( (size * sizeof(char))+10));
+			char* bltBuffer = (char*) (malloc( (size * sizeof(char))+10+1));
 			sprintf(bltBuffer, "builtin (%s)", string);
 			return bltBuffer;
 			}
@@ -153,46 +156,56 @@ printCentered(int width, char* value){
 void
 printStackFrame(int globalSP, int frameSP, int frameAP, int frameBP){
 
+	int STACK_WIDTH = 27;
 	for(int sp = frameSP; sp >= frameBP; sp--){
 		
 		// print index with indentation
 		if( SP < 10) 			fprintf(stdout, "| %d : ", sp);
 		else if( SP < 100 && sp < 10) 	fprintf(stdout, "|  %d : ", sp);
+		else if( SP < 100 && sp < 100) 	fprintf(stdout, "| %d : ", sp);
+		else if( SP < 1000 && sp < 10)	fprintf(stdout, "|   %d : ", sp);
+		else if( SP < 1000 && sp < 100)	fprintf(stdout, "|  %d : ", sp);
 		else			       	fprintf(stdout, "| %d : ", sp);
 		
 		// print empyt slot at SP	
-		if( sp == globalSP){
+		if( sp == globalSP)
+		{
 		       	fprintf(stdout,"                           |");
 		}
 		// print function names of calle and continuation		
-		else if( ((frameBP > 0) && (sp == frameBP+2 || sp == frameBP+3)) || (sp < 2) ){
-			
+		else if( sp == frameBP+2 || sp == frameBP+3 )
+		{	
 			VOIDPTRFUNC func = (VOIDPTRFUNC)(jStack[sp]);
 			char* funcName = functionName((VOIDPTRFUNC)func);
-			printCentered(27, funcName);	
+			printCentered(STACK_WIDTH, funcName);	
 		}
-		// print INT val of oldAP, oldBP, numArgs in LOCALS
-		else if( (((frameBP > 0) && ( sp == frameBP || sp == frameBP + 1))) || sp == frameAP + 4){
+		// print INT vals of
+		else if( sp == frameBP 		// oldBP
+		||	 sp == frameBP + 1 	// oldAP
+		|| 	 sp == frameAP + 4)	// numArgs in Locals
+		{
 			
-			// if numArgs in LOCALS is still js_nil print nil
+			// if numArgs in Locals is still js_nil print nil
 			if( jStack[sp] == js_nil){
-				printCentered(27, objName( (OBJ) jStack[sp]));
+				printCentered( STACK_WIDTH, "nil");
 			}else{
 				static char intBuffer[64];
 				sprintf(intBuffer, "%lu", (INT)jStack[sp]);
 				printCentered(27, intBuffer);
 			}
 		}
-		// print OBJs with objName
-		else{
-			// print args
-			OBJ stackElement = (OBJ) jStack[sp];
-			
-			// safety 
+		// print Args and Locals with objName
+		else{	
+			OBJ stackElement = (OBJ) jStack[sp];	
 			if( stackElement == NULL ){
-				printCentered(27, "ARG NULL");
+				printCentered(27, "ARG NULL ERROR");
 			}else{
+				
 				printCentered(27, objName(stackElement));
+				if( ISCONS(stackElement)){
+					fprintf(stdout, GRN" -> "RESET);
+				       	js_print(stdout, stackElement);
+				}
 			}
 		}
 
@@ -201,22 +214,20 @@ printStackFrame(int globalSP, int frameSP, int frameAP, int frameBP){
 		
 			if( sp == frameSP) fprintf(stdout, " <- SP");
 			if( sp == frameAP) fprintf(stdout, " <- AP");
-			if((sp == frameBP + 1) && ( frameAP > 2) ) fprintf(stdout, " (saved AP)");
-			if( frameBP > 0 && sp == frameBP) fprintf(stdout, " (saved BP)");
+			if( sp == frameBP + 1) fprintf(stdout, " (saved AP)");
+			if( sp == frameBP && globalSP > 0) fprintf(stdout, " (saved BP)");
 			if( sp == frameBP) fprintf(stdout, " <- BP");
-			if( (frameBP > 0 && sp == frameBP+3) || (frameBP == 0 && sp == frameBP+1)) fprintf(stdout, " (continuation/return)");
+			if( sp == frameBP+3) fprintf(stdout, " (continuation/return)");
 		}
 		
 		// print stackFrame border
 		if( sp == frameBP && frameBP > 0){
-			if( globalSP < 10) fprintf(stdout, "\n| ------------------------------ |");
-			else if( globalSP < 100) fprintf(stdout, "\n| ------------------------------- |");
+			if( globalSP < 10) fprintf(stdout,        "\n| ------------------------------ |");
+			else if( globalSP < 100) fprintf(stdout,  "\n| ------------------------------- |");
+			else if( globalSP < 1000) fprintf(stdout, "\n| -------------------------------- |");
 		}
-		
 		fprintf(stdout, "\n");	
 	}
-
-
 }
 
 void
@@ -229,9 +240,10 @@ printJStack(char *file,int line, char* func){
 	int frameSP = SP; 
 	int frameAP = AP;
 	int frameBP = BP;
+	int globalSP = SP;
 	while( frameSP >= 0){
 
-		printStackFrame(SP, frameSP, frameAP, frameBP);
+		printStackFrame(globalSP, frameSP, frameAP, frameBP);
 		frameSP = frameBP - 1; 
 		frameAP = (int)jStack[frameBP+1];
 		frameBP = (int)jStack[frameBP];
