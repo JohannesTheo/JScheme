@@ -7,7 +7,7 @@
 
 #define INITIAL_ENVIRONMENTSIZE 511	// one below a power of 2
 
-OBJ globalEnvironment;
+OBJ globalEnvironment = NULL;
 static int globalEnvironmentSize = INITIAL_ENVIRONMENTSIZE;
 static int globalEnvironmentFillSize = 0;
 
@@ -37,6 +37,10 @@ newGlobalEnvironment(int size){
 
 void
 initGlobalEnvironment(){
+	if( globalEnvironment != NULL) free(globalEnvironment);
+	
+	globalEnvironmentSize = INITIAL_ENVIRONMENTSIZE;
+	globalEnvironmentFillSize = 0;
 	globalEnvironment = newGlobalEnvironment(INITIAL_ENVIRONMENTSIZE);
 }
 
