@@ -200,6 +200,7 @@ struct jschemeObject{
 #define ISBUILTINS(o)	(TAG(o) == T_BUILTINSYNTAX)
 #define ISVOID(o)	(TAG(o) == T_VOID)
 #define ISUDF(o)	(TAG(o) == T_USERDEFINEDFUNCTION)
+#define ISENV(o)	(TAG(o) == T_GLOBALENVIRONMENT || TAG(o) == T_LOCALENVIRONMENT)
 
 /*
  * well known objects
