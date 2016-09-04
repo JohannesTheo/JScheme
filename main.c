@@ -94,6 +94,8 @@ enterTrampoline1(OBJ input){
 	printJStack(__FILE__,__LINE__,__FUNCTION__);
 	VOIDPTRFUNC CP_jREPL();
 
+	PUSH((OBJ)((INT)BP));
+	PUSH((OBJ)((INT)AP));
 	PUSH((OBJ)CP_jREPL);
 	PUSH(NULL);	// last continuation
 	AP = SP;	
@@ -152,7 +154,6 @@ main() {
 #endif
 	initGlobalEnvironment();
 	setupInitialEnvironment();
-
 	setupInitialEnvironmentCP();
 
 	printf("Welcome to (JS)cheme\n");
