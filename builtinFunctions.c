@@ -434,7 +434,7 @@ CP_builtin_define(){
 
 
 	OBJ env = ARG(0);
-	OBJ argList = LOCAL(1);
+	OBJ argList = ARG(1);
 
 	if( !ISCONS(argList) ){
 		js_error("(define): expects at least  2 arguments", js_nil);
