@@ -286,9 +286,11 @@ js_read(OBJ inStream){
 	prompt_off();
 	char ch = skipWhiteSpace(inStream);
 
-	if( ch == -1) return js_eof;
-
-	if(ch == '('){
+	if( ch == -1){
+		retVal = js_eof;
+		unreadChar(inStream, ch);
+	}
+	else if(ch == '('){
 		retVal = readList(inStream);
 	}
 	else if(ch =='\''){
