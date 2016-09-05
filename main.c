@@ -23,18 +23,22 @@ setupInitialEnvironment(){
 	globalEnvironmentPut(symbolTableGetOrAdd("cdr"), newBuiltinFunction("cdr", builtin_cdr));
 	globalEnvironmentPut(symbolTableGetOrAdd("cons"), newBuiltinFunction("cons", builtin_cons));
 
+	
+}
+	
+void
+setupBuiltinSyntax()
+{
 	// builtin syntax
-
 	globalEnvironmentPut(symbolTableGetOrAdd("define"), newBuiltinSyntax("define", builtin_define));
 	globalEnvironmentPut(symbolTableGetOrAdd("if"), newBuiltinSyntax("if", builtin_if));
 	globalEnvironmentPut(symbolTableGetOrAdd("lambda"), newBuiltinSyntax("lambda", builtin_lambda));
 	globalEnvironmentPut(symbolTableGetOrAdd("quote"), newBuiltinSyntax("quote", builtin_quote));
-	
 }
 
 void
-setupInitialEnvironmentCP(){
-	
+CP_setupBuiltinSyntax()
+{	
 	// CP builtin syntax
 	globalEnvironmentPut(symbolTableGetOrAdd("define"), CP_newBuiltinSyntax("define", (VOIDPTRFUNC)CP_builtin_define));
 	globalEnvironmentPut(symbolTableGetOrAdd("if"), CP_newBuiltinSyntax("if", (VOIDPTRFUNC)CP_builtin_if));
@@ -151,11 +155,11 @@ main() {
 	initDebugOptions();	
 	initGlobalEnvironment();
 	setupInitialEnvironment();
+	setupBuiltinSyntax();
 	selftest();
 #endif
 	initGlobalEnvironment();
 	setupInitialEnvironment();
-	setupInitialEnvironmentCP();
 
 	printf("Welcome to (JS)cheme\n");
 
@@ -167,14 +171,25 @@ main() {
 		SP = 0;
 		AP = 0;
 		BP = 0;
+		prompt_on();
 		printf("back in wonderland\n");
 	}	
 	printf("start REPL...\n");
 	OBJ inputStream = newFileStream(stdin);
 	
-	DEBUGCODE(0, printJStack(__FILE__,__LINE__,__FUNCTION__));
+#ifdef DEBUG
+	if(CONTINUATION_PASSING->state){
+		CP_setupBuiltinSyntax();
+		enterTrampoline1(inputStream);
+	}else{
+		setupBuiltinSyntax();
+		jREPL(inputStream);
+	}
+#else 
 	//jREPL(inputStream);
+	CP_setupBuiltinSyntax();
 	enterTrampoline1(inputStream);
+#endif
 
 	return 0;
 }
