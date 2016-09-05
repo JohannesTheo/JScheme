@@ -314,7 +314,13 @@ js_read(OBJ inStream){
 #ifdef DEBUG
 	else if(ch == '%'){
 		ch = nextChar(inStream);
-		OBJ debugOption = readSymbol(inStream, ch);
+		OBJ debugOption;
+		if(ch == '\n' ){
+		       	unreadChar(inStream, ch);
+			debugOption = newSymbol("");
+		}else{
+			debugOption = readSymbol(inStream, ch);
+		}
 		switchDebugOptions( debugOption );
 		retVal = js_void;
 	}
