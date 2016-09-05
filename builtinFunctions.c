@@ -1,4 +1,63 @@
 #include "jscheme.h"
+#include <stdlib.h>
+
+OBJ
+builtin_include(int numArgs){
+
+	if( numArgs != 1){
+		js_error("(include): expects 1 argument", js_nil);
+	}
+	OBJ arg1 = POP();
+	char *fileName;
+	FILE *theFile;
+
+	if( !ISSTRING(arg1) ){
+		js_error("(include): string arg expected:", arg1);
+	}
+	fileName = STRINGVAL(arg1);
+	theFile = fopen(fileName, "r");
+	if( theFile == NULL){
+		js_error("(include): cannot open file:", arg1); 	
+	}
+
+	OBJ inputStream = newFileStream(theFile);
+
+#ifdef DEBUG
+	if( PRINT_INCLUDE->state){
+		printIndent(indentLevelForInclude);
+	       	fprintf(stdout, "<include file:" YEL " %s" RESET" >\n", fileName);
+		indentLevelForInclude++;
+	}
+	if( CONTINUATION_PASSING->state){
+		enterTrampoline1(inputStream);
+	} 
+	else{
+		OBJ expr = js_read(inputStream);
+		OBJ result;
+
+		while( expr != js_eof){	
+			result = js_eval(globalEnvironment, expr);
+			if(PRINT_INCLUDE->state){
+				printIndent(indentLevelForInclude);
+				js_print(stdout, result);
+				printf("\n");
+			}
+			expr = js_read(inputStream);
+		}
+	}
+	if( PRINT_INCLUDE->state){
+		indentLevelForInclude--;
+		printIndent(indentLevelForInclude);
+	       	fprintf(stdout, "<EOF:" YEL " %s" RESET" >\n", fileName);
+	}
+#else
+	enterTrampoline1(inputStream);
+#endif
+	fclose( inputStream->u.fileStream.file );
+	free( inputStream);
+	
+	return js_void;
+}
 
 OBJ
 builtin_plus(int numArgs){

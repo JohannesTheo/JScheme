@@ -69,6 +69,7 @@ OBJ builtin_consP();
 OBJ builtin_car();
 OBJ builtin_cdr();
 OBJ builtin_cons();
+OBJ builtin_include();
 
 // builtinSyntax
 int isDefine();
@@ -89,5 +90,6 @@ VOIDPTRFUNC CP_builtin_if2();
  *	Continuation passing
  */
 void trampoline(VOIDPTRFUNC);
+OBJ enterTrampoline1(OBJ);
 VOIDPTRFUNC CP_js_eval();
 
