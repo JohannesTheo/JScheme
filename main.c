@@ -22,7 +22,8 @@ setupInitialEnvironment(){
 	globalEnvironmentPut(symbolTableGetOrAdd("car"), newBuiltinFunction("car", builtin_car));
 	globalEnvironmentPut(symbolTableGetOrAdd("cdr"), newBuiltinFunction("cdr", builtin_cdr));
 	globalEnvironmentPut(symbolTableGetOrAdd("cons"), newBuiltinFunction("cons", builtin_cons));
-
+	
+	globalEnvironmentPut(symbolTableGetOrAdd("include"), newBuiltinFunction("include", builtin_include));
 	
 }
 	
@@ -107,7 +108,8 @@ enterTrampoline1(OBJ input){
 	PUSH((OBJ)((INT)AP));
 	PUSH((OBJ)CP_jREPL);
 	PUSH(NULL);	// last continuation
-	AP = SP;	
+	AP = SP;
+	BP = AP - 4;
 	PUSH(input);
 	VOIDPTRFUNC CP_jREPL();
 
@@ -128,6 +130,7 @@ CP_jREPL(){
 	OBJ expr;
 	VOIDPTRFUNC CP_jREPL2();
 
+	if( SP > 5) prompt_off();
 	if(prompt_enabled) printf(CYN "JS> " RESET);
 	expr = js_read(inputStream);				// R ead
 	if( expr == js_eof ) RETURN( js_void );
@@ -142,10 +145,17 @@ CP_jREPL2(){
 	DEBUGCODE(PRINT_STACK->state, printJStack(__FILE__,__LINE__,__FUNCTION__));
 
 	OBJ result = RETVAL;
-	js_print(stdout, result);			// P rint
-							// L oop
-	printf("\n");
 
+#ifdef DEBUG
+	if( (SP <= 5) || PRINT_INCLUDE->state){
+		printIndent(indentLevelForInclude);
+#else
+	if( (SP <= 5)) {
+#endif
+		js_print(stdout, result);		// P rint
+		printf("\n");
+	}
+							// L oop
 	OBJ inputStream = ARG(0);
 	TAILCALL1((VOIDPTRFUNC)CP_jREPL, inputStream);	
 }
@@ -171,6 +181,7 @@ main() {
 	if( setjmp(whereEverythingWasFine) ){
 #ifdef DEBUG
 		indentLevel = 0;
+		indentLevelForInclude = 0;
 #endif
 		// reset Stack index
 		SP = 0;
@@ -218,7 +229,10 @@ void
 trampoline( VOIDPTRFUNC funcToCall){
 	
 #ifdef DEBUG
-	fprintf(stdout, "Enter trampoline...\n");
+	if( (SP <= 5) || PRINT_INCLUDE->state){
+		printIndent(indentLevelForInclude);
+		fprintf(stdout, "Enter trampoline...\n");
+	}
 #endif
 	void *nextFunc;
 	
@@ -227,6 +241,9 @@ trampoline( VOIDPTRFUNC funcToCall){
 		funcToCall = (VOIDPTRFUNC)(nextFunc);
 	}
 #ifdef DEBUG
-	fprintf(stdout, "Leave trampoline...\n");
+	if( (SP <= 5) || PRINT_INCLUDE->state){
+		printIndent(indentLevelForInclude);
+		fprintf(stdout, "Leave trampoline...\n");
+	}
 #endif
 }

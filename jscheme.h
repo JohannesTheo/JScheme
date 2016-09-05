@@ -222,6 +222,7 @@ OBJ js_sym_define, js_sym_lambda;
 
 #define INDENT "      "
 extern int indentLevel;
+extern int indentLevelForInclude;
 extern int oldIndentLevel;
 extern int PAUSE_INDENT_FLAG;
 
@@ -229,6 +230,7 @@ extern struct debugOption *DETAILED_TYPES;
 extern struct debugOption *EVAL_TRACE; 
 extern struct debugOption *CONTINUATION_PASSING; 
 extern struct debugOption *PRINT_STACK; 
+extern struct debugOption *PRINT_INCLUDE; 
 
 struct debugOption{
 	char *name;
