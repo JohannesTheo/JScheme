@@ -26,7 +26,7 @@ OBJ js_eval();
 void initJStack();
 
 // print
-void js_print(FILE *, OBJ);
+void js_print(FILE *, OBJ, int);
 void printJStack();
 #ifdef DEBUG
 void printLocalEnv(OBJ);
@@ -73,6 +73,8 @@ OBJ builtin_include();
 OBJ builtin_gThanNrP();
 OBJ builtin_set_car();
 OBJ builtin_set_cdr();
+OBJ builtin_display();
+OBJ builtin_write();
 
 // builtinSyntax
 int isDefine();

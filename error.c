@@ -15,7 +15,7 @@ js_error(char* msg, OBJ arg){
 	fflush(stdout);
 	fprintf(stderr,RESET "\n-------------\n");
 	fprintf(stderr,"JS-error: %s ", msg);
-	js_print(stderr, arg);
+	js_print(stderr, arg,1);
 	fprintf(stderr,"\n-------------\n");
 	
 	getMeOutOfHere();

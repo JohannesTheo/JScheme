@@ -1,6 +1,29 @@
 #include "jscheme.h"
 #include <stdlib.h>
 
+
+
+static OBJ
+builtin_displayOrWrite(int numArgs, int DisplayMode){
+	
+	if(numArgs > 1){
+		js_error("(display or write): expects 1 argument", js_nil);
+	}
+	OBJ arg = POP();
+	js_print(stdout, arg, DisplayMode);
+	return js_void;
+}
+
+OBJ
+builtin_display(int numArgs){
+	return builtin_displayOrWrite(numArgs, 0);
+}
+
+OBJ
+builtin_write(int numArgs){
+	return builtin_displayOrWrite(numArgs, 1);
+}
+
 OBJ
 builtin_include(int numArgs){
 
@@ -39,7 +62,7 @@ builtin_include(int numArgs){
 			result = js_eval(globalEnvironment, expr);
 			if(PRINT_INCLUDE->state){
 				printIndent(indentLevelForInclude);
-				js_print(stdout, result);
+				js_print(stdout, result,1);
 				printf("\n");
 			}
 			expr = js_read(inputStream);
@@ -418,9 +441,9 @@ builtin_define(OBJ env, OBJ argList){
 if( EVAL_TRACE->state) {
 		printIndent(indentLevel);
 		fprintf(stdout, RED"DEFINE "RESET);
-		js_print(stdout, arg1);       
+		js_print(stdout, arg1,1);       
 		fprintf(stdout, " -> ");
-		js_print(stdout, value);
+		js_print(stdout, value,1);
 
 		if( TAG(env) == T_GLOBALENVIRONMENT ){
 
@@ -453,9 +476,9 @@ if( EVAL_TRACE->state) {
 if( EVAL_TRACE->state ){
 			printIndent(indentLevel);
 			fprintf(stdout, RED"DEFINE "RESET);
-			js_print(stdout, name);       
+			js_print(stdout, name,1);       
 			fprintf(stdout, " -> ");
-			js_print(stdout, newUDF);
+			js_print(stdout, newUDF,1);
 
 			if( TAG(env) == T_GLOBALENVIRONMENT ){
 

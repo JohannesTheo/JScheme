@@ -27,9 +27,9 @@ printLocalEnv(OBJ localEnv){
 		if(key != NULL){	
 			value  = localEnv->u.environment.slots[i].value;
 			fprintf(stdout, "key: " GRN);
-			js_print(stdout, key);
+			js_print(stdout, key,1);
 			fprintf(stdout,RESET " value: " GRN);
-			js_print(stdout, value);
+			js_print(stdout, value,1);
 			fprintf(stdout, RESET "\n");	
 		} else {
 			fprintf(stdout, "NULL\n");
@@ -204,7 +204,7 @@ printStackFrame(int globalSP, int frameSP, int frameAP, int frameBP){
 				printCentered(27, objName(stackElement));
 				if( ISCONS(stackElement)){
 					fprintf(stdout, GRN" -> "RESET);
-				       	js_print(stdout, stackElement);
+				       	js_print(stdout, stackElement,1);
 				}
 			}
 		}
@@ -257,7 +257,7 @@ static void
 print_list_rest(FILE* outFile, OBJ o){
 
 	OBJ theRest;
-	js_print(outFile, CAR(o));	
+	js_print(outFile, CAR(o),1);	
 	theRest = CDR(o);
 
 	if(theRest == js_nil){
@@ -266,7 +266,7 @@ print_list_rest(FILE* outFile, OBJ o){
 	}
 	if( !ISCONS(theRest)){
 		fprintf(outFile, " . ");
-		js_print(outFile, theRest);
+		js_print(outFile, theRest,1);
 		fprintf(outFile, ")");
 		return;
 	}
@@ -275,7 +275,7 @@ print_list_rest(FILE* outFile, OBJ o){
 }
 
 void
-js_print(FILE* outFile,OBJ o){
+js_print(FILE* outFile, OBJ o, int DisplayMode){
 
 	enum tag kindOf = o->u.any.tag;
 
@@ -348,7 +348,9 @@ js_print(FILE* outFile,OBJ o){
 			fprintf(outFile,"%ld" , o->u.integer.intVal);
 			break;
 		case T_STRING:
-			fprintf(outFile,"\"%s\"", o->u.string.stringVal);
+			if(DisplayMode) fprintf(outFile, "\"");
+			fprintf(outFile,"%s", o->u.string.stringVal);
+			if(DisplayMode) fprintf(outFile, "\"");
 			break;
 		case T_SYMBOL:
 			fprintf(outFile,"%s", o->u.symbol.symbolVal);
@@ -368,7 +370,7 @@ js_print(FILE* outFile,OBJ o){
 			break;
 		case T_USERDEFINEDFUNCTION:
 			fprintf(outFile, "(lambda ");
-			js_print(outFile, o->u.userDefinedFunction.argList);
+			js_print(outFile, o->u.userDefinedFunction.argList,1);
 			fprintf(outFile, " ");
 			print_list_rest(outFile, o->u.userDefinedFunction.bodyList);
 			break;

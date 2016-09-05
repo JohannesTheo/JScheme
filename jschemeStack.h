@@ -209,7 +209,7 @@ RETURN_helper(OBJ retVal){
 	//AP = savedAP();
 
 	DEBUGCODE(PRINT_STACK->state,	fprintf(stdout, "RETURN: ") );
-	DEBUGCODE(PRINT_STACK->state,	js_print(stdout, retVal) );
+	DEBUGCODE(PRINT_STACK->state,	js_print(stdout, retVal, 1) );
 	DEBUGCODE(PRINT_STACK->state,	fprintf(stdout, " -> %s\n", functionName((VOIDPTRFUNC)retAddr)) );
 
 	return retAddr;

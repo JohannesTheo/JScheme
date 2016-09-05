@@ -27,6 +27,8 @@ setupInitialEnvironment(){
 	globalEnvironmentPut(symbolTableGetOrAdd(">"), newBuiltinFunction(">", builtin_gThanNrP));
 	globalEnvironmentPut(symbolTableGetOrAdd("set-car!"), newBuiltinFunction("set-car!", builtin_set_car));
 	globalEnvironmentPut(symbolTableGetOrAdd("set-cdr!"), newBuiltinFunction("set-cdr!", builtin_set_cdr));
+	globalEnvironmentPut(symbolTableGetOrAdd("display"), newBuiltinFunction("display", builtin_display));
+	globalEnvironmentPut(symbolTableGetOrAdd("write"), newBuiltinFunction("write", builtin_write));
 	
 }
 	
@@ -90,7 +92,7 @@ jREPL(OBJ input){
 		expr = js_read(input);				// R ead
 		result = js_eval(globalEnvironment, expr);	// E valuate
 		if( result == js_eof) return;
-		js_print(stdout, result);			// P rint
+		js_print(stdout, result, 1);			// P rint
 								// L oop
 		printf("\n");
 	}
@@ -155,7 +157,7 @@ CP_jREPL2(){
 #else
 	if( (SP <= 5)) {
 #endif
-		js_print(stdout, result);		// P rint
+		js_print(stdout, result, 1);		// P rint
 		printf("\n");
 	}
 							// L oop

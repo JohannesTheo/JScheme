@@ -112,7 +112,7 @@ if( EVAL_TRACE->state){
 // PRINT TRACE
 if( EVAL_TRACE->state){
 				printIndent(indentLevel);
-				fprintf(stdout, "binding " GRN); js_print(stdout, nextFormalArg);
+				fprintf(stdout, "binding " GRN); js_print(stdout, nextFormalArg,1);
 				fprintf(stdout, RESET " to -> ");
 				oldIndentLevel = indentLevel;
 				indentLevel = 0;
@@ -181,7 +181,7 @@ if( EVAL_TRACE->state){
 	}else{
 		printf("eval in " YEL "LOCAL" RESET " (%p): ", env);
 	}
-	js_print(stdout, expr);
+	js_print(stdout, expr,1);
 	
 	if(PAUSE_INDENT_FLAG){
 		indentLevel += oldIndentLevel;
@@ -204,7 +204,7 @@ if( EVAL_TRACE->state){
 // PRINT TRACE
 if( EVAL_TRACE->state){
 			fprintf(stdout, " -> " GRN); 
-			js_print(stdout, expr);
+			js_print(stdout, expr,1);
 			fprintf(stdout,"\n" RESET);
 }
 #endif
@@ -220,7 +220,7 @@ if( EVAL_TRACE->state){
 // PRINT TRACE
 if( EVAL_TRACE->state){
 		fprintf(stdout, " -> " GRN); 
-		js_print(stdout, value);
+		js_print(stdout, value,1);
 		fprintf(stdout, "\n" RESET);
 }
 #endif
@@ -251,7 +251,7 @@ if( EVAL_TRACE->state){
 if( EVAL_TRACE->state){
 			printIndent(indentLevel);
 			fprintf(stdout, "<< ");
-			js_print(stdout, value);
+			js_print(stdout, value,1);
 			fprintf(stdout, "\n");
 			indentLevel--;
 }
