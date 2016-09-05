@@ -59,11 +59,14 @@ toggleOption(struct debugOption *option) {
 static void
 continuationPassing(){
 	toggleOption(CONTINUATION_PASSING);
+
 	printDebugOptions();
+	js_error("RESTART for CP on/off", js_true);
 }
 static void
 printStackDebug(){
 	toggleOption(PRINT_STACK);
+	fprintf(stdout, "\nPRINT_STACK works only in CP mode\n");
 	printDebugOptions();
 }
 static void
@@ -75,6 +78,7 @@ detailedTypes(){
 static void
 evalTrace(){
 	toggleOption(EVAL_TRACE);
+	fprintf(stdout, "\nEVAL_TRACE works only in non-CP mode\n");
 	printDebugOptions();
 }
 
