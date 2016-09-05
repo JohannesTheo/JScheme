@@ -12,6 +12,8 @@ int PAUSE_INDENT_FLAG = 0;
 
 struct debugOption *DETAILED_TYPES; 
 struct debugOption *EVAL_TRACE;
+struct debugOption *CONTINUATION_PASSING;
+struct debugOption *PRINT_STACK;
 
 static struct debugOption*
 newDebugOption(char* name,char* identifier, int initialState){
@@ -36,8 +38,11 @@ printDebugOptions(){
 
 	fprintf(stdout, "\navailable debug options: \n");
 	fprintf(stdout, "----------------------------\n");
+	fprintf(stdout, "%s -> %s: %s\n", CONTINUATION_PASSING->identifier, CONTINUATION_PASSING->name, isOnOff(CONTINUATION_PASSING->state) );
+	fprintf(stdout, "----------------------------\n");
 	fprintf(stdout, "%s -> %s: %s\n", DETAILED_TYPES->identifier, DETAILED_TYPES->name, isOnOff(DETAILED_TYPES->state) );
 	fprintf(stdout, "%s -> %s: %s\n", EVAL_TRACE->identifier, EVAL_TRACE->name, isOnOff(EVAL_TRACE->state) );
+	fprintf(stdout, "%s -> %s: %s\n", PRINT_STACK->identifier, PRINT_STACK->name, isOnOff(PRINT_STACK->state) );
 	fprintf(stdout, "----------------------------\n");
 }
 
@@ -51,6 +56,16 @@ toggleOption(struct debugOption *option) {
 	}
 }
 
+static void
+continuationPassing(){
+	toggleOption(CONTINUATION_PASSING);
+	printDebugOptions();
+}
+static void
+printStackDebug(){
+	toggleOption(PRINT_STACK);
+	printDebugOptions();
+}
 static void
 detailedTypes(){
 	toggleOption(DETAILED_TYPES);
@@ -67,6 +82,8 @@ void
 initDebugOptions(){
 	DETAILED_TYPES = newDebugOption( "DETAILED_TYPES","DT", 0);
 	EVAL_TRACE = newDebugOption( "EVAL_TRACE","ET", 0);
+	CONTINUATION_PASSING = newDebugOption( "CONTINUATION_PASSING", "CP", 0);
+	PRINT_STACK = newDebugOption( "PRINT_STACK", "PS", 0);
 }
 
 void
@@ -82,6 +99,10 @@ switchDebugOptions( OBJ debugOption){
 		detailedTypes();
 	}else if( (strcmp(option, EVAL_TRACE->identifier) == 0) || (strcmp(option, EVAL_TRACE->name) == 0)){
 		evalTrace();
+	}else if( (strcmp(option, CONTINUATION_PASSING->identifier) == 0) || (strcmp(option, CONTINUATION_PASSING->name) == 0)){
+		continuationPassing();
+	}else if( (strcmp(option, PRINT_STACK->identifier) == 0) || (strcmp(option, PRINT_STACK->name) == 0)){
+		printStackDebug();
 	}else{
 		fprintf(stdout, "\nPlease use one of the");
 		printDebugOptions();
