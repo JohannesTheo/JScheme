@@ -62,6 +62,9 @@ initializeWellKnownObjects(){
 	js_void = (OBJ)(malloc( sizeof( struct jschemeAny)));
 	js_void->u.any.tag = T_VOID;
 
+	js_eof = (OBJ)(malloc( sizeof( struct jschemeAny)));
+	js_eof->u.any.tag = T_EOF;
+
 	js_sym_define = symbolTableGetOrAdd("define");
 	js_sym_lambda = symbolTableGetOrAdd("lambda");
 }
@@ -82,6 +85,7 @@ jREPL(OBJ input){
 	
 		expr = js_read(input);				// R ead
 		result = js_eval(globalEnvironment, expr);	// E valuate
+		if( result == js_eof) return;
 		js_print(stdout, result);			// P rint
 								// L oop
 		printf("\n");
@@ -126,6 +130,7 @@ CP_jREPL(){
 
 	if(prompt_enabled) printf(CYN "JS> " RESET);
 	expr = js_read(inputStream);				// R ead
+	if( expr == js_eof ) RETURN( js_void );
 	CALL2( CP_js_eval,globalEnvironment, expr, CP_jREPL2);	// E val
 }
 

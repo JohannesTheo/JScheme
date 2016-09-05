@@ -285,7 +285,9 @@ js_read(OBJ inStream){
 	OBJ retVal;
 	prompt_off();
 	char ch = skipWhiteSpace(inStream);
-	
+
+	if( ch == -1) return js_eof;
+
 	if(ch == '('){
 		retVal = readList(inStream);
 	}

@@ -63,6 +63,7 @@ enum tag{
 	T_GLOBALENVIRONMENT,
 	T_LOCALENVIRONMENT,
 	T_USERDEFINEDFUNCTION,
+	T_EOF,
 };
 
 extern const char* tag_lookup[];
@@ -205,7 +206,7 @@ struct jschemeObject{
 /*
  * well known objects
  */
-OBJ js_nil, js_true, js_false, js_void;
+OBJ js_nil, js_true, js_false, js_void, js_eof;
 OBJ js_sym_define, js_sym_lambda;
 
 #ifdef DEBUG
