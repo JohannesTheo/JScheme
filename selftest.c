@@ -110,7 +110,7 @@ selftest(){
 		sym1 = sym2 = sym3 = NULL;	// make compiler happy when compiled without DEBUG		
 		symbolTableFillTest();
 
-		printf("SymTable: " GRN "OK\n" RESET);
+//		printf("SymTable: " GRN "OK\n" RESET);
 	}
 
 	/*
@@ -142,7 +142,7 @@ selftest(){
 
 		globalEnvironmentFillTest();
 
-		printf("Env: " GRN "OK\n" RESET);
+//		printf("Env: " GRN "OK\n" RESET);
 	}
 
 	/*

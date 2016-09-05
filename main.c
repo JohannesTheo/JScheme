@@ -147,7 +147,6 @@ CP_jREPL2(){
 
 int
 main() {
-
 	initSymbolTable();
 	initializeWellKnownObjects();
 	initJStack();
@@ -158,9 +157,10 @@ main() {
 	setupBuiltinSyntax();
 	selftest();
 #endif
+	
+	printf("hello friend...\n");
 	initGlobalEnvironment();
 	setupInitialEnvironment();
-
 	printf("Welcome to (JS)cheme\n");
 
 	if( setjmp(whereEverythingWasFine) ){
@@ -174,7 +174,7 @@ main() {
 		prompt_on();
 		printf("back in wonderland\n");
 	}	
-	printf("start REPL...\n");
+	printf("...starting a REPL for you.\n");
 	OBJ inputStream = newFileStream(stdin);
 	
 #ifdef DEBUG
