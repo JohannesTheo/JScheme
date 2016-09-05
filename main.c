@@ -25,6 +25,8 @@ setupInitialEnvironment(){
 	
 	globalEnvironmentPut(symbolTableGetOrAdd("include"), newBuiltinFunction("include", builtin_include));
 	globalEnvironmentPut(symbolTableGetOrAdd(">"), newBuiltinFunction(">", builtin_gThanNrP));
+	globalEnvironmentPut(symbolTableGetOrAdd("set-car!"), newBuiltinFunction("set-car!", builtin_set_car));
+	globalEnvironmentPut(symbolTableGetOrAdd("set-cdr!"), newBuiltinFunction("set-cdr!", builtin_set_cdr));
 	
 }
 	

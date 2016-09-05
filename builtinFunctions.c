@@ -322,6 +322,38 @@ builtin_cons(int numArgs){
 	return newCons(arg1, arg2);
 }
 
+OBJ
+builtin_set_car(int numArgs){
+	if(numArgs != 2){
+		POPN(numArgs);
+		js_error("(set-car!): expects 2 argument", js_nil);
+	}
+	OBJ newCar = POP();
+	OBJ theCons = POP();
+
+	if(!ISCONS(theCons)){
+		js_error("(set-car!): non-cons argument", theCons);
+	}
+	SET_CAR(theCons, newCar);
+	return js_void;
+}
+
+OBJ
+builtin_set_cdr(int numArgs){
+	if(numArgs != 2){
+		POPN(numArgs);
+		js_error("(set-cdr!): expects 2 argument", js_nil);
+	}
+	OBJ newCdr = POP();
+	OBJ theCons = POP();
+
+	if(!ISCONS(theCons)){
+		js_error("(set-cdr!): non-cons argument", theCons);
+	}
+	SET_CDR(theCons, newCdr);
+	return js_void;
+}
+
 /*
  * syntax
  */

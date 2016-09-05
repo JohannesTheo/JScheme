@@ -190,6 +190,9 @@ struct jschemeObject{
 #define SYMBOLVAL(o)	((o)->u.symbol.symbolVal)
 #define STRINGVAL(o)	((o)->u.string.stringVal)
 
+#define SET_CAR(o, newCar)	((o)->u.cons.car = (newCar))
+#define SET_CDR(o, newCdr)	((o)->u.cons.cdr = (newCdr))
+
 #define ISNIL(o)	(TAG(o) == T_NIL)
 #define ISTRUE(o)	(TAG(o) == T_TRUE)
 #define ISFALSE(o)	(TAG(o) == T_FALSE)

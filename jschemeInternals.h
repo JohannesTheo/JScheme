@@ -71,6 +71,8 @@ OBJ builtin_cdr();
 OBJ builtin_cons();
 OBJ builtin_include();
 OBJ builtin_gThanNrP();
+OBJ builtin_set_car();
+OBJ builtin_set_cdr();
 
 // builtinSyntax
 int isDefine();
