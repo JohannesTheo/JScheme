@@ -3,7 +3,7 @@
 VOIDPTRFUNC
 CP_js_eval(){
 
-	printJStack(__FILE__,__LINE__,__FUNCTION__);
+	DEBUGCODE(PRINT_STACK->state, printJStack(__FILE__,__LINE__,__FUNCTION__));
 
 	OBJ env = ARG(0);
 	OBJ expr = ARG(1);	
@@ -50,7 +50,8 @@ CP_evalCons(){
 	 */
 	CREATE_LOCALS(6);
 	
-	printJStack(__FILE__,__LINE__,__FUNCTION__);
+	//printJStack(__FILE__,__LINE__,__FUNCTION__);
+	DEBUGCODE(PRINT_STACK->state, printJStack(__FILE__,__LINE__,__FUNCTION__));
 	CALL2(CP_js_eval, env, functionSlot, CP_evalCons2);	
 }
 
@@ -74,7 +75,8 @@ CP_evalCons2(){
 	
 	VOIDPTRFUNC CP_evalCons3();
 
-	printJStack(__FILE__,__LINE__,__FUNCTION__);
+	//printJStack(__FILE__,__LINE__,__FUNCTION__);
+	DEBUGCODE(PRINT_STACK->state, printJStack(__FILE__,__LINE__,__FUNCTION__));
 	switch( TAG(evaluatedFunctionSlot) ){
 
 		case T_BUILTINFUNCTION:
@@ -186,11 +188,13 @@ CP_evalCons3(){
 	if( restArgs != js_nil){
 	
 		OBJ nextArg = CAR(restArgs);
-		printJStack(__FILE__,__LINE__,__FUNCTION__);	
+		//printJStack(__FILE__,__LINE__,__FUNCTION__);	
+		DEBUGCODE(PRINT_STACK->state, printJStack(__FILE__,__LINE__,__FUNCTION__));
 		CALL2(CP_js_eval, env, nextArg, CP_evalCons3);	
 	}
 
-	printJStack(__FILE__,__LINE__,__FUNCTION__);	
+	//printJStack(__FILE__,__LINE__,__FUNCTION__);	
+	DEBUGCODE(PRINT_STACK->state, printJStack(__FILE__,__LINE__,__FUNCTION__));
 	OBJ function = LOCAL(0);
 	OBJ value = function->u.builtinFunction.theCode(numArgs);
 	RETURN(value);
@@ -216,7 +220,8 @@ CP_evalCons4(){
 
 	// case 1: Still some formalArgs to go...
 	if( restFormalArgs != js_nil){
-		printJStack(__FILE__,__LINE__,__FUNCTION__);
+		//printJStack(__FILE__,__LINE__,__FUNCTION__);
+		DEBUGCODE(PRINT_STACK->state, printJStack(__FILE__,__LINE__,__FUNCTION__));
 		OBJ env = ARG(0);
 		ASSERT(ISENV(env), "bad env");
 		OBJ restArgs = LOCAL(1);
@@ -228,7 +233,8 @@ CP_evalCons4(){
 		CALL2(CP_js_eval, env, unevaluatedArg, CP_evalCons4); 
 	}
 	
-	printJStack(__FILE__,__LINE__,__FUNCTION__);
+	//printJStack(__FILE__,__LINE__,__FUNCTION__);
+	DEBUGCODE(PRINT_STACK->state, printJStack(__FILE__,__LINE__,__FUNCTION__));
 	// case 2: newEnv is ready, eval bodies now...
 	OBJ restBodyList = LOCAL(5);
 
@@ -255,7 +261,8 @@ CP_evalCons4(){
 VOIDPTRFUNC
 CP_evalCons5(){
 	
-	printJStack(__FILE__,__LINE__,__FUNCTION__);
+	//printJStack(__FILE__,__LINE__,__FUNCTION__);
+	DEBUGCODE(PRINT_STACK->state, printJStack(__FILE__,__LINE__,__FUNCTION__));
 	OBJ newEnv = LOCAL(4);
 	OBJ restBodyList = LOCAL(5);
 

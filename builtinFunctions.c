@@ -426,6 +426,8 @@ builtin_quote(OBJ env, OBJ argList){
  *	CONTINUATION VERSIONS of
  *	1. DEFINE
  *	2. LAMBDA
+ *	3. QUOTE
+ *	4. IF
  *	
  */
 
@@ -458,7 +460,8 @@ CP_builtin_define(){
 		}
 		CREATE_LOCALS(1);
 		SET_LOCAL(0, arg1);
-		printJStack(__FILE__,__LINE__,__FUNCTION__);
+		//printJStack(__FILE__,__LINE__,__FUNCTION__);
+		DEBUGCODE(PRINT_STACK->state, printJStack(__FILE__,__LINE__,__FUNCTION__) );
 		CALL2(CP_js_eval, env, arg2, CP_builtin_define2);
 	}
 	// case 2: define CONS ( function ) -> (define (name args*) (body*) )
@@ -474,7 +477,8 @@ CP_builtin_define(){
 			newUDF->u.userDefinedFunction.numLocals = count_defines(bodyList);
 			newUDF->u.userDefinedFunction.home = env;
 			environmentPut(env, name, newUDF);
-			printJStack(__FILE__,__LINE__,__FUNCTION__);
+			//printJStack(__FILE__,__LINE__,__FUNCTION__);
+			DEBUGCODE(PRINT_STACK->state, printJStack(__FILE__,__LINE__,__FUNCTION__) );
 			RETURN(js_void);
 		}
 	}
@@ -490,7 +494,8 @@ CP_builtin_define2(){
 	OBJ env = ARG(0);
 	OBJ symbol = LOCAL(0);
 
-	printJStack(__FILE__,__LINE__,__FUNCTION__);
+	//printJStack(__FILE__,__LINE__,__FUNCTION__);
+	DEBUGCODE(PRINT_STACK->state, printJStack(__FILE__,__LINE__,__FUNCTION__) );
 	environmentPut(env, symbol, value);
 	RETURN(js_void);
 }
@@ -501,7 +506,8 @@ CP_builtin_lambda(){
 	OBJ env = ARG(0);
 	OBJ argList = ARG(1);
 
-	printJStack(__FILE__,__LINE__,__FUNCTION__);
+	//printJStack(__FILE__,__LINE__,__FUNCTION__);
+	DEBUGCODE(PRINT_STACK->state, printJStack(__FILE__,__LINE__,__FUNCTION__) );
 	if( !ISCONS(argList) ){
 		js_error("(lambda): expects at least 2 arguments", js_nil);
 	}
@@ -525,7 +531,8 @@ CP_builtin_quote(){
 //	OBJ env = ARG(0);
 	OBJ argList = ARG(1);
 
-	printJStack(__FILE__,__LINE__,__FUNCTION__);
+	//printJStack(__FILE__,__LINE__,__FUNCTION__);
+	DEBUGCODE(PRINT_STACK->state, printJStack(__FILE__,__LINE__,__FUNCTION__) );
 	if( (!ISCONS(argList)) || ( CDR(argList) != js_nil) ){
 		js_error("(quote): expects exactly 1 argument", js_nil);
 	}
@@ -558,7 +565,7 @@ CP_builtin_if(){
 	CREATE_LOCALS(2);
 	SET_LOCAL(0, ifExpr);
 	SET_LOCAL(1, elseExpr);
-	printJStack(__FILE__,__LINE__,__FUNCTION__);
+	DEBUGCODE(PRINT_STACK->state, printJStack(__FILE__,__LINE__,__FUNCTION__) );
 	CALL2(CP_js_eval, env, condExpr, CP_builtin_if2);
 }
 
@@ -571,7 +578,8 @@ CP_builtin_if2(){
 	OBJ ifExpr = LOCAL(0);
 	OBJ elseExpr = LOCAL(1);
 	
-	printJStack(__FILE__,__LINE__,__FUNCTION__);
+	//printJStack(__FILE__,__LINE__,__FUNCTION__);
+	DEBUGCODE(PRINT_STACK->state, printJStack(__FILE__,__LINE__,__FUNCTION__) );
 	if (condValue == js_true){
 		TAILCALL2(CP_js_eval, env, ifExpr);
 	}

@@ -60,7 +60,7 @@ LOCAL(int n0based ){
 
 
 	ASSERT( ((AP + 2 + n0based) < SP), "get local arg index error");
-	//ASSERT( ((AP + n0based) >= SP), "arg index error");
+	ASSERT( ((AP + 2 + n0based) > 0), "arg index error");
 	 
 	return jStack[AP + 2 + n0based];
 }
@@ -70,7 +70,7 @@ SET_LOCAL(int n0based, OBJ o){
 
 	
 	ASSERT( ((AP + 2 + n0based) < SP), "set local arg index error");
-	//ASSERT( ((AP + n0based) >= SP), "arg index error");
+	ASSERT( ((AP + 2 + n0based) > 0), "arg index error");
 	
 	jStack[AP + 2 + n0based] = o;
 }
@@ -83,12 +83,14 @@ static inline int
 savedAP(){
 	
 	ASSERT( ((BP + 1) < SP), "saved AP index error");
+	ASSERT( ((BP + 1) > 0), "saved AP index error");
 	return (int)jStack[BP+1];
 }
 
 static inline VOIDPTRFUNC
 getContinuation(){
 	ASSERT( ((BP + 3) < SP), "CONT index error");
+	ASSERT( ((BP + 3) > 0), "CONT index error");
 	return (VOIDPTRFUNC)jStack[BP+3];
 }
 
@@ -122,7 +124,9 @@ LEAVE_STACK_FRAME(){
 
 static inline VOIDPTRFUNC
 CALL1_helper(VOIDPTRFUNC func, OBJ arg1, VOIDPTRFUNC continuation){
-	fprintf(stdout, "C1: %s Cont: %s\n",  functionName((VOIDPTRFUNC)func), functionName((VOIDPTRFUNC)continuation));
+
+	DEBUGCODE(PRINT_STACK->state, fprintf(stdout, "C1: %s Cont: %s\n",  functionName((VOIDPTRFUNC)func), functionName((VOIDPTRFUNC)continuation)) );
+	
 	NEW_STACK_FRAME();
 	PUSH((OBJ) func);
 	PUSH((OBJ)continuation);
@@ -139,7 +143,9 @@ CALL1_helper(VOIDPTRFUNC func, OBJ arg1, VOIDPTRFUNC continuation){
 
 static inline VOIDPTRFUNC
 CALL2_helper(VOIDPTRFUNC func, OBJ arg1, OBJ arg2, VOIDPTRFUNC continuation){
-	fprintf(stdout, "C2: %s Cont: %s\n",  functionName((VOIDPTRFUNC)func), functionName((VOIDPTRFUNC)continuation));
+	
+	DEBUGCODE(PRINT_STACK->state, fprintf(stdout, "C2: %s Cont: %s\n",  functionName((VOIDPTRFUNC)func), functionName((VOIDPTRFUNC)continuation)) );
+	
 	NEW_STACK_FRAME();	
 	PUSH((OBJ) func);
 	PUSH((OBJ)continuation);
@@ -157,7 +163,7 @@ CALL2_helper(VOIDPTRFUNC func, OBJ arg1, OBJ arg2, VOIDPTRFUNC continuation){
 
 static inline VOIDPTRFUNC
 TAILCALL1_helper(VOIDPTRFUNC func, OBJ arg1){
-	fprintf(stdout, "TC1: %s\n", functionName((VOIDPTRFUNC)func));
+	DEBUGCODE(PRINT_STACK->state, fprintf(stdout, "TC1: %s\n", functionName((VOIDPTRFUNC)func)) );
 	
 	VOIDPTRFUNC retAddr = (VOIDPTRFUNC)(getContinuation());
 	
@@ -175,7 +181,7 @@ TAILCALL1_helper(VOIDPTRFUNC func, OBJ arg1){
 static inline VOIDPTRFUNC
 TAILCALL2_helper(VOIDPTRFUNC func, OBJ arg1, OBJ arg2){
 	
-	fprintf(stdout, "TC2: %s\n", functionName((VOIDPTRFUNC)func));
+	DEBUGCODE( PRINT_STACK->state, fprintf(stdout, "TC2: %s\n", functionName((VOIDPTRFUNC)func)) );
 
 	VOIDPTRFUNC retAddr = (VOIDPTRFUNC)(getContinuation());
 
@@ -202,9 +208,9 @@ RETURN_helper(OBJ retVal){
 	//SP = AP - 1;
 	//AP = savedAP();
 
-	fprintf(stdout, "RETURN: ");
-	js_print(stdout, retVal);
-	fprintf(stdout, " -> %s\n", functionName((VOIDPTRFUNC)retAddr));
+	DEBUGCODE(PRINT_STACK->state,	fprintf(stdout, "RETURN: ") );
+	DEBUGCODE(PRINT_STACK->state,	js_print(stdout, retVal) );
+	DEBUGCODE(PRINT_STACK->state,	fprintf(stdout, " -> %s\n", functionName((VOIDPTRFUNC)retAddr)) );
 
 	return retAddr;
 }
