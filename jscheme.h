@@ -209,6 +209,12 @@ OBJ js_nil, js_true, js_false, js_void;
 OBJ js_sym_define, js_sym_lambda;
 
 #ifdef DEBUG
+# define DEBUGCODE(option, code){ ((option) ? code : 0); } 
+#else 
+# define DEBUGCODE(option, code) // nothing 
+#endif
+
+#ifdef DEBUG
 /*
  * debug tracing
  */
@@ -220,6 +226,8 @@ extern int PAUSE_INDENT_FLAG;
 
 extern struct debugOption *DETAILED_TYPES;
 extern struct debugOption *EVAL_TRACE; 
+extern struct debugOption *CONTINUATION_PASSING; 
+extern struct debugOption *PRINT_STACK; 
 
 struct debugOption{
 	char *name;
