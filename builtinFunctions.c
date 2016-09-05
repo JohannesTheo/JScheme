@@ -249,6 +249,31 @@ builtin_eqP(int numArgs){
 }
 
 OBJ
+builtin_gThanNrP(int numArgs){
+	if(numArgs != 2){
+		POPN(numArgs);
+		js_error("(>): expects 2 arguments", js_nil);
+	}
+
+	OBJ arg2 = POP();
+	OBJ arg1 = POP();
+	
+	if(ISINTEGER(arg1)){
+		if(ISINTEGER(arg2)){
+			if( INTVAL(arg1) > INTVAL(arg2)) return js_true;
+			return js_false;
+		}else{
+			js_error("(>): non-integer argument", arg2);
+		}
+
+	}else{
+		js_error("(>): non-integer argument", arg1);
+	}
+	// NOT REACHED
+	return NULL;
+}
+
+OBJ
 builtin_consP(int numArgs){
 	if(numArgs != 1){
 		POPN(numArgs);

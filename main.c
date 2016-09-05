@@ -24,6 +24,7 @@ setupInitialEnvironment(){
 	globalEnvironmentPut(symbolTableGetOrAdd("cons"), newBuiltinFunction("cons", builtin_cons));
 	
 	globalEnvironmentPut(symbolTableGetOrAdd("include"), newBuiltinFunction("include", builtin_include));
+	globalEnvironmentPut(symbolTableGetOrAdd(">"), newBuiltinFunction(">", builtin_gThanNrP));
 	
 }
 	
