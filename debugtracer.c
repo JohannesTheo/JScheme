@@ -7,6 +7,7 @@
 #include <string.h>
 
 int indentLevel = 0;
+int indentLevelForInclude = 0;
 int oldIndentLevel = 0;
 int PAUSE_INDENT_FLAG = 0;
 
@@ -14,6 +15,7 @@ struct debugOption *DETAILED_TYPES;
 struct debugOption *EVAL_TRACE;
 struct debugOption *CONTINUATION_PASSING;
 struct debugOption *PRINT_STACK;
+struct debugOption *PRINT_INCLUDE;
 
 static struct debugOption*
 newDebugOption(char* name,char* identifier, int initialState){
@@ -43,6 +45,7 @@ printDebugOptions(){
 	fprintf(stdout, "%s -> %s: %s\n", DETAILED_TYPES->identifier, DETAILED_TYPES->name, isOnOff(DETAILED_TYPES->state) );
 	fprintf(stdout, "%s -> %s: %s\n", EVAL_TRACE->identifier, EVAL_TRACE->name, isOnOff(EVAL_TRACE->state) );
 	fprintf(stdout, "%s -> %s: %s\n", PRINT_STACK->identifier, PRINT_STACK->name, isOnOff(PRINT_STACK->state) );
+	fprintf(stdout, "%s -> %s: %s\n", PRINT_INCLUDE->identifier, PRINT_INCLUDE->name, isOnOff(PRINT_INCLUDE->state) );
 	fprintf(stdout, "----------------------------\n");
 }
 
@@ -54,6 +57,12 @@ toggleOption(struct debugOption *option) {
 	}else{
 		option->state = 1;
 	}
+}
+
+static void
+printInclude(){
+	toggleOption(PRINT_INCLUDE);
+	printDebugOptions();
 }
 
 static void
@@ -86,8 +95,9 @@ void
 initDebugOptions(){
 	DETAILED_TYPES = newDebugOption( "DETAILED_TYPES","DT", 0);
 	EVAL_TRACE = newDebugOption( "EVAL_TRACE","ET", 0);
-	CONTINUATION_PASSING = newDebugOption( "CONTINUATION_PASSING", "CP", 0);
+	CONTINUATION_PASSING = newDebugOption( "CONTINUATION_PASSING", "CP", 1);
 	PRINT_STACK = newDebugOption( "PRINT_STACK", "PS", 0);
+	PRINT_INCLUDE = newDebugOption( "PRINT_INCLUDE", "PI", 0);
 }
 
 void
@@ -107,6 +117,8 @@ switchDebugOptions( OBJ debugOption){
 		continuationPassing();
 	}else if( (strcmp(option, PRINT_STACK->identifier) == 0) || (strcmp(option, PRINT_STACK->name) == 0)){
 		printStackDebug();
+	}else if( (strcmp(option, PRINT_INCLUDE->identifier) == 0) || (strcmp(option, PRINT_INCLUDE->name) == 0)){
+		printInclude();
 	}else{
 		fprintf(stdout, "\nPlease use one of the");
 		printDebugOptions();
