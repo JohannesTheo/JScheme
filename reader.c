@@ -211,6 +211,10 @@ readSymbol(OBJ inStream, char firstChar){
 		free(buffer);
 		return js_false;
 	}
+	if(strcmp(buffer, "#void") == 0 ){
+		free(buffer);
+		return js_void;
+	}
 
 	// realloc buffer to save memory and add string terminator.
 	buffer = realloc(buffer, current_size + 1);
