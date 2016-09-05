@@ -36,7 +36,7 @@ isOnOff(int option){
 static void
 printDebugOptions(){
 
-	fprintf(stdout, "\navailable debug options: \n");
+	fprintf(stdout, "\navailable debug options: %%XY or %%FULL_NAME\n");
 	fprintf(stdout, "----------------------------\n");
 	fprintf(stdout, "%s -> %s: %s\n", CONTINUATION_PASSING->identifier, CONTINUATION_PASSING->name, isOnOff(CONTINUATION_PASSING->state) );
 	fprintf(stdout, "----------------------------\n");
