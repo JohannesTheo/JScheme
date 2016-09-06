@@ -29,6 +29,7 @@ setupInitialEnvironment(){
 	globalEnvironmentPut(symbolTableGetOrAdd("set-cdr!"), newBuiltinFunction("set-cdr!", builtin_set_cdr));
 	globalEnvironmentPut(symbolTableGetOrAdd("display"), newBuiltinFunction("display", builtin_display));
 	globalEnvironmentPut(symbolTableGetOrAdd("write"), newBuiltinFunction("write", builtin_write));
+	globalEnvironmentPut(symbolTableGetOrAdd("string=?"), newBuiltinFunction("string=?", builtin_eqStringP));
 	
 }
 	

@@ -75,6 +75,7 @@ OBJ builtin_set_car();
 OBJ builtin_set_cdr();
 OBJ builtin_display();
 OBJ builtin_write();
+OBJ builtin_eqStringP();
 
 // builtinSyntax
 int isDefine();

@@ -1,5 +1,6 @@
 #include "jscheme.h"
 #include <stdlib.h>
+#include <string.h>
 
 
 
@@ -176,8 +177,10 @@ builtin_times(int numArgs){
 
 OBJ
 builtin_quotient(int numArgs){
-	
-	printf(RED "WARNING:" RESET " division is implemented for integers only and will truncate fractions!\n");
+
+#ifdef DEBUG	
+	if( DETAILED_TYPES->state) printf(RED "WARNING:" RESET " division is implemented for integers only and will truncate fractions!\n");
+#endif
 	OBJ theArg;
 	switch (numArgs){
 		
@@ -268,6 +271,31 @@ builtin_eqP(int numArgs){
 		}
 	}
 	// TO-DO: Strings, cons, ...
+	return js_false;
+}
+
+OBJ
+builtin_eqStringP(int numArgs){
+	if(numArgs != 2){
+		POPN(numArgs);
+		js_error("(string=?): expects 2 arguments", js_nil);
+	}
+
+	OBJ arg2 = POP();
+	OBJ arg1 = POP();
+	
+	// case 1: same jscheme OBJ 
+	if( arg1 == arg2) return js_true;
+	// case 2: same INTEGER value
+	if(ISSTRING(arg1)){
+		if(ISSTRING(arg2)){
+			if( strcmp( STRINGVAL(arg1), STRINGVAL(arg2)) == 0) return js_true;
+			return js_false;
+		}
+		js_error("(string=?): non-string argument", arg2);
+	}
+	js_error("(string=?): non-string argument", arg1);
+
 	return js_false;
 }
 
