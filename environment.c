@@ -130,6 +130,38 @@ globalEnvironmentPut(OBJ storedKey, OBJ storedValue){
 	}
 }
 
+void
+globalEnvironmentSet(OBJ storedKey, OBJ storedValue){
+	
+	uint32_t h = (int) storedKey;
+	int startIndex = h % globalEnvironmentSize;
+	int nextIndex = startIndex;
+	OBJ try;
+
+	for(;;){
+	
+		try = globalEnvironment->u.environment.slots[nextIndex].key;
+
+		// case 1: already there -> replace
+		if(try == storedKey){
+
+			globalEnvironment->u.environment.slots[nextIndex].value = storedValue;
+			return;
+		}
+		// case 2: new -> insert
+		if(try == NULL){
+			js_error("(environmentSet) no such key:", storedKey);
+			return;
+		}
+		// case 3: hash collision -> probing
+		nextIndex = ( nextIndex + 1) % globalEnvironmentSize;
+		if(nextIndex == startIndex){
+			js_error("(environmentSet) no such key:", storedKey);
+			return;
+		}
+	}
+}
+
 OBJ
 globalEnvironmentGet(OBJ searchedKey){
 	
@@ -190,6 +222,30 @@ localEnvironmentPut(OBJ env, OBJ storedKey, OBJ storedValue){
 	error("local environment error - no empty slot", __FILE__, __LINE__);
 }
 
+void
+localEnvironmentSet(OBJ env, OBJ storedKey, OBJ storedValue){
+	OBJ parent;	
+	OBJ nextKeyInEnv;
+	int numEnvSlots = env->u.environment.numSlots;
+
+	for(int i = 0; i < numEnvSlots; i++){
+		
+		nextKeyInEnv = env->u.environment.slots[i].key;
+		
+		// case 1: key already there -> replace
+		if( nextKeyInEnv == storedKey) {
+			env->u.environment.slots[i].value = storedValue;
+			return;
+		}
+	}
+	if( (parent = env->u.environment.parentEnvironment) != NULL){
+		environmentSet( parent, storedKey, storedValue);
+		return;
+	}
+	js_error("(environmentSet) no such key:", storedKey);
+	return;
+}
+
 OBJ
 localEnvironmentGet(OBJ env, OBJ searchedKey){
 	
@@ -232,6 +288,18 @@ environmentPut(OBJ env, OBJ storedKey, OBJ storedValue){
 		return localEnvironmentPut(env, storedKey, storedValue);
 	} 
 	js_error("environment put: not an environment", env);
+}
+
+void
+environmentSet(OBJ env, OBJ storedKey, OBJ storedValue){
+
+	if( TAG(env) == T_GLOBALENVIRONMENT ){
+		return globalEnvironmentSet(storedKey, storedValue);
+	} 
+	if( TAG(env) == T_LOCALENVIRONMENT ){
+		return localEnvironmentSet(env, storedKey, storedValue);
+	} 
+	js_error("environment set: not an environment", env);
 }
 
 OBJ

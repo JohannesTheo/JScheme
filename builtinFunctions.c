@@ -759,3 +759,51 @@ CP_builtin_if2(){
 	//NOT REACHED
 	return NULL;
 }
+
+VOIDPTRFUNC
+CP_builtin_set() {
+    OBJ env = ARG(0);
+    OBJ argList = ARG(1);
+    OBJ varName, expr;
+    VOIDPTRFUNC CP_builtin_set2();
+
+    if (!ISCONS(argList)) {
+	js_error("(set!) expects 2 arguments:", argList);
+    }
+    varName = CAR(argList);
+    argList = CDR(argList);
+
+    if (!ISCONS(argList)) {
+	js_error("(set!) expects 2 arguments:", argList);
+    }
+    expr = CAR(argList);
+    argList = CDR(argList);
+    if (argList != js_nil) {
+	js_error("(set!) expects 2 arguments:", argList);
+    }
+
+    if (!ISSYMBOL(varName)) {
+	js_error("(set!) non symbol variable name:", varName);
+    }
+    if (expr == js_nil) {
+	environmentSet(env, varName, expr);
+	RETURN (js_void);
+    }
+    CREATE_LOCALS(1);
+    SET_LOCAL(0, varName);
+    ASSERT(env != NULL, "bad env");
+    CALL2(CP_js_eval, env, expr, CP_builtin_set2);
+    // not reached
+}
+
+VOIDPTRFUNC
+CP_builtin_set2() {
+    {
+	OBJ value = RETVAL;
+	OBJ env = ARG(0);
+	OBJ varName = LOCAL(0);
+
+	environmentSet(env, varName, value);
+	RETURN (js_void);
+     }
+}

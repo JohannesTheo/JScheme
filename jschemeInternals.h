@@ -55,6 +55,7 @@ OBJ symbolTableGetOrAdd(char* );
 // environment
 void initGlobalEnvironment();
 void environmentPut(OBJ env, OBJ storedKey, OBJ storedValue);
+void environmentSet(OBJ env, OBJ storedKey, OBJ storedValue);
 OBJ environmentGet(OBJ env, OBJ searchedKey);
 void globalEnvironmentPut(OBJ storedKey, OBJ storedValue);
 OBJ globalEnvironmentGet(OBJ searchedKey);
@@ -91,7 +92,8 @@ VOIDPTRFUNC CP_builtin_lambda();
 VOIDPTRFUNC CP_builtin_quote();
 VOIDPTRFUNC CP_builtin_if();
 VOIDPTRFUNC CP_builtin_if2();
-
+VOIDPTRFUNC CP_builtin_set();
+VOIDPTRFUNC CP_builtin_set2();
 /*
  *	Continuation passing
  */

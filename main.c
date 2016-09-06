@@ -41,6 +41,7 @@ setupBuiltinSyntax()
 	globalEnvironmentPut(symbolTableGetOrAdd("if"), newBuiltinSyntax("if", builtin_if));
 	globalEnvironmentPut(symbolTableGetOrAdd("lambda"), newBuiltinSyntax("lambda", builtin_lambda));
 	globalEnvironmentPut(symbolTableGetOrAdd("quote"), newBuiltinSyntax("quote", builtin_quote));
+	globalEnvironmentPut(symbolTableGetOrAdd("set!"), newString("not available yet"));
 }
 
 void
@@ -51,6 +52,7 @@ CP_setupBuiltinSyntax()
 	globalEnvironmentPut(symbolTableGetOrAdd("if"), CP_newBuiltinSyntax("if", (VOIDPTRFUNC)CP_builtin_if));
 	globalEnvironmentPut(symbolTableGetOrAdd("lambda"), CP_newBuiltinSyntax("lambda", (VOIDPTRFUNC)CP_builtin_lambda));
 	globalEnvironmentPut(symbolTableGetOrAdd("quote"), CP_newBuiltinSyntax("quote", (VOIDPTRFUNC)CP_builtin_quote));
+	globalEnvironmentPut(symbolTableGetOrAdd("set!"), CP_newBuiltinSyntax("set!", (VOIDPTRFUNC)CP_builtin_set));
 
 }
 
