@@ -8,6 +8,20 @@
 (define (>= a b) (not (< a b)))
 (define (<= a b) (not (> a b)))
 
+(define (zero? n)
+  	(eq? n 0))
+
+(define (negative? n)
+  	(> 0 n))
+
+(define (positive? n)
+  	(> n 0))
+
+(define (abs num)
+  	(if (negative? num)
+	  	(* num -1)
+		num))
+
 (define (even? a)
 	(if (= 0 a)
 		#t
@@ -40,6 +54,15 @@
 			  	(set-car! l o)
 				(set_nth (- n 1) (cdr l) o )))))
 
+(define (indexOfS? string l)
+  	(define (indexOfS?_helper accu string l)
+	  	(if (eq? l nil)
+	  		-1
+		  	(if (string=? string (car l))
+		  		accu
+				(indexOfS?_helper (+ accu 1) string (cdr l))
+				)))
+	(indexOfS?_helper 1 string l))
 
 (define (newline) (display "\n"))
 
