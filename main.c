@@ -239,7 +239,7 @@ trampoline( VOIDPTRFUNC funcToCall){
 #ifdef DEBUG
 	if( (SP <= 5) || PRINT_INCLUDE->state){
 		printIndent(indentLevelForInclude);
-		fprintf(stdout, "Enter trampoline...\n");
+		fprintf(stdout, "Enter a magical trampoline.\n");
 	}
 #endif
 	void *nextFunc;
@@ -251,7 +251,7 @@ trampoline( VOIDPTRFUNC funcToCall){
 #ifdef DEBUG
 	if( (SP <= 5) || PRINT_INCLUDE->state){
 		printIndent(indentLevelForInclude);
-		fprintf(stdout, "Leave trampoline...\n");
+		fprintf(stdout, "Back in reality.\n");
 	}
 #endif
 }
