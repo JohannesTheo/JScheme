@@ -1,9 +1,143 @@
-/*
- * eval stack
+/*	
+ *
+ *	*****************************
+ * 	*     The JScheme Stack     *
+ *	*****************************
+ *
+ *	SP -> points to the first free slot on stack
+ *	AP -> points to the first argument in the current stack frame
+ *	BP -> points to the first element in the current stack frame
+ *
+ *	RETVAL -> used as return value register in continuation passing style
+ *
+ * 	
+ * 	THE JSTACK LAYOUT:
+ *
+ * 	abstract layout of a stack frame:
+ *	| ------------------------------- |
+ *	| 11 :                            | <- SP
+ *	| 10 :         LOCAL N            |
+ *	| 10 :           ...              |
+ *	| 10 :         LOCAL 1            |
+ *	| 10 :          ARG N             |
+ *	| 10 :           ....             |
+ *	| 10 :          ARG 1             |
+ *	|  4 :       environment          | <- AP
+ *	|  3 :   continuation / return    |
+ *	|  2 :         callee             |
+ *	|  1 :        (save AP)           | 
+ *	|  0 :        (saved BP)          | <- BP
+ *	| ------------------------------- |
+ *	
+ *	***********************************************************************
+ 
+ *	#comment:
+ *
+ *	Every CALL will create a NEW stack frame. RETURN will allways leave a stack frame.
+ *	This can be a small overhead but it simplifies the usage pattern a lot! :)
+ *	
+ *	1 CALL -> RETURN most of the time
+ *	2 TAILCALL when reusing a stack frame ( will drop LOCALS so pass them as args if needed )
+ *	3 LOCALS can be created in the stack frame they are needed. Because following CALLs will 
+ *	  create another stack frame LOCALS are safe in the callers stack frame.
+ 
+ *	***********************************************************************
+ *
+ *	CALL: 
+ *	- creates a new stack frame (save oldAP, oldBP and set BP to new stack frame)
+ *	- pushes callee
+ *	- pushes continuation/return address
+ *	- pushes ARG1 to ARG N
+ *		
+ *	TAILCALL:
+ *	- replace calle of current stack frame with new callee
+ *	- reuse continuation/return of current stack frame
+ *	- set ARG1 to ARG N
+ *	- drops locals!
+ *
+ *	RETURN:
+ *	- set RETVAL to the return value
+ *	- calls the continuation of current stack frame
+ *	- leaves the stack frame ( restores previous stack frame with oldBP and oldAP )
+ *
+ * 
+ * 	# IF a function needs some locals it must create and manage them
+ *
+ *	CREATE_LOCALS N:
+ *	- creates n locals initilaised with js_nil
+ *
+ *	LOCAL N:
+ *	- returns the local n in the current stack frame
+ *
+ *	SET_LOCAL N O:
+ *	- sets the local n to o in the current stack frame
+ *
+ *
+ *	initial stack:
+ *	----------------------------------
+ *	|  0 :                           | <- SP <- AP <- BP
+ *	----------------------------------
+ *
+ * 	in CP_jREPL:
+ *	----------------------------------
+ *	|  0 :                           | <- SP 
+ *	|  4 :       #file stream        | <- AP
+ *	|  3 :           NULL            | (continuation/return)
+ *	|  2 :         CP_jREPL          |
+ *	|  1 :            0              | (saved AP)
+ *	|  0 :            0              | (saved BP) <- BP
+ *	----------------------------------
+ *	
+ *	in CP_js_eval for: (define a 100)
+ *	-> CALL( CP_js_eval, GLOBAL, expr, CP_jREPL2)
+ *	----------------------------------
+ *	| 11 :                            | <- SP
+ *	| 10 :            cons            | -> (define a 100)
+ *	|  9 :  GLOBAL: (0x7ff7fa003600)  | <- AP
+ *	|  8 :          CP_jREPL2         | (continuation/return)
+ *	|  7 :         CP_js_eval         |
+ *	|  6 :              4             | (saved AP)
+ *	|  5 :              0             | (saved BP) <- BP
+ *	| ------------------------------- |
+ *	|  4 :        #file stream        |
+ *	|  3 :            NULL            |
+ *	|  2 :          CP_jREPL          |
+ *	|  1 :              0             |
+ *	|  0 :              0             |
+ *	----------------------------------
+ *	
+ *	...
+ *	-> TAILCALL CP_evalCons 
+ *	-> Create LOCALS for functionsSlot, restArgs, numArgs, etc...
+ *	...
+ *
+ *	in CP_evalCons2
+ *	----------------------------------
+ *	| 17 :                            | <- SP
+ *	| 16 :             nil            |
+ *  	| 15 :             nil            |
+ *  	| 14 :             nil            |
+ *  	| 13 :              0             |			LOCAL 2: numArgs
+ *  	| 12 :            cons            | -> (a 100)		LOCAL 1: restArgs
+ *	| 11 :      builtin (define)      |			LOCAL 0: THE EVALUATED FUNCTION SLOT
+ *	| 10 :            cons            | -> (define a 100)	THE ORIGINAL cons
+ *	|  9 :  GLOBAL: (0x7fdb74007600)  | <- AP
+ *	|  8 :          CP_jREPL2         | (continuation/return)
+ *	|  7 :         CP_evalCons        |
+ *	|  6 :              4             | (saved AP)
+ *	|  5 :              0             | (saved BP) <- BP
+ *	| ------------------------------- |
+ *	|  4 :        #file stream        |
+ *	|  3 :            NULL            |
+ *	|  2 :          CP_jREPL          |
+ *	|  1 :              0             |
+ *	|  0 :              0             |
+ *	----------------------------------
+ *
  */
 
 extern OBJ *jStack;
-extern int SP; 			// spIndex = index of next unused slot
+extern int SP;
 extern int AP;
 extern int BP;
 extern int stackLimit;
