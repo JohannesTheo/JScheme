@@ -85,6 +85,7 @@ OBJ builtin_define();
 OBJ builtin_if();
 OBJ builtin_lambda();
 OBJ builtin_quote();
+OBJ builtin_set();
 // CP bultinSyntax
 VOIDPTRFUNC CP_builtin_define();
 VOIDPTRFUNC CP_builtin_define2();

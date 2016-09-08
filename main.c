@@ -41,7 +41,7 @@ setupBuiltinSyntax()
 	globalEnvironmentPut(symbolTableGetOrAdd("if"), newBuiltinSyntax("if", builtin_if));
 	globalEnvironmentPut(symbolTableGetOrAdd("lambda"), newBuiltinSyntax("lambda", builtin_lambda));
 	globalEnvironmentPut(symbolTableGetOrAdd("quote"), newBuiltinSyntax("quote", builtin_quote));
-	globalEnvironmentPut(symbolTableGetOrAdd("set!"), newString("not available yet"));
+	globalEnvironmentPut(symbolTableGetOrAdd("set!"), newBuiltinSyntax("set!", builtin_set));
 }
 
 void

@@ -527,6 +527,37 @@ if( EVAL_TRACE->state ){
 }
 
 OBJ
+builtin_set(OBJ env, OBJ argList) {
+    OBJ varName, expr;
+
+    if (!ISCONS(argList)) {
+	js_error("(set!) expects 2 arguments:", argList);
+    }
+    varName = CAR(argList);
+    argList = CDR(argList);
+
+    if (!ISCONS(argList)) {
+	js_error("(set!) expects 2 arguments:", argList);
+    }
+    expr = CAR(argList);
+    argList = CDR(argList);
+    if (argList != js_nil) {
+	js_error("(set!) expects 2 arguments:", argList);
+    }
+
+    if (!ISSYMBOL(varName)) {
+	js_error("(set!) non symbol variable name:", varName);
+    }
+    if (expr == js_nil) {
+	environmentSet(env, varName, expr);
+	return js_void;	
+    }
+    OBJ evaledExpr = js_eval(env, expr);
+    environmentSet(env, varName, evaledExpr);
+    return js_void;
+}
+
+OBJ
 builtin_if(OBJ env, OBJ argList){
 	OBJ condExpr, ifExpr, elseExpr, condValue;
 	
