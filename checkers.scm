@@ -1,6 +1,6 @@
 (include "init.scm")
 (include "gamePrint.scm")
-(include "move.scm")
+(include "gameMove.scm")
 (include "gameState.scm")
 
 (define current_game (new_checkers))
