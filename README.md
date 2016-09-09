@@ -13,15 +13,17 @@ JS is a simple scheme implementation written in C. The name was chosen intention
 ## Getting started
 
 1. Install
-```
-git clone git@github.com:JohannesTheo/JScheme.git
-cd ./JScheme
-make js
-```
+
+	```
+	git clone git@github.com:JohannesTheo/JScheme.git
+	cd ./JScheme
+	make js
+	```
+
 2. Run
-```
-./jscheme
-```
+	```
+	./jscheme
+	```
 
 ## Features
 
@@ -118,60 +120,60 @@ For more detailed examples please have a look at the "checkers.scm" demo or "ini
 * `string=?` compare strings
 * `include` a file ( read in, evaluate and give control back to interactive REPL)
 
-	> ```
-	> JS> (include "some File.scm")
-	> #void
-	>```
+	```
+	JS> (include "some File.scm")
+	#void
+	```
 
 ### Builtin syntax
 (All the syntax is working in CPS and non-CPS mode)
 
 
 * `define` variables or functions
->```
->JS> (define a 100) 
->#void
->JS> (define (f x y z) (+ x y z))
->#void
->JS> (f 1 2 a)
->103
->```
+	```
+	JS> (define a 100) 
+	#void
+	JS> (define (f x y z) (+ x y z))
+	#void
+	JS> (f 1 2 a)
+	103
+	```
 
 * `lambda` anonymous functions
->```
->JS> ((lambda (x y)(* x y)) 3 3)
->9
->```
+	```
+	JS> ((lambda (x y)(* x y)) 3 3)
+	9
+	```
 
 * `if` conditional if else
->```
->JS> (define condition #t)
->#void
->JS> (define ifExpr "condition was true")
->#void
->JS> (define elseExpr "condition was false")
->#void
->JS> (if condition ifExpr elseExpr)
->"condition was true"
->```
+	```
+	JS> (define condition #t)
+	#void
+	JS> (define ifExpr "condition was true")
+	#void
+	JS> (define elseExpr "condition was false")
+	#void
+	JS> (if condition ifExpr elseExpr)
+	"condition was true"
+	```
 
 * `quote` returns the unevaluated expr.
->```
->JS> (quote '(1 2 3 a))
->(1 2 3 a)
->```
+	```
+	JS> (quote '(1 2 3 a))
+	(1 2 3 a)
+	```
 
 * `set!` set a variable to a new value
->```
->JS> (define a "helloWorld")
->#void
->JS> (set! a 128)
->#void
->JS> ((lambda () (set! a "hello environment scopes")))
->#void
->JS> a 
->"hello environment scopes"
->```
+	```
+	JS> (define a "helloWorld")
+	#void
+	JS> (set! a 128)
+	#void
+	JS> ((lambda () (set! a "hello environment scopes")))
+	#void
+	JS> a 
+	"hello environment scopes"
+	```
 
 ### init.scm
 
