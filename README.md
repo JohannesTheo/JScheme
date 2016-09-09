@@ -117,10 +117,10 @@ For more detailed examples please have a look at the "checkers.scm" demo or "ini
 * `write` print to read back ( strings with quotes )
 * `string=?` compare strings
 * `include` include a file ( read in, evaluate and give control back to interactive REPL)
->	```
->	JS> (include "someFile.scm")
->	```
-
+>```
+>JS> (include "some File.scm") 
+>#void
+>```
 
 
 ### Builtin syntax
@@ -128,50 +128,50 @@ For more detailed examples please have a look at the "checkers.scm" demo or "ini
 
 
 * `define` variables or functions
->	```
->	JS> (define a 100) 
->	#void
->	JS> (define (f x y z) (+ x y z))
->	#void
->	JS> (f 1 2 a)
->	103
->	```
+>```
+>JS> (define a 100) 
+>#void
+>JS> (define (f x y z) (+ x y z))
+>#void
+>JS> (f 1 2 a)
+>103
+>```
 
 * `lambda` anonymous functions
->	```
->	JS> ((lambda (x y)(* x y)) 3 3)
->	9
->	```
+>```
+>JS> ((lambda (x y)(* x y)) 3 3)
+>9
+>```
 
 * `if` conditional if else
->	```
->	JS> (define condition #t)
->	#void
->	JS> (define ifExpr "condition was true")
->	#void
->	JS> (define elseExpr "condition was false")
->	#void
->	JS> (if condition ifExpr elseExpr)
->	"condition was true"
->	```
+>```
+>JS> (define condition #t)
+>#void
+>JS> (define ifExpr "condition was true")
+>#void
+>JS> (define elseExpr "condition was false")
+>#void
+>JS> (if condition ifExpr elseExpr)
+>"condition was true"
+>```
 
 * `quote` returns the unevaluated expr.
->	```
->	JS> (quote '(1 2 3 a))
->	(1 2 3 a)
->	```
+>```
+>JS> (quote '(1 2 3 a))
+>(1 2 3 a)
+>```
 
 * `set!` set a variable to a new value
->	```
->	JS> (define a "helloWorld")
->	#void
->	JS> (set! a 128)
->	#void
->	JS> ((lambda () (set! a "hello environment scopes")))
->	#void
->	JS> a 
->	"hello environment scopes"
->	```
+>```
+>JS> (define a "helloWorld")
+>#void
+>JS> (set! a 128)
+>#void
+>JS> ((lambda () (set! a "hello environment scopes")))
+>#void
+>JS> a 
+>"hello environment scopes"
+>```
 
 ### init.scm
 
