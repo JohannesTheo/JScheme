@@ -121,8 +121,10 @@ For more detailed examples please have a look at the "checkers.scm" demo or "ini
 	JS> (include "someFile.scm")
 	```
 
+
 ### Builtin syntax
 (All the syntax is working in CPS and non-CPS mode)
+
 
 * `define` variables or functions
 >	```
