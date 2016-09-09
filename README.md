@@ -116,12 +116,12 @@ For more detailed examples please have a look at the "checkers.scm" demo or "ini
 * `display` print for user output ( strings without quotes )
 * `write` print to read back ( strings with quotes )
 * `string=?` compare strings
-* `include` include a file ( read in, evaluate and give control back to interactive REPL)
->```
->JS> (include "some File.scm") 
->#void
->```
+* `include` a file ( read in, evaluate and give control back to interactive REPL)
 
+	> ```
+	> JS> (include "some File.scm")
+	> #void
+	>```
 
 ### Builtin syntax
 (All the syntax is working in CPS and non-CPS mode)
