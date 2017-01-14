@@ -15,7 +15,7 @@ JS is a simple scheme implementation written in C. The name was chosen intention
 1. Install
 
 	```
-	git clone git@github.com:JohannesTheo/JScheme.git
+	git clone https://github.com/JohannesTheo/JScheme.git
 	cd ./JScheme
 	make js
 	```
